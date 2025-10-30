@@ -159,7 +159,7 @@ class LoginScreen extends StatelessWidget {
                       // === Login Button ===
                       InkWell(
                         onTap: () {
-                          context.pushRoute(HistoryRoute());
+                          context.pushRoute(MainRoute());
                         },
                         child: Container(
                           alignment: Alignment.center,
