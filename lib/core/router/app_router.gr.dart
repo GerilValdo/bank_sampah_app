@@ -27,6 +27,22 @@ class DashboardRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [DepositWasteScreen]
+class DepositWasteRoute extends PageRouteInfo<void> {
+  const DepositWasteRoute({List<PageRouteInfo>? children})
+    : super(DepositWasteRoute.name, initialChildren: children);
+
+  static const String name = 'DepositWasteRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const DepositWasteScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [HistoryScreen]
 class HistoryRoute extends PageRouteInfo<void> {
   const HistoryRoute({List<PageRouteInfo>? children})

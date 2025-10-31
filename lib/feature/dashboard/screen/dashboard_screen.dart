@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/constants/app_color.dart';
 import 'package:bank_sampah_app/core/constants/app_style.dart';
+import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -99,7 +100,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // POINTS CARD 
+  // POINTS CARD
   Widget _buildPointsCard() {
     return Row(
       children: [
@@ -139,7 +140,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // QUICK ACTIONS 
+  // QUICK ACTIONS
   Widget _buildQuickActions(BuildContext context) {
     final List<Map<String, dynamic>> actions = [
       {
@@ -147,16 +148,16 @@ class DashboardScreen extends StatelessWidget {
         'label': 'Deposit Waste',
         'gradient': [Colors.teal, const Color(0xFF50C878)],
       },
-      {
-        'icon': FontAwesomeIcons.truck,
-        'label': 'Pickup Request',
-        'gradient': [Colors.blueAccent, Colors.lightBlue],
-      },
-      {
-        'icon': FontAwesomeIcons.bookOpen,
-        'label': 'Education',
-        'gradient': [Colors.orange, Colors.deepOrangeAccent],
-      },
+      // {
+      //   'icon': FontAwesomeIcons.truck,
+      //   'label': 'Pickup Request',
+      //   'gradient': [Colors.blueAccent, Colors.lightBlue],
+      // },
+      // {
+      //   'icon': FontAwesomeIcons.bookOpen,
+      //   'label': 'Education',
+      //   'gradient': [Colors.orange, Colors.deepOrangeAccent],
+      // },
       {
         'icon': FontAwesomeIcons.gift,
         'label': 'Rewards',
@@ -188,9 +189,10 @@ class DashboardScreen extends StatelessWidget {
               label: item['label'],
               gradient: item['gradient'],
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${item['label']} tapped')),
-                );
+                context.pushRoute(DepositWasteRoute());
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   SnackBar(content: Text('${item['label']} tapped')),
+                // );
               },
             );
           },
@@ -240,7 +242,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // RECENT ACTIVITY 
+  // RECENT ACTIVITY
   Widget _buildRecentActivity(BuildContext context) {
     final activities = [
       {
