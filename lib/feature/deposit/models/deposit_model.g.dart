@@ -8,14 +8,17 @@ part of 'deposit_model.dart';
 
 _DepositModel _$DepositModelFromJson(Map<String, dynamic> json) =>
     _DepositModel(
-      id: json['id'] as String,
-      categoryId: json['categoryId'] as String,
+      id: (json['id'] as num?)?.toInt(),
+      categoryId: (json['categoryId'] as num).toInt(),
       weight: (json['weight'] as num).toDouble(),
       totalPoints: (json['totalPoints'] as num).toInt(),
       status: json['status'] as String,
       imageUrl: json['imageUrl'] as String?,
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      nameCategory: json['nameCategory'] as String?,
+      pointsPerKgCategory: (json['pointsPerKgCategory'] as num?)?.toInt(),
+      iconNameCategory: json['iconNameCategory'] as String?,
     );
 
 Map<String, dynamic> _$DepositModelToJson(_DepositModel instance) =>
@@ -28,4 +31,7 @@ Map<String, dynamic> _$DepositModelToJson(_DepositModel instance) =>
       'imageUrl': instance.imageUrl,
       'notes': instance.notes,
       'createdAt': instance.createdAt.toIso8601String(),
+      'nameCategory': instance.nameCategory,
+      'pointsPerKgCategory': instance.pointsPerKgCategory,
+      'iconNameCategory': instance.iconNameCategory,
     };

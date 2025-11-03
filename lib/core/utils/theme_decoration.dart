@@ -42,9 +42,9 @@ ThemeData themeDataDecoration() {
       }),
       side: WidgetStateBorderSide.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return BorderSide(color: Colors.grey.withOpacity(0.5), width: 1.5);
+          return BorderSide(color: Colors.grey.withValues(alpha: 0.5), width: 1.5);
         }
-        return BorderSide(color: Colors.grey.withOpacity(0.5), width: 1.5);
+        return BorderSide(color: Colors.grey.withValues(alpha: 0.5), width: 1.5);
       }),
     ),
     appBarTheme: AppBarTheme(
@@ -71,11 +71,11 @@ ThemeData themeDataDecoration() {
         filled: true,
         labelStyle: AppTextStyle.regular(
           fontSize: AppFontSize.h5,
-          color: Colors.black.withOpacity(0.7),
+          color: Colors.black.withValues(alpha: 0.7),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.5)),
+          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.5)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

@@ -1,5 +1,10 @@
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
+import 'package:bank_sampah_app/feature/deposit/database/category_local_data_source.dart';
+import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_source.dart';
+import 'package:bank_sampah_app/feature/deposit/models/category_model.dart';
+import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,25 +27,25 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
   double? weight;
   String? notes;
   File? imageFile;
+  List<CategoryModel> categories = [];
 
   final picker = ImagePicker();
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _weightController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadCategories(); // ambil data dari database hanya sekali
   }
 
-  // Daftar kategori dengan poin per kg
-  final List<Map<String, dynamic>> wasteCategories = [
-    {'name': 'Plastic Bottles & Containers', 'points': 50},
-    {'name': 'Paper & Cardboard', 'points': 40},
-    {'name': 'Metal Cans & Aluminum', 'points': 75},
-    {'name': 'Glass Bottles', 'points': 60},
-    {'name': 'Electronics', 'points': 100},
-    {'name': 'Organic Waste', 'points': 30},
-  ];
+  Future<void> _loadCategories() async {
+    try {
+      final data = await CategoryLocalDataSource().getAllCategories();
+      setState(() {
+        categories = data;
+      });
+    } catch (e) {
+      print('Error categories: $e');
+    }
+  }
 
   Future<void> _pickImage() async {
     try {
@@ -62,35 +67,65 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
     }
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     final form = _formKey.currentState;
     if (form == null) return;
 
     if (form.validate()) {
       form.save();
 
-      // contoh: hitung total points jika ingin
-      final selected = wasteCategories.firstWhere(
-        (c) => c['name'] == selectedCategory,
-        orElse: () => {},
-      );
-      final int ptsPerKg = selected.isNotEmpty ? selected['points'] as int : 0;
-      final int totalPts = ((weight ?? 0) * ptsPerKg).round();
+      final weightValue = double.tryParse(_weightController.text) ?? 0.0;
+      final categories = await CategoryLocalDataSource().getAllCategories();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Deposit submitted successfully 🎉 — Earned $totalPts pts",
-          ),
-          backgroundColor: Colors.green,
+      final selected = categories.firstWhere(
+        (c) => c.name == selectedCategory,
+        orElse: () => CategoryModel(
+          id: 0,
+          name: 'Unknown',
+          iconName: 'question',
+          pointsPerKg: 0,
         ),
       );
 
-      // TODO: panggil API / simpan ke DB di sini
-    } else {
-      // form tidak valid
+      final totalPoints = (weightValue * selected.pointsPerKg).round();
+
+      // Buat objek DepositModel
+      final deposit = DepositModel(
+        categoryId: selected.id ?? 0,
+        weight: weightValue,
+        totalPoints: totalPoints,
+        status: 'pending', // bisa juga 'completed' kalau sudah diverifikasi
+        imageUrl: imageFile?.path,
+        notes: notes,
+        createdAt: DateTime.now(),
+      );
+
+      // Simpan ke SQLite
+      await DepositLocalDataSource().insertDeposit(deposit);
+
+      // Tampilkan notifikasi sukses
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fix errors in the form")),
+        SnackBar(
+          content: Text(
+            'Deposit saved ✅\n'
+            '${selected.name} — $weightValue kg ($totalPoints pts)',
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+
+      // Reset form setelah submit
+      _formKey.currentState?.reset();
+      _weightController.clear();
+      setState(() {
+        selectedCategory = null;
+        imageFile = null;
+        notes = null;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please complete the form correctly")),
       );
     }
   }
@@ -126,7 +161,7 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
     );
   }
 
-  // HEADER 
+  // HEADER
   Widget _buildHeader(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -193,101 +228,94 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              DropdownSearch<String>(
-                items: (filter, loadProps) {
-                  return wasteCategories.map((e) {
-                    final name = e['name'] as String;
-                    final pts = e['points'] as int;
-                    return "$name ($pts pts/kg)";
-                  }).toList();
-                },
-                selectedItem: selectedCategory != null
-                    ? wasteCategories.firstWhere(
-                            (e) => e['name'] == selectedCategory,
-                          )['name']
-                          as String
-                    : null,
 
-                onChanged: (val) {
-                  setState(() {
-                    // Ambil hanya nama kategori tanpa "(xx pts/kg)"
-                    selectedCategory = val?.split('(').first.trim();
-                  });
-                },
-
-                validator: (val) => val == null || val.isEmpty
-                    ? "Please select a waste category"
-                    : null,
-
-                decoratorProps: DropDownDecoratorProps(
-                  decoration: InputDecoration(
-                    hintText: "Select waste type",
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                      borderSide: BorderSide(color: Colors.teal, width: 1.5),
-                    ),
-                  ),
-                ),
-
-                popupProps: PopupProps.menu(
-                  fit: FlexFit.loose,
-                  constraints: const BoxConstraints(maxHeight: 300),
-                  showSearchBox: false,
-                  menuProps: MenuProps(
-                    borderRadius: BorderRadius.circular(12),
-                    elevation: 4,
-                    backgroundColor: Colors.white,
-                  ),
-                  itemBuilder: (context, item, isDisabled, isSelected) {
-                    final isCurrent =
-                        selectedCategory != null &&
-                        item.startsWith(selectedCategory!);
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: isCurrent
-                            ? Colors.teal.withValues(alpha: 0.1)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Builder(
+                builder: (context) {
+                  if (categories.isEmpty) {
+                    return Center(child: Text('No Data'));
+                  }
+                  return DropdownSearch<String>(
+                    items: (filter, props) {
+                      return categories
+                          .map((c) => "${c.name} (${c.pointsPerKg} pts/kg)")
+                          .toList();
+                    },
+                    selectedItem: selectedCategory,
+                    onChanged: (val) {
+                      setState(() {
+                        selectedCategory = val?.split('(').first.trim();
+                      });
+                    },
+                    validator: (val) => val == null || val.isEmpty
+                        ? "Please select a category"
+                        : null,
+                    dropdownBuilder: (context, selectedItem) {
+                      if (selectedItem == null) {
+                        return SizedBox();
+                      }
+                      final category = categories.firstWhere(
+                        (c) => selectedItem.startsWith(c.name),
+                        orElse: () => categories.first,
+                      );
+                      return Row(
                         children: [
+                          Icon(
+                            mapIconName(category.iconName),
+                            color: Colors.teal,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              item.split('(').first.trim(),
+                              "${category.name} (${category.pointsPerKg} pts/kg)",
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Text(
-                            item.split('(').last.replaceAll(')', ''),
-                            style: const TextStyle(
-                              color: Colors.teal,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12,
-                            ),
-                          ),
                         ],
+                      );
+                    },
+
+                    popupProps: PopupProps.menu(
+                      fit: FlexFit.loose,
+                      constraints: const BoxConstraints(maxHeight: 300),
+                      showSearchBox: false,
+                      menuProps: MenuProps(
+                        borderRadius: BorderRadius.circular(12),
+                        elevation: 4,
+                        backgroundColor: Colors.white,
                       ),
-                    );
-                  },
-                ),
+                      itemBuilder: (context, item, isDisabled, isSelected) {
+                        final category = categories.firstWhere(
+                          (c) => item.startsWith(c.name),
+                          orElse: () => categories.first,
+                        );
+                        return ListTile(
+                          leading: Icon(
+                            mapIconName(category.iconName),
+                            color: Colors.teal,
+                          ),
+                          title: Text(category.name),
+                          subtitle: Text("${category.pointsPerKg} pts/kg"),
+                        );
+                      },
+                    ),
+
+                    decoratorProps: DropDownDecoratorProps(
+                      decoration: InputDecoration(
+                        hintText: "Select waste type",
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 20),
               const Text(
@@ -329,7 +357,6 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                     icon: const Icon(Icons.clear),
                     onPressed: () {
                       _weightController.clear();
-                      // jika butuh update state/validasi live, panggil setState()
                       setState(() {});
                     },
                   ),
@@ -357,8 +384,7 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
               const SizedBox(height: 8),
 
               InkWell(
-                onTap:
-                    _pickImage, // pastikan metode ini ada dan aman (try/catch)
+                onTap: _pickImage,
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   height: 150,
@@ -437,26 +463,9 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
               Center(
                 child: InkWell(
                   onTap: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      _formKey.currentState?.save();
-                      final weightValue =
-                          double.tryParse(_weightController.text) ?? 0.0;
-                      // Lakukan submit / hit API / hitung points
-                      // Contoh notifikasi:
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Submitted: $selectedCategory — $weightValue kg',
-                          ),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please complete the form'),
-                        ),
-                      );
+                    _submitForm();
+                    if (context.mounted) {
+                      context.pop();
                     }
                   },
                   child: Container(

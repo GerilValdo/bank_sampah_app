@@ -2,6 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/constants/app_color.dart';
 import 'package:bank_sampah_app/core/constants/app_style.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
+import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
+import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_source.dart';
+import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -244,30 +247,6 @@ class DashboardScreen extends StatelessWidget {
 
   // RECENT ACTIVITY
   Widget _buildRecentActivity(BuildContext context) {
-    final activities = [
-      {
-        'title': 'Plastic Bottles',
-        'amount': '+125',
-        'status': 'completed',
-        'color': Colors.green,
-        'icon': FontAwesomeIcons.trashCan,
-      },
-      {
-        'title': 'Cardboard',
-        'amount': '+200',
-        'status': 'completed',
-        'color': Colors.green,
-        'icon': FontAwesomeIcons.box,
-      },
-      {
-        'title': 'Metal Cans',
-        'amount': '+90',
-        'status': 'pending',
-        'color': Colors.orange,
-        'icon': FontAwesomeIcons.candyCane,
-      },
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -281,21 +260,33 @@ class DashboardScreen extends StatelessWidget {
             TextButton(onPressed: () {}, child: const Text('View All')),
           ],
         ),
-        ListView.builder(
-          padding: EdgeInsets.zero,
-          itemCount: activities.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            final activity = activities[index];
-            return _buildActivityCard(activity);
+        FutureBuilder(
+          future: DepositLocalDataSource().getAllDeposits(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
+              return Center(child: Text('No Data'));
+            } else {
+              final data = snapshot.data as List<DepositModel>;
+              return ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: data.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  final activity = data[index];
+                  return _buildActivityCard(activity);
+                },
+              );
+            }
           },
         ),
       ],
     );
   }
 
-  Widget _buildActivityCard(Map<String, dynamic> data) {
+  Widget _buildActivityCard(DepositModel data) {
     return Card(
       elevation: 3,
       margin: const EdgeInsets.only(bottom: 12),
@@ -306,22 +297,26 @@ class DashboardScreen extends StatelessWidget {
           width: 36,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: data['color'].withOpacity(0.15),
+            color: Colors.green.withValues(alpha: 0.15),
           ),
-          child: Icon(data['icon'], color: data['color'], size: 16),
+          child: Icon(
+            mapIconName(data.iconNameCategory!),
+            color: Colors.green,
+            size: 16,
+          ),
         ),
         title: Text(
-          data['title'],
+          data.nameCategory ?? '',
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         subtitle: Row(
-          children: const [
-            Text('2.5 kg'),
+          children: [
+            Text(data.weight.toString()),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 4),
               child: Text('•'),
             ),
-            Text('2 hours ago'),
+            Text(data.createdAt.toString()),
           ],
         ),
         trailing: Column(
@@ -329,22 +324,22 @@ class DashboardScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              data['amount'],
+              data.totalPoints.toString(),
               style: TextStyle(
-                color: data['color'],
+                color: Colors.green,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
-                color: data['color'].withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                data['status'],
+                data.status,
                 style: TextStyle(
-                  color: data['color'],
+                  color: Colors.green,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
