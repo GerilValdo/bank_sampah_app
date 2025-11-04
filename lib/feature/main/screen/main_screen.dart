@@ -9,15 +9,19 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 @RoutePage()
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({
+    super.key,
+    @PathParam('initialIndex') this.initialIndex = 0,
+  });
   static const id = '/main';
+  final int initialIndex;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex = 0;
 
   final List<Widget> _pages = const [
     DashboardScreen(),
@@ -25,6 +29,13 @@ class _MainScreenState extends State<MainScreen> {
     RewardsScreen(),
     ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {

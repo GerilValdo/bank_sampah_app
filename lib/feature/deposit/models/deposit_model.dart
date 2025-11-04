@@ -14,6 +14,7 @@ abstract class DepositModel with _$DepositModel {
     String? imageUrl,
     String? notes,
     required DateTime createdAt,
+    String? reason,
     String? nameCategory,
     int? pointsPerKgCategory,
     String? iconNameCategory,

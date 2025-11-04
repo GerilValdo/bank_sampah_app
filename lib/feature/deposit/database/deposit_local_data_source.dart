@@ -1,50 +1,14 @@
+import 'package:bank_sampah_app/feature/database/database_helper.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import '../models/deposit_model.dart';
 
 class DepositLocalDataSource {
-  static const _dbName = 'deposit.db';
   static const _tableName = 'deposits';
-  static const _dbVersion = 1;
 
-  static Database? _database;
-
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDatabase();
-    return _database!;
-  }
-
-  Future<Database> _initDatabase() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, _dbName);
-
-    return await openDatabase(
-      path,
-      version: _dbVersion,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE $_tableName(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            categoryId INTEGER NOT NULL,
-            weight REAL NOT NULL,
-            totalPoints INTEGER NOT NULL,
-            status TEXT NOT NULL,
-            imageUrl TEXT,
-            notes TEXT,
-            createdAt TEXT NOT NULL,
-            nameCategory TEXT,
-            pointsPerKgCategory INTEGER,
-            iconNameCategory TEXT
-
-          )
-        ''');
-      },
-    );
-  }
-
+  // ✅ CREATE
   Future<int> insertDeposit(DepositModel model) async {
-    final db = await database;
+    final db = await DatabaseHelper.getDatabase();
+    print(model.toJson());
     return await db.insert(
       _tableName,
       model.toJson(),
@@ -52,32 +16,31 @@ class DepositLocalDataSource {
     );
   }
 
+  // ✅ READ ALL (JOIN CATEGORY)
   Future<List<DepositModel>> getAllDeposits() async {
-    final db = await database;
-    // final result = await db.query(_tableName, orderBy: 'id DESC');
-    final result2 = await db.rawQuery('''
-    SELECT $_tableName.*, categories.*
-    FROM $_tableName
-    LEFT JOIN categories ON $_tableName.categoryId = categories.id
-''');
-    return result2.map((json) => DepositModel.fromJson(json)).toList();
+    final db = await DatabaseHelper.getDatabase();
+    final result = await db.rawQuery('''
+      SELECT d.*, c.name AS nameCategory, c.pointsPerKg AS pointsPerKgCategory, c.iconName AS iconNameCategory
+      FROM deposits d
+      LEFT JOIN categories c ON d.categoryId = c.id
+      ORDER BY d.id DESC
+    ''');
+    print(result);
+    return result.map((e) => DepositModel.fromJson(e)).toList();
   }
 
+  // ✅ READ BY ID
   Future<DepositModel?> getDepositById(int id) async {
-    final db = await database;
+    final db = await DatabaseHelper.getDatabase();
     final result = await db.query(_tableName, where: 'id = ?', whereArgs: [id]);
     if (result.isEmpty) return null;
     return DepositModel.fromJson(result.first);
   }
 
-  Future<void> deleteDeposit(int id) async {
-    final db = await database;
-    await db.delete(_tableName, where: 'id = ?', whereArgs: [id]);
-  }
-
-  Future<void> updateDeposit(DepositModel model) async {
-    final db = await database;
-    await db.update(
+  // ✅ UPDATE
+  Future<int> updateDeposit(DepositModel model) async {
+    final db = await DatabaseHelper.getDatabase();
+    return await db.update(
       _tableName,
       model.toJson(),
       where: 'id = ?',
@@ -85,8 +48,15 @@ class DepositLocalDataSource {
     );
   }
 
-  Future<void> clearAll() async {
-    final db = await database;
+  // ✅ DELETE
+  Future<int> deleteDeposit(int id) async {
+    final db = await DatabaseHelper.getDatabase();
+    return await db.delete(_tableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  // ✅ CLEAR ALL
+  Future<void> clearAllDeposits() async {
+    final db = await DatabaseHelper.getDatabase();
     await db.delete(_tableName);
   }
 }

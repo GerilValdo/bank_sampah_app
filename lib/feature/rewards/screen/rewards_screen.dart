@@ -97,7 +97,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final height = size.height;
-    final width = size.width;
+    // final width = size.width;
     double progress = totalPoints / nextReward;
 
     return Scaffold(

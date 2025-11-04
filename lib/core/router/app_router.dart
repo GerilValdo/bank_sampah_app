@@ -7,6 +7,7 @@ import 'package:bank_sampah_app/feature/history/screen/history_screen.dart';
 import 'package:bank_sampah_app/feature/main/screen/main_screen.dart';
 import 'package:bank_sampah_app/feature/profile/screen/profile_screen.dart';
 import 'package:bank_sampah_app/feature/rewards/screen/rewards_screen.dart';
+import 'package:flutter/material.dart';
 
 part 'app_router.gr.dart';
 

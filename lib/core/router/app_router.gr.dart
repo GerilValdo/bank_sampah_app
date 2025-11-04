@@ -76,18 +76,51 @@ class LoginRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [MainScreen]
-class MainRoute extends PageRouteInfo<void> {
-  const MainRoute({List<PageRouteInfo>? children})
-    : super(MainRoute.name, initialChildren: children);
+class MainRoute extends PageRouteInfo<MainRouteArgs> {
+  MainRoute({Key? key, int initialIndex = 0, List<PageRouteInfo>? children})
+    : super(
+        MainRoute.name,
+        args: MainRouteArgs(key: key, initialIndex: initialIndex),
+        rawPathParams: {'initialIndex': initialIndex},
+        initialChildren: children,
+      );
 
   static const String name = 'MainRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const MainScreen();
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<MainRouteArgs>(
+        orElse: () =>
+            MainRouteArgs(initialIndex: pathParams.getInt('initialIndex', 0)),
+      );
+      return MainScreen(key: args.key, initialIndex: args.initialIndex);
     },
   );
+}
+
+class MainRouteArgs {
+  const MainRouteArgs({this.key, this.initialIndex = 0});
+
+  final Key? key;
+
+  final int initialIndex;
+
+  @override
+  String toString() {
+    return 'MainRouteArgs{key: $key, initialIndex: $initialIndex}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! MainRouteArgs) return false;
+    return key == other.key && initialIndex == other.initialIndex;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ initialIndex.hashCode;
 }
 
 /// generated route for

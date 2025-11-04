@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
+import 'package:bank_sampah_app/feature/deposit/bloc/category_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/database/category_local_data_source.dart';
 import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_source.dart';
 import 'package:bank_sampah_app/feature/deposit/models/category_model.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
@@ -27,24 +29,12 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
   double? weight;
   String? notes;
   File? imageFile;
-  List<CategoryModel> categories = [];
 
   final picker = ImagePicker();
 
   void initState() {
     super.initState();
-    _loadCategories(); // ambil data dari database hanya sekali
-  }
-
-  Future<void> _loadCategories() async {
-    try {
-      final data = await CategoryLocalDataSource().getAllCategories();
-      setState(() {
-        categories = data;
-      });
-    } catch (e) {
-      print('Error categories: $e');
-    }
+    context.read<CategoryBloc>().add(CategoryEvent.loadCategories());
   }
 
   Future<void> _pickImage() async {
@@ -76,11 +66,10 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
 
       final weightValue = double.tryParse(_weightController.text) ?? 0.0;
       final categories = await CategoryLocalDataSource().getAllCategories();
-
       final selected = categories.firstWhere(
         (c) => c.name == selectedCategory,
         orElse: () => CategoryModel(
-          id: 0,
+          id: 1,
           name: 'Unknown',
           iconName: 'question',
           pointsPerKg: 0,
@@ -91,10 +80,10 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
 
       // Buat objek DepositModel
       final deposit = DepositModel(
-        categoryId: selected.id ?? 0,
+        categoryId: selected.id ?? 1,
         weight: weightValue,
         totalPoints: totalPoints,
-        status: 'pending', // bisa juga 'completed' kalau sudah diverifikasi
+        status: 'pending',
         imageUrl: imageFile?.path,
         notes: notes,
         createdAt: DateTime.now(),
@@ -228,18 +217,22 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-
-              Builder(
-                builder: (context) {
-                  if (categories.isEmpty) {
-                    return Center(child: Text('No Data'));
+              BlocBuilder<CategoryBloc, CategoryState>(
+                builder: (context, state) {
+                  if (state.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
                   }
+
+                  if (state.categories.isEmpty) {
+                    return const Text("No categories available");
+                  }
+
+                  final data = state.categories;
+
                   return DropdownSearch<String>(
-                    items: (filter, props) {
-                      return categories
-                          .map((c) => "${c.name} (${c.pointsPerKg} pts/kg)")
-                          .toList();
-                    },
+                    items: (filter, props) => data
+                        .map((c) => "${c.name} (${c.pointsPerKg} pts/kg)")
+                        .toList(),
                     selectedItem: selectedCategory,
                     onChanged: (val) {
                       setState(() {
@@ -250,13 +243,13 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                         ? "Please select a category"
                         : null,
                     dropdownBuilder: (context, selectedItem) {
-                      if (selectedItem == null) {
-                        return SizedBox();
-                      }
-                      final category = categories.firstWhere(
+                      if (selectedItem == null) return const SizedBox();
+
+                      final category = data.firstWhere(
                         (c) => selectedItem.startsWith(c.name),
-                        orElse: () => categories.first,
+                        orElse: () => data.first,
                       );
+
                       return Row(
                         children: [
                           Icon(
@@ -274,20 +267,13 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                         ],
                       );
                     },
-
                     popupProps: PopupProps.menu(
-                      fit: FlexFit.loose,
                       constraints: const BoxConstraints(maxHeight: 300),
                       showSearchBox: false,
-                      menuProps: MenuProps(
-                        borderRadius: BorderRadius.circular(12),
-                        elevation: 4,
-                        backgroundColor: Colors.white,
-                      ),
                       itemBuilder: (context, item, isDisabled, isSelected) {
-                        final category = categories.firstWhere(
+                        final category = data.firstWhere(
                           (c) => item.startsWith(c.name),
-                          orElse: () => categories.first,
+                          orElse: () => data.first,
                         );
                         return ListTile(
                           leading: Icon(
@@ -299,16 +285,11 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                         );
                       },
                     ),
-
                     decoratorProps: DropDownDecoratorProps(
                       decoration: InputDecoration(
                         hintText: "Select waste type",
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -317,6 +298,7 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                   );
                 },
               ),
+
               const SizedBox(height: 20),
               const Text(
                 "Weight (kg)",

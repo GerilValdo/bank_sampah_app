@@ -3,15 +3,41 @@ import 'package:bank_sampah_app/core/constants/app_color.dart';
 import 'package:bank_sampah_app/core/constants/app_style.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
-import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_source.dart';
+import 'package:bank_sampah_app/feature/deposit/bloc/deposit_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 @RoutePage()
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
   static const String id = '/dashboard';
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  Color getStatusColor(String status) {
+    switch (status) {
+      case 'completed':
+        return const Color(0xFF10B981);
+      case 'pending':
+        return const Color(0xFFF59E0B);
+      case 'rejected':
+        return const Color(0xFFEF4444);
+      default:
+        return Colors.grey;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<DepositBloc>().add(DepositEvent.loadDeposits());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,10 +218,12 @@ class DashboardScreen extends StatelessWidget {
               label: item['label'],
               gradient: item['gradient'],
               onTap: () {
-                context.pushRoute(DepositWasteRoute());
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   SnackBar(content: Text('${item['label']} tapped')),
-                // );
+                if (index == 0) {
+                  context.pushRoute(DepositWasteRoute());
+                }
+                if (index == 1) {
+                  context.pushRoute(MainRoute(initialIndex: 2));
+                }
               },
             );
           },
@@ -260,26 +288,25 @@ class DashboardScreen extends StatelessWidget {
             TextButton(onPressed: () {}, child: const Text('View All')),
           ],
         ),
-        FutureBuilder(
-          future: DepositLocalDataSource().getAllDeposits(),
-          builder: (context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+        BlocBuilder<DepositBloc, DepositState>(
+          builder: (context, state) {
+            if (state.isLoading) {
               return Center(child: CircularProgressIndicator());
-            } else if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
-              return Center(child: Text('No Data'));
-            } else {
-              final data = snapshot.data as List<DepositModel>;
-              return ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: data.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final activity = data[index];
-                  return _buildActivityCard(activity);
-                },
-              );
             }
+            if (state.deposits.isEmpty) {
+              return Center(child: const Text("No Data"));
+            }
+            final data = state.deposits;
+            return ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: data.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                final activity = data[index];
+                return _buildActivityCard(activity);
+              },
+            );
           },
         ),
       ],
@@ -287,6 +314,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildActivityCard(DepositModel data) {
+    final statusColor = getStatusColor(data.status);
     return Card(
       elevation: 3,
       margin: const EdgeInsets.only(bottom: 12),
@@ -297,10 +325,10 @@ class DashboardScreen extends StatelessWidget {
           width: 36,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Colors.green.withValues(alpha: 0.15),
+            color: statusColor.withValues(alpha: 0.15),
           ),
           child: Icon(
-            mapIconName(data.iconNameCategory!),
+            mapIconName(data.iconNameCategory ?? ''),
             color: Colors.green,
             size: 16,
           ),
@@ -311,12 +339,12 @@ class DashboardScreen extends StatelessWidget {
         ),
         subtitle: Row(
           children: [
-            Text(data.weight.toString()),
+            Text('${data.weight.toString()}kg'),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 4),
               child: Text('•'),
             ),
-            Text(data.createdAt.toString()),
+            Text(DateFormat('dd MMM yyyy').format(data.createdAt)),
           ],
         ),
         trailing: Column(
@@ -324,7 +352,7 @@ class DashboardScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              data.totalPoints.toString(),
+              '+${data.totalPoints.toString()}',
               style: TextStyle(
                 color: Colors.green,
                 fontWeight: FontWeight.bold,
@@ -333,13 +361,13 @@ class DashboardScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
+                color: getStatusColor(data.status).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 data.status,
                 style: TextStyle(
-                  color: Colors.green,
+                  color: getStatusColor(data.status),
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
