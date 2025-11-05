@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
-import 'package:bank_sampah_app/feature/authentication/screen/register_screen.dart';
 import 'package:flutter/material.dart';
 
 @RoutePage()
@@ -248,12 +247,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterScreen(),
-                        ),
-                      );
+                      context.replaceRoute(RegisterRoute());
                     },
                     style: TextButton.styleFrom(
                       visualDensity: VisualDensity.compact,

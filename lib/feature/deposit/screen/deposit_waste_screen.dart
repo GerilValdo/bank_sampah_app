@@ -15,8 +15,9 @@ import 'package:flutter/services.dart';
 
 @RoutePage()
 class DepositWasteScreen extends StatefulWidget {
-  const DepositWasteScreen({super.key});
+  const DepositWasteScreen({super.key, this.deposit});
   static const id = '/deposit';
+  final DepositModel? deposit;
 
   @override
   State<DepositWasteScreen> createState() => _DepositWasteScreenState();
@@ -25,16 +26,26 @@ class DepositWasteScreen extends StatefulWidget {
 class _DepositWasteScreenState extends State<DepositWasteScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
   String? selectedCategory;
   double? weight;
-  String? notes;
   File? imageFile;
 
   final picker = ImagePicker();
 
+  @override
   void initState() {
     super.initState();
     context.read<CategoryBloc>().add(CategoryEvent.loadCategories());
+    if (widget.deposit != null) {
+      final d = widget.deposit!;
+      _weightController.text = d.weight.toString();
+      selectedCategory = d.nameCategory;
+      _notesController.text = d.notes.toString();
+      if (d.imageUrl != null && d.imageUrl!.isNotEmpty) {
+        imageFile = File(d.imageUrl!);
+      }
+    }
   }
 
   Future<void> _pickImage() async {
@@ -58,65 +69,84 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
   }
 
   Future<void> _submitForm() async {
-    final form = _formKey.currentState;
-    if (form == null) return;
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please complete the form')));
+      return;
+    }
 
-    if (form.validate()) {
-      form.save();
+    _formKey.currentState?.save();
+    final weightValue = double.tryParse(_weightController.text) ?? 0.0;
 
-      final weightValue = double.tryParse(_weightController.text) ?? 0.0;
-      final categories = await CategoryLocalDataSource().getAllCategories();
-      final selected = categories.firstWhere(
-        (c) => c.name == selectedCategory,
-        orElse: () => CategoryModel(
-          id: 1,
-          name: 'Unknown',
-          iconName: 'question',
-          pointsPerKg: 0,
-        ),
-      );
+    final categorySource = CategoryLocalDataSource();
+    final depositSource = DepositLocalDataSource();
 
-      final totalPoints = (weightValue * selected.pointsPerKg).round();
+    // Ambil kategori dari database
+    final categories = await categorySource.getAllCategories();
+    final selected = categories.firstWhere(
+      (c) => c.name == selectedCategory,
+      orElse: () => CategoryModel(
+        id: 1,
+        name: 'Unknown',
+        iconName: 'question',
+        pointsPerKg: 0,
+      ),
+    );
 
-      // Buat objek DepositModel
-      final deposit = DepositModel(
-        categoryId: selected.id ?? 1,
-        weight: weightValue,
-        totalPoints: totalPoints,
-        status: 'pending',
-        imageUrl: imageFile?.path,
-        notes: notes,
-        createdAt: DateTime.now(),
-      );
+    final totalPoints = (weightValue * selected.pointsPerKg).round();
 
-      // Simpan ke SQLite
-      await DepositLocalDataSource().insertDeposit(deposit);
+    // Buat model Deposit
+    final deposit = DepositModel(
+      id: widget.deposit?.id, 
+      categoryId: selected.id ?? 1,
+      weight: weightValue,
+      totalPoints: totalPoints,
+      status: widget.deposit?.status ?? 'pending',
+      imageUrl: imageFile?.path,
+      notes: _notesController.text,
+      createdAt: widget.deposit?.createdAt ?? DateTime.now(),
+      nameCategory: selected.name,
+      iconNameCategory: selected.iconName,
+    );
 
-      // Tampilkan notifikasi sukses
+    // Tentukan mode Create / Update
+    if (widget.deposit == null) {
+      await depositSource.insertDeposit(deposit);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Deposit saved ✅\n'
-            '${selected.name} — $weightValue kg ($totalPoints pts)',
-          ),
+          content: Text('Deposit Added: ${selected.name} — $weightValue kg'),
           backgroundColor: Colors.green,
-          duration: const Duration(seconds: 3),
         ),
       );
-
-      // Reset form setelah submit
-      _formKey.currentState?.reset();
-      _weightController.clear();
-      setState(() {
-        selectedCategory = null;
-        imageFile = null;
-        notes = null;
-      });
     } else {
+      await depositSource.updateDeposit(deposit);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please complete the form correctly")),
+        SnackBar(
+          content: Text('Deposit Updated: ${selected.name} — $weightValue kg'),
+          backgroundColor: Colors.blue,
+        ),
       );
     }
+
+    // Reset form & kembali ke halaman sebelumnya
+    _formKey.currentState?.reset();
+    _weightController.clear();
+    _notesController.clear();
+    setState(() {
+      selectedCategory = null;
+      imageFile = null;
+    });
+
+    Navigator.pop(context, true); // untuk trigger refresh setelah kembali
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _notesController.dispose();
+    _weightController.dispose();
   }
 
   @override
@@ -418,8 +448,8 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
               ),
               const SizedBox(height: 8),
               TextFormField(
+                controller: _notesController,
                 maxLines: 3,
-                onSaved: (val) => notes = val,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
@@ -446,9 +476,6 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                 child: InkWell(
                   onTap: () {
                     _submitForm();
-                    if (context.mounted) {
-                      context.pop();
-                    }
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -467,7 +494,9 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
                       children: [
                         Icon(Icons.file_upload_outlined, color: Colors.white),
                         Text(
-                          'Submit Deposit',
+                          widget.deposit == null
+                              ? 'Submit Deposit'
+                              : 'Update Deposit',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

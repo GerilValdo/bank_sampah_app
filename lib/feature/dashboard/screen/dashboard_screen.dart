@@ -5,6 +5,7 @@ import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
 import 'package:bank_sampah_app/feature/deposit/bloc/deposit_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
+import 'package:bank_sampah_app/feature/history/bloc/history_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -219,7 +220,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               gradient: item['gradient'],
               onTap: () {
                 if (index == 0) {
-                  context.pushRoute(DepositWasteRoute());
+                  context.pushRoute(DepositWasteRoute()).then((value) {
+                    context.read<DepositBloc>().add(
+                      DepositEvent.loadDeposits(),
+                    );
+                    context.read<HistoryBloc>().add(
+                      HistoryEvent.loadTransactions(),
+                    );
+                  });
                 }
                 if (index == 1) {
                   context.pushRoute(MainRoute(initialIndex: 2));
@@ -315,65 +323,120 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildActivityCard(DepositModel data) {
     final statusColor = getStatusColor(data.status);
-    return Card(
-      elevation: 3,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: ListTile(
-        leading: Container(
-          height: 36,
-          width: 36,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: statusColor.withValues(alpha: 0.15),
-          ),
-          child: Icon(
-            mapIconName(data.iconNameCategory ?? ''),
-            color: Colors.green,
-            size: 16,
-          ),
+    return Dismissible(
+      key: ValueKey(data.id), // pastikan tiap item punya ID unik
+      direction: DismissDirection.endToStart, // geser ke kiri untuk hapus
+      background: Container(
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(15),
         ),
-        title: Text(
-          data.nameCategory ?? '',
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        subtitle: Row(
-          children: [
-            Text('${data.weight.toString()}kg'),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4),
-              child: Text('•'),
-            ),
-            Text(DateFormat('dd MMM yyyy').format(data.createdAt)),
-          ],
-        ),
-        trailing: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '+${data.totalPoints.toString()}',
-              style: TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      confirmDismiss: (direction) async {
+        // konfirmasi sebelum hapus
+        return await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Hapus Data'),
+            content: const Text('Yakin ingin menghapus data ini?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: const Text('Batal'),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: const Text('Hapus'),
+              ),
+            ],
+          ),
+        );
+      },
+      onDismissed: (direction) {
+        // Hapus data dari sumber data (misalnya Bloc, SQLite, dsb)
+        context.read<DepositBloc>().add(DepositEvent.deleteDeposit(data.id!));
+        context.read<HistoryBloc>().add(HistoryEvent.loadTransactions());
+
+        // Feedback visual
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${data.nameCategory} dihapus')));
+      },
+      child: Card(
+        elevation: 3,
+        margin: const EdgeInsets.only(bottom: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: InkWell(
+          onTap: () {
+            context.pushRoute(DepositWasteRoute(deposit: data)).then((value) {
+              // setelah update selesai, refresh data lagi
+              context.read<DepositBloc>().add(DepositEvent.loadDeposits());
+              context.read<HistoryBloc>().add(HistoryEvent.loadTransactions());
+            });
+          },
+          child: ListTile(
+            leading: Container(
+              height: 36,
+              width: 36,
               decoration: BoxDecoration(
-                color: getStatusColor(data.status).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
+                color: statusColor.withValues(alpha: 0.15),
               ),
-              child: Text(
-                data.status,
-                style: TextStyle(
-                  color: getStatusColor(data.status),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+              child: Icon(
+                mapIconName(data.iconNameCategory ?? ''),
+                color: Colors.green,
+                size: 16,
               ),
             ),
-          ],
+            title: Text(
+              data.nameCategory ?? '',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            subtitle: Row(
+              children: [
+                Text('${data.weight.toString()}kg'),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  child: Text('•'),
+                ),
+                Text(DateFormat('dd MMM yyyy').format(data.createdAt)),
+              ],
+            ),
+            trailing: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '+${data.totalPoints.toString()}',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: getStatusColor(data.status).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    data.status,
+                    style: TextStyle(
+                      color: getStatusColor(data.status),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

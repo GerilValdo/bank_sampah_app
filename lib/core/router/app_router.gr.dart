@@ -28,18 +28,51 @@ class DashboardRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [DepositWasteScreen]
-class DepositWasteRoute extends PageRouteInfo<void> {
-  const DepositWasteRoute({List<PageRouteInfo>? children})
-    : super(DepositWasteRoute.name, initialChildren: children);
+class DepositWasteRoute extends PageRouteInfo<DepositWasteRouteArgs> {
+  DepositWasteRoute({
+    Key? key,
+    DepositModel? deposit,
+    List<PageRouteInfo>? children,
+  }) : super(
+         DepositWasteRoute.name,
+         args: DepositWasteRouteArgs(key: key, deposit: deposit),
+         initialChildren: children,
+       );
 
   static const String name = 'DepositWasteRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const DepositWasteScreen();
+      final args = data.argsAs<DepositWasteRouteArgs>(
+        orElse: () => const DepositWasteRouteArgs(),
+      );
+      return DepositWasteScreen(key: args.key, deposit: args.deposit);
     },
   );
+}
+
+class DepositWasteRouteArgs {
+  const DepositWasteRouteArgs({this.key, this.deposit});
+
+  final Key? key;
+
+  final DepositModel? deposit;
+
+  @override
+  String toString() {
+    return 'DepositWasteRouteArgs{key: $key, deposit: $deposit}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DepositWasteRouteArgs) return false;
+    return key == other.key && deposit == other.deposit;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ deposit.hashCode;
 }
 
 /// generated route for
@@ -135,6 +168,22 @@ class ProfileRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const ProfileScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [RegisterScreen]
+class RegisterRoute extends PageRouteInfo<void> {
+  const RegisterRoute({List<PageRouteInfo>? children})
+    : super(RegisterRoute.name, initialChildren: children);
+
+  static const String name = 'RegisterRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const RegisterScreen();
     },
   );
 }

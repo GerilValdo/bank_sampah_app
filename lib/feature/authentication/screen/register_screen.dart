@@ -1,15 +1,50 @@
-import 'package:bank_sampah_app/feature/authentication/screen/login_screen.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/feature/authentication/widgets/custom_text_form_field.dart';
 import 'package:flutter/material.dart';
 
+@RoutePage()
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
+  static const id = '/register';
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
+    final TextEditingController nameC = TextEditingController();
+    final TextEditingController emailC = TextEditingController();
+    final TextEditingController phoneNumberC = TextEditingController();
+    final TextEditingController passwordC = TextEditingController();
+    final TextEditingController confirmPasswordC = TextEditingController();
+    final GlobalKey _formKey = GlobalKey<FormState>();
+
+    Future<void> _register() async {
+    // if (!_formKey.currentState!.validate()) return;
+
+    try {
+      // TODO: 🔹 Panggil auth API / Firebase / Local DB di sini
+      await Future.delayed(const Duration(seconds: 2));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully 🎉'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Navigasi ke LoginScreen
+      context.replaceRoute(const LoginRoute());
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registration failed: $e'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } 
+  }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -61,57 +96,89 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(width * 0.07),
-                  child: Column(
-                    spacing: height * 0.025,
-                    children: [
-                      CustomTextFormField(
-                        label: 'Full Name',
-                        hintText: 'your name',
-                        prefixIcon: Icons.person_outline_outlined,
-                      ),
-                      CustomTextFormField(
-                        label: 'Email',
-                        hintText: 'your.email@example.com',
-                        prefixIcon: Icons.mail_outline_rounded,
-                      ),
-                      CustomTextFormField(
-                        label: 'Phone Number',
-                        hintText: '+62 812 3456 7890',
-                        prefixIcon: Icons.phone_outlined,
-                      ),
-                      CustomTextFormField(
-                        label: 'Password',
-                        hintText: '••••••••',
-                        prefixIcon: Icons.lock_outline_rounded,
-                      ),
-                      CustomTextFormField(
-                        label: 'Confirm Password',
-                        hintText: '••••••••',
-                        prefixIcon: Icons.lock_outline_rounded,
-                      ),
-                      SizedBox(height: height * 0.015),
-                      // === Login Button ===
-                      Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(vertical: height * 0.018),
-                        decoration: BoxDecoration(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      spacing: height * 0.025,
+                      children: [
+                        CustomTextFormField(
+                          controller: nameC,
+                          label: 'Full Name',
+                          hintText: 'your name',
+                          prefixIcon: Icons.person_outline_outlined,
+                          validator: (v) =>
+                              v == null || v.isEmpty ? 'Name required' : null,
+                        ),
+                        CustomTextFormField(
+                          controller: emailC,
+                          label: 'Email',
+                          hintText: 'your.email@example.com',
+                          prefixIcon: Icons.mail_outline_rounded,
+                          validator: (v) => v == null || !v.contains('@') || !v.contains('.')
+                              ? 'Enter valid email'
+                              : null,
+                        ),
+                        CustomTextFormField(
+                          controller: phoneNumberC,
+                          label: 'Phone Number',
+                          hintText: 'Enter your phone number',
+                          prefixIcon: Icons.phone_outlined,
+                          validator:   (v) =>
+                              v == null || v.length < 10 ? 'Invalid phone' : null,
+                        ),
+                        CustomTextFormField(
+                          controller: passwordC,
+                          label: 'Password',
+                          hintText: '••••••••',
+                          prefixIcon: Icons.lock_outline_rounded,
+                          validator: (v) =>
+                              v == null || v.length < 8 ? 'Min 8 characters' : null,
+                        ),
+                        CustomTextFormField(
+                          controller: confirmPasswordC,
+                          label: 'Confirm Password',
+                          hintText: '••••••••',
+                          prefixIcon: Icons.lock_outline_rounded,
+                          validator: (v) {
+                            if (v == null || v.isEmpty ) {
+                              return 'Confirm password required';
+                            }   
+                            if (v != passwordC.text) {
+                              return 'Password do not match';
+                            }
+                            return null;
+                          }
+                        ),
+                        SizedBox(height: height * 0.015),
+                        // === Login Button ===
+                        InkWell(
                           borderRadius: BorderRadius.circular(30),
-                          gradient: const LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [Color(0xFF00BC7D), Color(0xFF00BBA7)],
+                          onTap: () {},
+                          child: Container(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(
+                              vertical: height * 0.018,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              gradient: const LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [Color(0xFF00BC7D), Color(0xFF00BBA7)],
+                              ),
+                            ),
+                            child: Text(
+                              'Create Account',
+                              style: TextStyle(
+                                fontSize: width * 0.04,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                        child: Text(
-                          'Create Account',
-                          style: TextStyle(
-                            fontSize: width * 0.04,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -130,10 +197,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
+                      context.replaceRoute(LoginRoute());
                     },
                     style: TextButton.styleFrom(
                       visualDensity: VisualDensity.compact,

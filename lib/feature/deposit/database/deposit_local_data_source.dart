@@ -8,7 +8,6 @@ class DepositLocalDataSource {
   // ✅ CREATE
   Future<int> insertDeposit(DepositModel model) async {
     final db = await DatabaseHelper.getDatabase();
-    print(model.toJson());
     return await db.insert(
       _tableName,
       model.toJson(),

@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/feature/authentication/screen/login_screen.dart';
+import 'package:bank_sampah_app/feature/authentication/screen/register_screen.dart';
 import 'package:bank_sampah_app/feature/authentication/screen/splash_screen.dart';
 import 'package:bank_sampah_app/feature/dashboard/screen/dashboard_screen.dart';
+import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
 import 'package:bank_sampah_app/feature/deposit/screen/deposit_waste_screen.dart';
 import 'package:bank_sampah_app/feature/history/screen/history_screen.dart';
 import 'package:bank_sampah_app/feature/main/screen/main_screen.dart';
@@ -21,6 +23,7 @@ class AppRouter extends RootStackRouter {
   List<AutoRoute> get routes => [
     AutoRoute(page: SplashRoute.page, initial: true, path: SplashScreen.id),
     AutoRoute(page: LoginRoute.page, path: LoginScreen.id),
+    AutoRoute(page: RegisterRoute.page, path: RegisterScreen.id),
     AutoRoute(page: DashboardRoute.page, path: DashboardScreen.id),
     AutoRoute(page: HistoryRoute.page, path: HistoryScreen.id),
     AutoRoute(page: ProfileRoute.page, path: ProfileScreen.id),
