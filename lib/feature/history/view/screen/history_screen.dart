@@ -1,5 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:bank_sampah_app/feature/history/bloc/history_bloc.dart';
+import 'package:bank_sampah_app/feature/history/view/bloc/history_bloc.dart';
 import 'package:bank_sampah_app/feature/history/widgets/transaction_card.dart';
 // import 'package:bank_sampah_app/core/constants/app_style.dart';
 // import 'package:bank_sampah_app/core/constants/export.dart';

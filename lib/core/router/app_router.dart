@@ -4,8 +4,8 @@ import 'package:bank_sampah_app/feature/authentication/screen/register_screen.da
 import 'package:bank_sampah_app/feature/authentication/screen/splash_screen.dart';
 import 'package:bank_sampah_app/feature/dashboard/screen/dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
-import 'package:bank_sampah_app/feature/deposit/screen/deposit_waste_screen.dart';
-import 'package:bank_sampah_app/feature/history/screen/history_screen.dart';
+import 'package:bank_sampah_app/feature/deposit/view/screen/deposit_waste_screen.dart';
+import 'package:bank_sampah_app/feature/history/view/screen/history_screen.dart';
 import 'package:bank_sampah_app/feature/main/screen/main_screen.dart';
 import 'package:bank_sampah_app/feature/profile/screen/profile_screen.dart';
 import 'package:bank_sampah_app/feature/rewards/screen/rewards_screen.dart';

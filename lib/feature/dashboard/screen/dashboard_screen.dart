@@ -3,9 +3,10 @@ import 'package:bank_sampah_app/core/constants/app_color.dart';
 import 'package:bank_sampah_app/core/constants/app_style.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
-import 'package:bank_sampah_app/feature/deposit/bloc/deposit_bloc.dart';
+import 'package:bank_sampah_app/feature/authentication/bloc/auth_bloc.dart';
+import 'package:bank_sampah_app/feature/deposit/view/bloc/deposit_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
-import 'package:bank_sampah_app/feature/history/bloc/history_bloc.dart';
+import 'package:bank_sampah_app/feature/history/view/bloc/history_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     context.read<DepositBloc>().add(DepositEvent.loadDeposits());
+    context.read<AuthBloc>().add(AuthEvent.loadUser());
   }
 
   @override
@@ -94,79 +96,138 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // HEADER
   Widget _buildHeader() {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Container(
-        height: 48,
-        width: 48,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white, width: 2),
-          borderRadius: BorderRadius.circular(50),
-          image: const DecorationImage(
-            image: AssetImage('assets/images/logo.webp'),
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        return state.when(
+          error: (message) =>
+              Text(message, style: TextStyle(color: Colors.red)),
+          initial: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          unauthenticated: () => ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              height: 48,
+              width: 48,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50),
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/logo.webp'),
+                ),
+              ),
+            ),
+            subtitle: Text(
+              'Please login first',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            trailing: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Colors.white.withValues(alpha: 0.3),
+              ),
+              child: const Icon(
+                Icons.workspace_premium_outlined,
+                color: Colors.white,
+              ),
+            ),
+            title: Text(
+              'Welcome, Guest',
+              style: TextStyle(color: Colors.white70),
+            ),
           ),
-        ),
-      ),
-      title: const Text(
-        'Welcome back,',
-        style: TextStyle(color: Colors.white70),
-      ),
-      subtitle: const Text(
-        'John Doe',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-      ),
-      trailing: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          color: Colors.white.withValues(alpha: 0.3),
-        ),
-        child: const Icon(
-          Icons.workspace_premium_outlined,
-          color: Colors.white,
-        ),
-      ),
+          authenticated: (user) => ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              height: 48,
+              width: 48,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 2),
+                borderRadius: BorderRadius.circular(50),
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/logo.webp'),
+                ),
+              ),
+            ),
+            title: const Text(
+              'Welcome back,',
+              style: TextStyle(color: Colors.white70),
+            ),
+            subtitle: Text(
+              user.name,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            trailing: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Colors.white.withValues(alpha: 0.3),
+              ),
+              child: const Icon(
+                Icons.workspace_premium_outlined,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
   // POINTS CARD
   Widget _buildPointsCard() {
-    return Row(
-      children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white, width: 2),
-            gradient: LinearGradient(
-              colors: [
-                const Color(0xFF50C878).withValues(alpha: 0.7),
-                Colors.teal,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: const Icon(FontAwesomeIcons.coins, color: Colors.white),
-        ),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Total Points",
-              style: AppTextStyle.semiBold(color: AppColor.background),
-            ),
-            Text(
-              "2,450",
-              style: AppTextStyle.bold(
-                color: AppColor.background,
-                fontSize: 22,
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        return state.maybeWhen(
+          authenticated: (user) => Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 2),
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF50C878).withValues(alpha: 0.7),
+                      Colors.teal,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(FontAwesomeIcons.coins, color: Colors.white),
               ),
-            ),
-          ],
-        ),
-      ],
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Total Points",
+                    style: AppTextStyle.semiBold(color: AppColor.background),
+                  ),
+                  Text(
+                    user.totalPoints.toString(),
+                    style: AppTextStyle.bold(
+                      color: AppColor.background,
+                      fontSize: 22,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          orElse: () {
+            return SizedBox();
+          },
+        );
+      },
     );
   }
 

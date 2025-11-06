@@ -1,5 +1,8 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/core/router/app_router.dart';
+import 'package:bank_sampah_app/feature/authentication/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 @RoutePage()
@@ -13,6 +16,12 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool notificationsEnabled = true;
+
+  @override
+  void initState() {
+    context.read<AuthBloc>().add(AuthEvent.loadUser());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,111 +45,124 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // HEADER
   Widget _buildHeader(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 50, left: 16, right: 16, bottom: 16),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF10B981), Color(0xFF14B8A6)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Back button & title
-          Row(
-            children: [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-              ),
-              const Text(
-                'Profile',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        return Container(
+          padding: const EdgeInsets.only(
+            top: 50,
+            left: 16,
+            right: 16,
+            bottom: 16,
           ),
-          const SizedBox(height: 10),
-          // User info
-          Row(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF10B981), Color(0xFF14B8A6)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              GestureDetector(
-                onTap: () {},
-                child: const CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white24,
-                  child: Text(
-                    'JD',
+              // Back button & title
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  ),
+                  const Text(
+                    'Profile',
                     style: TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
                       fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'John Doe',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+              const SizedBox(height: 10),
+              // User info
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {},
+                    child: const CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white24,
+                      child: Text(
+                        'JD',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Member since January 2024',
-                      style: TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'John Doe',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Member since January 2024',
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                        ),
+                      ],
                     ),
+                  ),
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: Colors.white24,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Summary
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: const [
+                    _SummaryItem(value: '45', label: 'Total Deposits'),
+                    _SummaryItem(value: '127.5 kg', label: 'Total Weight'),
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: const BoxDecoration(
-                    color: Colors.white24,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.edit, color: Colors.white, size: 18),
-                ),
-              ),
             ],
           ),
-          const SizedBox(height: 20),
-          // Summary
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                _SummaryItem(value: '45', label: 'Total Deposits'),
-                _SummaryItem(value: '127.5 kg', label: 'Total Weight'),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -285,7 +307,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 TextButton(
                   onPressed: () {
+                    context.read<AuthBloc>().add(AuthEvent.logout());
                     Navigator.pop(context);
+                    context.replaceRoute(LoginRoute());
                   },
                   child: const Text('Logout'),
                 ),

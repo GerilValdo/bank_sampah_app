@@ -1,6 +1,6 @@
 import 'package:auto_route/annotations.dart';
 import 'package:bank_sampah_app/feature/dashboard/screen/dashboard_screen.dart';
-import 'package:bank_sampah_app/feature/history/screen/history_screen.dart';
+import 'package:bank_sampah_app/feature/history/view/screen/history_screen.dart';
 import 'package:bank_sampah_app/feature/profile/screen/profile_screen.dart';
 import 'package:bank_sampah_app/feature/rewards/screen/rewards_screen.dart';
 import 'package:flutter/material.dart';

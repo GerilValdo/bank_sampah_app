@@ -5,7 +5,7 @@ class DatabaseHelper {
   static const _dbName = 'sampahku.db';
   static const _dbVersion = 1;
   static const _tableNameCategories = 'categories';
-  static const _tableNameUsers = 'users';
+  // static const _tableNameUsers = 'users';
   static const _tableNameDeposit = 'deposits';
 
   static Database? _database;
@@ -55,29 +55,24 @@ class DatabaseHelper {
           )
         ''');
 
-        await db.execute('''
-          CREATE TABLE $_tableNameUsers(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            email TEXT,
-            phoneNumber INTEGER,
-            password TEXT,
-            totalPoints INTEGER,
-            profileImage TEXT,
-            createdAt TEXT,
-            role TEXT
-          )
-        ''');
+        // await db.execute('''
+        //   CREATE TABLE $_tableNameUsers(
+        //     id INTEGER PRIMARY KEY AUTOINCREMENT,
+        //     name TEXT,
+        //     email TEXT,
+        //     phoneNumber INTEGER,
+        //     password TEXT,
+        //     totalPoints INTEGER,
+        //     profileImage TEXT,
+        //     createdAt TEXT,
+        //     role TEXT
+        //   )
+        // ''');
 
-        await db.execute('''
-          INSERT INTO $_tableNameUsers (id, name, email, phoneNumber, password, role) VALUES
-          (1, 'Valdo', 'tes123@gmail.com', 'bottleWater'),
-          (2, 'Paper & Cardboard', 40, 'scroll'),
-          (3, 'Metal Cans & Alumunium', 75, 'canFood'),
-          (4, 'Glass Bottles', 560, 'wineBottle'),
-          (5, 'Electronics', 100, 'computer'),
-          (6, 'Organic Waste', 30, 'leaf');
-        ''');
+        // await db.execute('''
+        //   INSERT INTO $_tableNameUsers (id, name, email, phoneNumber, password, role) VALUES
+        //   (1, 'Valdo', 'tes123@gmail.com', 081245124545, '123123123', 'admin'),
+        // ''');
       },
     );
 

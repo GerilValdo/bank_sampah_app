@@ -11,6 +11,21 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+//     void checkAuth(BuildContext context) async {
+//   final loggedIn = await AuthPrefsService.isLoggedIn();
+//   if (!loggedIn) {
+//     context.replaceRoute(LoginRoute());
+//     return;
+//   }
+
+//   final role = await AuthPrefsService.getRole();
+//   if (role == 'admin') {
+// context.replaceRoute(AdminDashboardRoute());
+//   } else {
+//     context.replaceRoute(MainRoute());
+//   }
+// }
     Future.delayed(const Duration(seconds: 3), () {
       context.router.replaceAll([LoginRoute()]);
       // Navigate to next screen here, e.g.:

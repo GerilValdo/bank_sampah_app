@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
-import 'package:bank_sampah_app/feature/deposit/bloc/category_bloc.dart';
+import 'package:bank_sampah_app/feature/deposit/view/bloc/category_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/database/category_local_data_source.dart';
 import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_source.dart';
 import 'package:bank_sampah_app/feature/deposit/models/category_model.dart';
