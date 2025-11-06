@@ -24,7 +24,9 @@ class RegisterScreen extends StatelessWidget {
 
     Future<void> _register() async {
       if (!_formKey.currentState!.validate()) return;
-       context.read<AuthBloc>().add(
+
+      if (_formKey.currentState!.validate()) {
+        context.read<AuthBloc>().add(
           AuthEvent.register(
             name: nameC.text,
             email: emailC.text.trim(),
@@ -32,23 +34,27 @@ class RegisterScreen extends StatelessWidget {
             password: passwordC.text.trim(),
           ),
         );
+      }
     }
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         state.whenOrNull(
-      authenticated: (user) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account created successfully 🎉')),
+          authenticated: (user) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Account created successfully 🎉')),
+            );
+            context.replaceRoute(MainRoute());
+          },
+          error: (message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          },
         );
-        context.replaceRoute(MainRoute());
-      },
-      error: (message) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message), backgroundColor: Colors.redAccent),
-        );
-      },
-    );
       },
       child: Scaffold(
         body: SingleChildScrollView(

@@ -66,7 +66,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       await AuthPrefsService.saveUser(user, role: 'user');
-      await AuthPrefsService.setLoggedIn(true);
+      // await AuthPrefsService.setLoggedIn(true);
 
       emit(AuthState.authenticated(user));
     } catch (e) {
