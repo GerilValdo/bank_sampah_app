@@ -22,12 +22,10 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(
-        AuthEvent.login(email: emailC.text, password: passwordC.text),
-      );
-      context.replaceRoute(MainRoute());
-    }
+    // Hanya kirim event login, tanpa navigasi langsung
+    context.read<AuthBloc>().add(
+      AuthEvent.login(email: emailC.text, password: passwordC.text),
+    );
   }
 
   @override
