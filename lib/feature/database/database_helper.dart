@@ -5,7 +5,7 @@ class DatabaseHelper {
   static const _dbName = 'sampahku.db';
   static const _dbVersion = 1;
   static const _tableNameCategories = 'categories';
-  // static const _tableNameUsers = 'users';
+  static const _tableUsers = 'users';
   static const _tableNameDeposit = 'deposits';
 
   static Database? _database;
@@ -55,24 +55,24 @@ class DatabaseHelper {
           )
         ''');
 
-        // await db.execute('''
-        //   CREATE TABLE $_tableNameUsers(
-        //     id INTEGER PRIMARY KEY AUTOINCREMENT,
-        //     name TEXT,
-        //     email TEXT,
-        //     phoneNumber INTEGER,
-        //     password TEXT,
-        //     totalPoints INTEGER,
-        //     profileImage TEXT,
-        //     createdAt TEXT,
-        //     role TEXT
-        //   )
-        // ''');
+        await db.execute('''
+          CREATE TABLE $_tableUsers(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            email TEXT,
+            phoneNumber INTEGER,
+            password TEXT,
+            totalPoints INTEGER DEFAULT 0,
+            profileImage TEXT,
+            createdAt TEXT,
+            role TEXT DEFAULT 'user'
+          )
+        ''');
 
-        // await db.execute('''
-        //   INSERT INTO $_tableNameUsers (id, name, email, phoneNumber, password, role) VALUES
-        //   (1, 'Valdo', 'tes123@gmail.com', 081245124545, '123123123', 'admin'),
-        // ''');
+        await db.execute('''
+          INSERT INTO $_tableUsers (id, name, email, phoneNumber, password, role) VALUES
+          (1, 'Valdo', 'tes123@gmail.com', 081245124545, '123123123', 'admin');
+        ''');
       },
     );
 

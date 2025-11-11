@@ -85,10 +85,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
         children: [
           Row(
             children: [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-              ),
               const SizedBox(width: 4),
               const Text(
                 'Transaction History',
@@ -154,7 +150,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final tabs = ['All', 'Completed', 'Pending', 'Rejected'];
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -170,22 +166,33 @@ class _HistoryScreenState extends State<HistoryScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: tabs.map((tab) {
           final isActive = tab == selectedCategory;
-          return GestureDetector(
-            onTap: () {
-              context.read<HistoryBloc>().add(HistoryEvent.filterChanged(tab));
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(
-                color: isActive ? const Color(0xFF10B981) : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                tab,
-                style: TextStyle(
-                  color: isActive ? Colors.white : Colors.grey[700],
-                  fontWeight: FontWeight.w600,
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                context.read<HistoryBloc>().add(
+                  HistoryEvent.filterChanged(tab),
+                );
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? const Color(0xFF10B981)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      tab,
+                      style: TextStyle(
+                        color: isActive ? Colors.white : Colors.grey[700],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

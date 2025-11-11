@@ -99,6 +99,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         return state.when(
+          success: (message) =>
+              Text(message, style: TextStyle(color: Colors.green)),
           error: (message) =>
               Text(message, style: TextStyle(color: Colors.red)),
           initial: () => const Center(child: CircularProgressIndicator()),
@@ -112,7 +114,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 border: Border.all(color: Colors.white, width: 2),
                 borderRadius: BorderRadius.circular(50),
                 image: const DecorationImage(
-                  image: AssetImage('assets/images/logo.webp'),
+                  image: AssetImage('assets/images/logoLama.webp'),
                 ),
               ),
             ),
@@ -149,7 +151,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 border: Border.all(color: Colors.white, width: 2),
                 borderRadius: BorderRadius.circular(50),
                 image: const DecorationImage(
-                  image: AssetImage('assets/images/logo.webp'),
+                  image: AssetImage('assets/images/logoLama.webp'),
                 ),
               ),
             ),

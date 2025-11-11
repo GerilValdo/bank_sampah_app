@@ -35,13 +35,36 @@ class _LoginScreenState extends State<LoginScreen> {
     final width = size.width;
 
     return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (previous, current) {
+        // 🔹 Hanya trigger kalau state-nya benar-benar berubah
+        final isNowAuthenticated = current.maybeWhen(
+          authenticated: (_) => true,
+          orElse: () => false,
+        );
+        final isNowError = current.maybeWhen(
+          error: (_) => true,
+          orElse: () => false,
+        );
+        final wasAuthenticated = previous.maybeWhen(
+          authenticated: (_) => true,
+          orElse: () => false,
+        );
+        final wasError = previous.maybeWhen(
+          error: (_) => true,
+          orElse: () => false,
+        );
+
+        // ✅ hanya trigger jika baru saja berpindah ke state ini
+        return (!wasAuthenticated && isNowAuthenticated) ||
+            (!wasError && isNowError);
+      },
       listener: (context, state) {
         state.whenOrNull(
           authenticated: (user) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Login successful 🎉')),
             );
-            context.replaceRoute(MainRoute());
+            context.router.replaceAll([MainRoute()]);
           },
           error: (message) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -58,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: width * 0.07,
-              vertical: height * 0.08,
+              vertical: height * 0.05,
             ),
             child: Form(
               key: _formKey,
@@ -67,15 +90,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   // === Logo ===
                   Container(
-                    height: height * 0.1,
-                    width: height * 0.1,
+                    height: height * 0.2,
+                    // width: height * 0.1,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('assets/images/logo.webp'),
                       ),
                     ),
                   ),
-                  SizedBox(height: height * 0.02),
+                  // SizedBox(height: height * 0.02),
 
                   // === Welcome Text ===
                   Text(

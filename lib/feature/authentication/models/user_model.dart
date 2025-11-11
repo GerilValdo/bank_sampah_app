@@ -9,12 +9,12 @@ abstract class UserModel with _$UserModel {
     int? id,
     required String name,
     required String email,
-    required String phoneNumber,
+    required int phoneNumber,
     required String password,
     @Default(0) int totalPoints,
     String? profileImage,
     DateTime? createdAt,
-    @Default('user')String role,
+    @Default('user') String role,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

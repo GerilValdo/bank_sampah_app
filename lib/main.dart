@@ -2,6 +2,7 @@ import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/core/router/app_router_observer.dart';
 import 'package:bank_sampah_app/core/utils/theme_decoration.dart';
 import 'package:bank_sampah_app/feature/authentication/bloc/auth_bloc.dart';
+import 'package:bank_sampah_app/feature/authentication/database/user_local_datasource.dart';
 import 'package:bank_sampah_app/feature/deposit/view/bloc/category_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/view/bloc/deposit_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/database/category_local_data_source.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
           create: (context) => HistoryBloc(DepositLocalDataSource()),
         ),
         BlocProvider(
-          create: (context) => AuthBloc(),
+          create: (context) => AuthBloc(UserLocalDatasource()),
         ),
 
       ],

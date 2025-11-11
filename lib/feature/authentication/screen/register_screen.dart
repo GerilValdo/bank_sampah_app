@@ -6,63 +6,97 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 @RoutePage()
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
-  static const id = '/register';
+  static const String id = '/register';
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final nameC = TextEditingController();
+  final emailC = TextEditingController();
+  final phoneNumberC = TextEditingController();
+  final passwordC = TextEditingController();
+  final confirmPasswordC = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    nameC.dispose();
+    emailC.dispose();
+    phoneNumberC.dispose();
+    passwordC.dispose();
+    confirmPasswordC.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
-    final TextEditingController nameC = TextEditingController();
-    final TextEditingController emailC = TextEditingController();
-    final TextEditingController phoneNumberC = TextEditingController();
-    final TextEditingController passwordC = TextEditingController();
-    final TextEditingController confirmPasswordC = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
 
-    Future<void> _register() async {
-      if (!_formKey.currentState!.validate()) return;
+    // Fungsi register
+    Future<void> register() async {
+      if (!formKey.currentState!.validate()) return;
 
-      if (_formKey.currentState!.validate()) {
-        context.read<AuthBloc>().add(
-          AuthEvent.register(
-            name: nameC.text,
-            email: emailC.text.trim(),
-            phoneNumber: phoneNumberC.text.trim(),
-            password: passwordC.text.trim(),
-          ),
-        );
-      }
+      context.read<AuthBloc>().add(
+        AuthEvent.register(
+          name: nameC.text,
+          email: emailC.text.trim(),
+          phoneNumber: phoneNumberC.text.trim(),
+          password: passwordC.text.trim(),
+        ),
+      );
     }
 
     return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         state.whenOrNull(
-          authenticated: (user) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Account created successfully 🎉')),
-            );
-            context.replaceRoute(MainRoute());
+          loading: () {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(content: Text('Processing registration...')),
+              );
+          },
+          success: (message) async {
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(SnackBar(content: Text(message)));
+
+            // Tunggu sedikit agar snackbar sempat tampil
+            await Future.delayed(const Duration(milliseconds: 800));
+
+            if (!context.mounted) return;
+            context.replaceRoute(LoginRoute());
           },
           error: (message) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(message),
-                backgroundColor: Colors.redAccent,
-              ),
-            );
+            if (!context.mounted) return;
+
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(message),
+                  backgroundColor: Colors.redAccent,
+                ),
+              );
           },
         );
       },
       child: Scaffold(
         body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: width * 0.07,
-              vertical: height * 0.08,
-            ),
+          padding: EdgeInsets.symmetric(
+            horizontal: width * 0.07,
+            vertical: height * 0.08,
+          ),
+          child: Form(
+            key: formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -106,105 +140,98 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.07),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        spacing: height * 0.025,
-                        children: [
-                          CustomTextFormField(
-                            controller: nameC,
-                            label: 'Full Name',
-                            hintText: 'your name',
-                            prefixIcon: Icons.person_outline_outlined,
-                            validator: (v) =>
-                                v == null || v.isEmpty ? 'Name required' : null,
-                          ),
-                          CustomTextFormField(
-                            controller: emailC,
-                            label: 'Email',
-                            hintText: 'your.email@example.com',
-                            prefixIcon: Icons.mail_outline_rounded,
-                            validator: (v) =>
-                                v == null ||
-                                    !v.contains('@') ||
-                                    !v.contains('.')
-                                ? 'Enter valid email'
-                                : null,
-                          ),
-                          CustomTextFormField(
-                            controller: phoneNumberC,
-                            label: 'Phone Number',
-                            hintText: 'Enter your phone number',
-                            prefixIcon: Icons.phone_outlined,
-                            validator: (v) => v == null || v.length < 10
-                                ? 'Invalid phone'
-                                : null,
-                          ),
-                          CustomTextFormField(
-                            controller: passwordC,
-                            label: 'Password',
-                            hintText: '••••••••',
-                            prefixIcon: Icons.lock_outline_rounded,
-                            validator: (v) => v == null || v.length < 8
-                                ? 'Min 8 characters'
-                                : null,
-                          ),
-                          CustomTextFormField(
-                            controller: confirmPasswordC,
-                            label: 'Confirm Password',
-                            hintText: '••••••••',
-                            prefixIcon: Icons.lock_outline_rounded,
-                            validator: (v) {
-                              if (v == null || v.isEmpty) {
-                                return 'Confirm password required';
-                              }
-                              if (v != passwordC.text) {
-                                return 'Password do not match';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: height * 0.015),
-                          // === Login Button ===
-                          InkWell(
-                            borderRadius: BorderRadius.circular(30),
-                            onTap: () {
-                              _register();
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.symmetric(
-                                vertical: height * 0.018,
+                    child: Column(
+                      spacing: height * 0.025,
+                      children: [
+                        CustomTextFormField(
+                          controller: nameC,
+                          label: 'Full Name',
+                          hintText: 'Your name',
+                          prefixIcon: Icons.person_outline_outlined,
+                          validator: (v) =>
+                              v == null || v.isEmpty ? 'Name required' : null,
+                        ),
+                        CustomTextFormField(
+                          controller: emailC,
+                          label: 'Email',
+                          hintText: 'your.email@example.com',
+                          prefixIcon: Icons.mail_outline_rounded,
+                          validator: (v) =>
+                              v == null || !v.contains('@') || !v.contains('.')
+                              ? 'Enter valid email'
+                              : null,
+                        ),
+                        CustomTextFormField(
+                          controller: phoneNumberC,
+                          label: 'Phone Number',
+                          hintText: 'Enter your phone number',
+                          prefixIcon: Icons.phone_outlined,
+                          validator: (v) => v == null || v.length < 10
+                              ? 'Invalid phone number'
+                              : null,
+                        ),
+                        CustomTextFormField(
+                          controller: passwordC,
+                          label: 'Password',
+                          hintText: '••••••••',
+                          prefixIcon: Icons.lock_outline_rounded,
+                          obscureText: true,
+                          validator: (v) => v == null || v.length < 8
+                              ? 'Min 8 characters'
+                              : null,
+                        ),
+                        CustomTextFormField(
+                          controller: confirmPasswordC,
+                          label: 'Confirm Password',
+                          hintText: '••••••••',
+                          prefixIcon: Icons.lock_outline_rounded,
+                          obscureText: true,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return 'Confirm password required';
+                            }
+                            if (v != passwordC.text) {
+                              return 'Passwords do not match';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: height * 0.015),
+
+                        // === Register Button ===
+                        InkWell(
+                          borderRadius: BorderRadius.circular(30),
+                          onTap: register,
+                          child: Container(
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(
+                              vertical: height * 0.018,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              gradient: const LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [Color(0xFF00BC7D), Color(0xFF00BBA7)],
                               ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                gradient: const LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    Color(0xFF00BC7D),
-                                    Color(0xFF00BBA7),
-                                  ],
-                                ),
-                              ),
-                              child: Text(
-                                'Create Account',
-                                style: TextStyle(
-                                  fontSize: width * 0.04,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
+                            ),
+                            child: Text(
+                              'Create Account',
+                              style: TextStyle(
+                                fontSize: width * 0.04,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
                 SizedBox(height: height * 0.03),
 
-                // === Register ===
+                // === Login Navigation ===
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -219,9 +246,6 @@ class RegisterScreen extends StatelessWidget {
                       onPressed: () {
                         context.replaceRoute(LoginRoute());
                       },
-                      style: TextButton.styleFrom(
-                        visualDensity: VisualDensity.compact,
-                      ),
                       child: Text(
                         'Login',
                         style: TextStyle(
