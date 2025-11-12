@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/feature/admin/dashboard/admin_dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/authentication/screen/login_screen.dart';
 import 'package:bank_sampah_app/feature/authentication/screen/register_screen.dart';
 import 'package:bank_sampah_app/feature/authentication/screen/splash_screen.dart';
@@ -30,5 +31,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: MainRoute.page, path: MainScreen.id),
     AutoRoute(page: RewardsRoute.page, path: RewardsScreen.id),
     AutoRoute(page: DepositWasteRoute.page, path: DepositWasteScreen.id),
+    AutoRoute(page: AdminDashboardRoute.page, path: AdminDashboardScreen.id),
   ];
 }

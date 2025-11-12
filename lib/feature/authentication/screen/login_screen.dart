@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
+import 'package:bank_sampah_app/core/services/auth_prefs_service.dart';
 import 'package:bank_sampah_app/feature/authentication/bloc/auth_bloc.dart';
 import 'package:bank_sampah_app/feature/authentication/widgets/custom_text_form_field.dart';
 import 'package:flutter/material.dart';
@@ -60,11 +61,17 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       listener: (context, state) {
         state.whenOrNull(
-          authenticated: (user) {
+          authenticated: (user) async {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Login successful 🎉')),
             );
-            context.router.replaceAll([MainRoute()]);
+            final role = await AuthPrefsService.getRole();
+
+            if (role == 'admin') {
+              context.router.replaceAll([const AdminDashboardRoute()]);
+            } else {
+              context.router.replaceAll([MainRoute()]);
+            }
           },
           error: (message) {
             ScaffoldMessenger.of(context).showSnackBar(

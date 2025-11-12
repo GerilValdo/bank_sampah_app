@@ -11,6 +11,22 @@
 part of 'app_router.dart';
 
 /// generated route for
+/// [AdminDashboardScreen]
+class AdminDashboardRoute extends PageRouteInfo<void> {
+  const AdminDashboardRoute({List<PageRouteInfo>? children})
+    : super(AdminDashboardRoute.name, initialChildren: children);
+
+  static const String name = 'AdminDashboardRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const AdminDashboardScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [DashboardScreen]
 class DashboardRoute extends PageRouteInfo<void> {
   const DashboardRoute({List<PageRouteInfo>? children})

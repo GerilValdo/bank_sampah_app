@@ -50,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen>
             authenticated: (user) async {
               final role = await AuthPrefsService.getRole();
               if (role == 'admin') {
-                // context.replaceRoute(AdminDashboardRoute());
+                context.replaceRoute(AdminDashboardRoute());
               } else {
                 context.replaceRoute(MainRoute());
               }
