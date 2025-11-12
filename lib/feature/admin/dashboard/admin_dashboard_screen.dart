@@ -175,6 +175,28 @@ class AdminDashboardScreen extends StatelessWidget {
   // == SECTION: Quick Actions ==
   // ============================
   Widget _buildQuickActions() {
+    final List<Map<String, dynamic>> actionData = [
+      {
+        'icon': FontAwesomeIcons.sackDollar,
+        'title': 'Manage Deposits',
+        'color': const Color(0xFFF59E0B),
+      },
+      {
+        'icon': FontAwesomeIcons.userGear,
+        'title': 'Manage Users',
+        'color': Colors.purple,
+      },
+      // {
+      //   'icon': FontAwesomeIcons.truck,
+      //   'title': 'Manage Pickups',
+      //   'color': Colors.indigo,
+      // },
+      // {
+      //   'icon': FontAwesomeIcons.chartLine,
+      //   'title': 'View Reports',
+      //   'color': Colors.orange,
+      // },
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -183,46 +205,43 @@ class AdminDashboardScreen extends StatelessWidget {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: [
-            _actionCard(
-              FontAwesomeIcons.sackDollar,
-              "Manage Deposits",
-              Colors.green,
-            ),
-            // _actionCard(
-            //   FontAwesomeIcons.truck,
-            //   "Manage Pickups",
-            //   Colors.indigo,
-            // ),
-            _actionCard(
-              FontAwesomeIcons.userGear,
-              "Manage Users",
-              Colors.purple,
-            ),
-            // _actionCard(
-            //   FontAwesomeIcons.chartLine,
-            //   "View Reports",
-            //   Colors.orange,
-            // ),
-          ],
+        GridView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: actionData.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            crossAxisCount: 2,
+          ),
+          itemBuilder: (context, index) {
+            final items = actionData[index];
+            return _actionCard(
+              icon: items['icon'],
+              title: items['title'],
+              color: items['color'],
+            );
+          },
         ),
       ],
     );
   }
 
-  Widget _actionCard(IconData icon, String title, Color color) {
+  Widget _actionCard({
+    required IconData icon,
+    required String title,
+    required Color color,
+  }) {
     return Container(
-      width: 165,
-      height: 100,
+      // width: 165,
+      // height: 100,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

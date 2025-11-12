@@ -22,7 +22,7 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(page: SplashRoute.page, initial: true, path: SplashScreen.id),
+    AutoRoute(page: SplashRoute.page, path: SplashScreen.id),
     AutoRoute(page: LoginRoute.page, path: LoginScreen.id),
     AutoRoute(page: RegisterRoute.page, path: RegisterScreen.id),
     AutoRoute(page: DashboardRoute.page, path: DashboardScreen.id),
@@ -31,6 +31,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: MainRoute.page, path: MainScreen.id),
     AutoRoute(page: RewardsRoute.page, path: RewardsScreen.id),
     AutoRoute(page: DepositWasteRoute.page, path: DepositWasteScreen.id),
-    AutoRoute(page: AdminDashboardRoute.page, path: AdminDashboardScreen.id),
+    AutoRoute(page: AdminDashboardRoute.page, initial: true, path: AdminDashboardScreen.id),
   ];
 }

@@ -248,10 +248,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              _socialButton(
-                                width,
-                                Icons.g_mobiledata_rounded,
-                                'Google',
+                              InkWell(
+                                onTap: () {
+                                  context.replaceRoute(AdminDashboardRoute());
+                                },
+                                child: _socialButton(
+                                  width,
+                                  Icons.g_mobiledata_rounded,
+                                  'Google',
+                                ),
                               ),
                               _socialButton(
                                 width,
