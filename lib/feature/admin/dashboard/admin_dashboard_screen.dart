@@ -1,23 +1,44 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/feature/admin/dashboard/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 @RoutePage()
-class AdminDashboardScreen extends StatelessWidget {
+class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
   static const String id = '/admin-dashboard';
+
+  @override
+  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+}
+
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  String activeMenu = 'dashboard';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
+      drawer: AdminDrawer(
+        activeMenu: activeMenu,
+        onMenuSelected: (menu) {
+          setState(() {
+            activeMenu = menu;
+          });
+          Navigator.pop(context);
+        },
+      ),
       appBar: AppBar(
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              icon: Icon(Icons.menu, color: Colors.white),
+            );
+          },
+        ),
         backgroundColor: const Color(0xFF0E1F4B),
         elevation: 0,
         toolbarHeight: 90,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {},
-        ),
         title: const Text(
           "Welcome back,\nAdmin",
           style: TextStyle(
@@ -172,8 +193,6 @@ class AdminDashboardScreen extends StatelessWidget {
   }
 
   // ============================
-  // == SECTION: Quick Actions ==
-  // ============================
   Widget _buildQuickActions() {
     final List<Map<String, dynamic>> actionData = [
       {
@@ -214,6 +233,7 @@ class AdminDashboardScreen extends StatelessWidget {
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
             crossAxisCount: 2,
+            childAspectRatio: 1.5,
           ),
           itemBuilder: (context, index) {
             final items = actionData[index];
@@ -263,8 +283,6 @@ class AdminDashboardScreen extends StatelessWidget {
   }
 
   // ==============================
-  // == SECTION: Pending Approval ==
-  // ==============================
   Widget _buildPendingApprovals() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,6 +325,7 @@ class AdminDashboardScreen extends StatelessWidget {
     }
 
     return Container(
+      width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -357,7 +376,10 @@ class AdminDashboardScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text("Approve"),
+                  child: const Text(
+                    "Approve",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
@@ -372,7 +394,10 @@ class AdminDashboardScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text("Reject"),
+                  child: const Text(
+                    "Reject",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -380,7 +405,7 @@ class AdminDashboardScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.15),
+                color: statusColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -396,8 +421,6 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 
-  // ============================
-  // == SECTION: Top Contributors ==
   // ============================
   Widget _buildTopContributors() {
     return Column(
@@ -473,8 +496,6 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 
-  // ============================
-  // == Helper: Section Header ==
   // ============================
   Widget _sectionHeader(String title) {
     return Row(
