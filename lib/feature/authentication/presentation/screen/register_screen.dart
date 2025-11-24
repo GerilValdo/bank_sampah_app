@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
-import 'package:bank_sampah_app/feature/authentication/bloc/auth_bloc.dart';
-import 'package:bank_sampah_app/feature/authentication/widgets/custom_text_form_field.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/bloc/auth_bloc.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/widgets/custom_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -1,9 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/feature/admin/dashboard/admin_dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/admin/transactions/screen/admin_transaction_screen.dart';
-import 'package:bank_sampah_app/feature/authentication/screen/login_screen.dart';
-import 'package:bank_sampah_app/feature/authentication/screen/register_screen.dart';
-import 'package:bank_sampah_app/feature/authentication/screen/splash_screen.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/screen/login_screen.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/screen/register_screen.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/screen/splash_screen.dart';
 import 'package:bank_sampah_app/feature/dashboard/screen/dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
 import 'package:bank_sampah_app/feature/deposit/view/screen/deposit_waste_screen.dart';

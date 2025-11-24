@@ -1,6 +1,6 @@
-import 'package:bank_sampah_app/core/services/auth_prefs_service.dart';
-import 'package:bank_sampah_app/feature/authentication/database/user_local_datasource.dart';
-import 'package:bank_sampah_app/feature/authentication/models/user_model.dart';
+import 'package:bank_sampah_app/feature/authentication/data/service/auth_prefs_service.dart';
+import 'package:bank_sampah_app/feature/authentication/data/datasource/user_local_datasource.dart';
+import 'package:bank_sampah_app/feature/authentication/data/models/user_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -39,9 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogin(_Login event, Emitter<AuthState> emit) async {
     emit(const AuthState.loading());
     try {
-      final userData = await _localDatasource.getUserByEmail(
-        event.email.trim(),
-      );
+      final userData = await _localDatasource.getUserByEmail(event.email.trim());
 
       if (userData == null) {
         emit(const AuthState.error('No account found. Please register first.'));
@@ -53,10 +51,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user.password == event.password.trim()) {
         await AuthPrefsService.saveUser(user, role: user.role);
         emit(AuthState.authenticated(user));
-        return;
       } else {
         emit(const AuthState.error('Invalid email or password'));
       }
+
     } catch (e) {
       emit(AuthState.error('Login failed: ${e.toString()}'));
     }
@@ -65,19 +63,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onRegister(_Register event, Emitter<AuthState> emit) async {
     emit(const AuthState.loading());
 
-    final user = UserModel(
-      name: event.name,
-      email: event.email.trim(),
-      phoneNumber: int.parse(event.phoneNumber),
-      password: event.password.trim(),
-      totalPoints: 0,
-      role: 'user',
-    );
-
     try {
+      // cek duplicate
+      final exist = await _localDatasource.getUserByEmail(event.email.trim());
+      if (exist != null) {
+        emit(const AuthState.error("Email already registered"));
+        return;
+      }
+
+      final user = UserModel(
+        name: event.name,
+        email: event.email.trim(),
+        phoneNumber: event.phoneNumber.trim(),
+        password: event.password.trim(),
+        totalPoints: 0,
+        role: 'user',
+      );
+
       await _localDatasource.insertUser(user.toJson());
 
       emit(const AuthState.success('Account created successfully 🎉'));
+
     } catch (e) {
       emit(AuthState.error('Registration failed: ${e.toString()}'));
     }

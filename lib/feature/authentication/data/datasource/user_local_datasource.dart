@@ -1,4 +1,4 @@
-import 'package:bank_sampah_app/feature/database/database_helper.dart';
+import 'package:bank_sampah_app/core/database/database_helper.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserLocalDatasource {
@@ -14,7 +14,7 @@ class UserLocalDatasource {
       );
     } catch (e) {
       print('DB Insert Error: $e');
-      rethrow;
+      return 0;
     }
   }
 
@@ -46,21 +46,31 @@ class UserLocalDatasource {
   }
 
   Future<int> updateUser(Map<String, dynamic> user, String email) async {
-    final db = await DatabaseHelper.getDatabase();
-    return await db.update(
-      _tableName,
-      user,
-      where: 'email = ?',
-      whereArgs: [email],
-    );
+    try {
+      final db = await DatabaseHelper.getDatabase();
+      return await db.update(
+        _tableName,
+        user,
+        where: 'email = ?',
+        whereArgs: [email],
+      );
+    } catch (e) {
+      print('DB Update Error: $e');
+      return 0;
+    }
   }
 
   Future<int> deleteUser(String email) async {
-    final db = await DatabaseHelper.getDatabase();
-    return await db.delete(
-      _tableName,
-      where: 'email = ?',
-      whereArgs: [email],
-    );
+    try {
+      final db = await DatabaseHelper.getDatabase();
+      return await db.delete(
+        _tableName,
+        where: 'email = ?',
+        whereArgs: [email],
+      );
+    } catch (e) {
+      print('DB Delete Error: $e');
+      return 0;
+    }
   }
 }

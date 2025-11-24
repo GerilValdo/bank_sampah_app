@@ -10,7 +10,7 @@ abstract class UserModel with _$UserModel {
     String? address,
     required String name,
     required String email,
-    required int phoneNumber,
+    required String phoneNumber,
     required String password,
     @Default(0) int totalPoints,
     String? profileImage,

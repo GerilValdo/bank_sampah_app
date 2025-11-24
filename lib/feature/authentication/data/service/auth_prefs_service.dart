@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:bank_sampah_app/feature/authentication/models/user_model.dart';
+import 'package:bank_sampah_app/feature/authentication/data/models/user_model.dart';
 
 class AuthPrefsService {
   static const _userKey = 'user_data';
