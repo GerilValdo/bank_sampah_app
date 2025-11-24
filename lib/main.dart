@@ -8,10 +8,11 @@ import 'package:bank_sampah_app/feature/deposit/view/bloc/deposit_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/database/category_local_data_source.dart';
 import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_source.dart';
 import 'package:bank_sampah_app/feature/history/view/bloc/history_bloc.dart';
+import 'package:bank_sampah_app/feature/rewards/bloc/withdraw_bloc.dart';
+import 'package:bank_sampah_app/feature/rewards/database/withdraw_local_datasource.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,10 +37,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => HistoryBloc(DepositLocalDataSource()),
         ),
+        BlocProvider(create: (context) => AuthBloc(UserLocalDatasource())),
         BlocProvider(
-          create: (context) => AuthBloc(UserLocalDatasource()),
+          create: (context) => WithdrawBloc(WithdrawLocalDataSource()),
         ),
-
       ],
       child: MaterialApp.router(
         title: 'Sampahku',

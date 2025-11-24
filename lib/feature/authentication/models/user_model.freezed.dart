@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserModel {
 
- int? get id; String get name; String get email; int get phoneNumber; String get password; int get totalPoints; String? get profileImage; DateTime? get createdAt; String get role;
+ int? get id; String? get address; String get name; String get email; int get phoneNumber; String get password; int get totalPoints; String? get profileImage; DateTime? get createdAt; String get role;
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserModelCopyWith<UserModel> get copyWith => _$UserModelCopyWithImpl<UserModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.password, password) || other.password == password)&&(identical(other.totalPoints, totalPoints) || other.totalPoints == totalPoints)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.role, role) || other.role == role));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.address, address) || other.address == address)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.password, password) || other.password == password)&&(identical(other.totalPoints, totalPoints) || other.totalPoints == totalPoints)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.role, role) || other.role == role));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,email,phoneNumber,password,totalPoints,profileImage,createdAt,role);
+int get hashCode => Object.hash(runtimeType,id,address,name,email,phoneNumber,password,totalPoints,profileImage,createdAt,role);
 
 @override
 String toString() {
-  return 'UserModel(id: $id, name: $name, email: $email, phoneNumber: $phoneNumber, password: $password, totalPoints: $totalPoints, profileImage: $profileImage, createdAt: $createdAt, role: $role)';
+  return 'UserModel(id: $id, address: $address, name: $name, email: $email, phoneNumber: $phoneNumber, password: $password, totalPoints: $totalPoints, profileImage: $profileImage, createdAt: $createdAt, role: $role)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserModelCopyWith<$Res>  {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) _then) = _$UserModelCopyWithImpl;
 @useResult
 $Res call({
- int? id, String name, String email, int phoneNumber, String password, int totalPoints, String? profileImage, DateTime? createdAt, String role
+ int? id, String? address, String name, String email, int phoneNumber, String password, int totalPoints, String? profileImage, DateTime? createdAt, String role
 });
 
 
@@ -65,10 +65,11 @@ class _$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? email = null,Object? phoneNumber = null,Object? password = null,Object? totalPoints = null,Object? profileImage = freezed,Object? createdAt = freezed,Object? role = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? address = freezed,Object? name = null,Object? email = null,Object? phoneNumber = null,Object? password = null,Object? totalPoints = null,Object? profileImage = freezed,Object? createdAt = freezed,Object? role = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as int?,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,phoneNumber: null == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as int,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
@@ -161,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String name,  String email,  int phoneNumber,  String password,  int totalPoints,  String? profileImage,  DateTime? createdAt,  String role)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String? address,  String name,  String email,  int phoneNumber,  String password,  int totalPoints,  String? profileImage,  DateTime? createdAt,  String role)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.name,_that.email,_that.phoneNumber,_that.password,_that.totalPoints,_that.profileImage,_that.createdAt,_that.role);case _:
+return $default(_that.id,_that.address,_that.name,_that.email,_that.phoneNumber,_that.password,_that.totalPoints,_that.profileImage,_that.createdAt,_that.role);case _:
   return orElse();
 
 }
@@ -182,10 +183,10 @@ return $default(_that.id,_that.name,_that.email,_that.phoneNumber,_that.password
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String name,  String email,  int phoneNumber,  String password,  int totalPoints,  String? profileImage,  DateTime? createdAt,  String role)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String? address,  String name,  String email,  int phoneNumber,  String password,  int totalPoints,  String? profileImage,  DateTime? createdAt,  String role)  $default,) {final _that = this;
 switch (_that) {
 case _UserModel():
-return $default(_that.id,_that.name,_that.email,_that.phoneNumber,_that.password,_that.totalPoints,_that.profileImage,_that.createdAt,_that.role);case _:
+return $default(_that.id,_that.address,_that.name,_that.email,_that.phoneNumber,_that.password,_that.totalPoints,_that.profileImage,_that.createdAt,_that.role);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +203,10 @@ return $default(_that.id,_that.name,_that.email,_that.phoneNumber,_that.password
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String name,  String email,  int phoneNumber,  String password,  int totalPoints,  String? profileImage,  DateTime? createdAt,  String role)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String? address,  String name,  String email,  int phoneNumber,  String password,  int totalPoints,  String? profileImage,  DateTime? createdAt,  String role)?  $default,) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.name,_that.email,_that.phoneNumber,_that.password,_that.totalPoints,_that.profileImage,_that.createdAt,_that.role);case _:
+return $default(_that.id,_that.address,_that.name,_that.email,_that.phoneNumber,_that.password,_that.totalPoints,_that.profileImage,_that.createdAt,_that.role);case _:
   return null;
 
 }
@@ -217,10 +218,11 @@ return $default(_that.id,_that.name,_that.email,_that.phoneNumber,_that.password
 @JsonSerializable()
 
 class _UserModel implements UserModel {
-  const _UserModel({this.id, required this.name, required this.email, required this.phoneNumber, required this.password, this.totalPoints = 0, this.profileImage, this.createdAt, this.role = 'user'});
+  const _UserModel({this.id, this.address, required this.name, required this.email, required this.phoneNumber, required this.password, this.totalPoints = 0, this.profileImage, this.createdAt, this.role = 'user'});
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  int? id;
+@override final  String? address;
 @override final  String name;
 @override final  String email;
 @override final  int phoneNumber;
@@ -243,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.password, password) || other.password == password)&&(identical(other.totalPoints, totalPoints) || other.totalPoints == totalPoints)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.role, role) || other.role == role));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.address, address) || other.address == address)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.password, password) || other.password == password)&&(identical(other.totalPoints, totalPoints) || other.totalPoints == totalPoints)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.role, role) || other.role == role));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,email,phoneNumber,password,totalPoints,profileImage,createdAt,role);
+int get hashCode => Object.hash(runtimeType,id,address,name,email,phoneNumber,password,totalPoints,profileImage,createdAt,role);
 
 @override
 String toString() {
-  return 'UserModel(id: $id, name: $name, email: $email, phoneNumber: $phoneNumber, password: $password, totalPoints: $totalPoints, profileImage: $profileImage, createdAt: $createdAt, role: $role)';
+  return 'UserModel(id: $id, address: $address, name: $name, email: $email, phoneNumber: $phoneNumber, password: $password, totalPoints: $totalPoints, profileImage: $profileImage, createdAt: $createdAt, role: $role)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$UserModelCopyWith<$Res> implements $UserModelCopyWith<$Re
   factory _$UserModelCopyWith(_UserModel value, $Res Function(_UserModel) _then) = __$UserModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? id, String name, String email, int phoneNumber, String password, int totalPoints, String? profileImage, DateTime? createdAt, String role
+ int? id, String? address, String name, String email, int phoneNumber, String password, int totalPoints, String? profileImage, DateTime? createdAt, String role
 });
 
 
@@ -280,10 +282,11 @@ class __$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? email = null,Object? phoneNumber = null,Object? password = null,Object? totalPoints = null,Object? profileImage = freezed,Object? createdAt = freezed,Object? role = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? address = freezed,Object? name = null,Object? email = null,Object? phoneNumber = null,Object? password = null,Object? totalPoints = null,Object? profileImage = freezed,Object? createdAt = freezed,Object? role = null,}) {
   return _then(_UserModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as int?,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,phoneNumber: null == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as int,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable

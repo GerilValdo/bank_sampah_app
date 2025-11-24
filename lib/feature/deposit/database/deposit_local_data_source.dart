@@ -58,4 +58,22 @@ class DepositLocalDataSource {
     final db = await DatabaseHelper.getDatabase();
     await db.delete(_tableName);
   }
+
+  /// Total Deposits (jumlah row)
+  Future<int> getTotalDeposits() async {
+    final db = await DatabaseHelper.getDatabase();
+    final result = await db.rawQuery('SELECT COUNT(*) as total FROM $_tableName');
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
+  
+  /// Total Weight (sum all weights)
+  Future<double> getTotalWeight() async {
+    final db = await DatabaseHelper.getDatabase();
+    final result = await db.rawQuery('SELECT SUM(weight) as totalWeight FROM $_tableName');
+
+    final total = result.first['totalWeight'];
+    if (total == null) return 0.0;
+
+    return (total as double);
+  }
 }

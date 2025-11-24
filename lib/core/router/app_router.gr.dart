@@ -27,6 +27,22 @@ class AdminDashboardRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [AdminTransactionScreen]
+class AdminTransactionRoute extends PageRouteInfo<void> {
+  const AdminTransactionRoute({List<PageRouteInfo>? children})
+    : super(AdminTransactionRoute.name, initialChildren: children);
+
+  static const String name = 'AdminTransactionRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const AdminTransactionScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [DashboardScreen]
 class DashboardRoute extends PageRouteInfo<void> {
   const DashboardRoute({List<PageRouteInfo>? children})
@@ -205,22 +221,6 @@ class RegisterRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [RewardsScreen]
-class RewardsRoute extends PageRouteInfo<void> {
-  const RewardsRoute({List<PageRouteInfo>? children})
-    : super(RewardsRoute.name, initialChildren: children);
-
-  static const String name = 'RewardsRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const RewardsScreen();
-    },
-  );
-}
-
-/// generated route for
 /// [SplashScreen]
 class SplashRoute extends PageRouteInfo<void> {
   const SplashRoute({List<PageRouteInfo>? children})
@@ -232,6 +232,22 @@ class SplashRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const SplashScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [WithdrawScreen]
+class WithdrawRoute extends PageRouteInfo<void> {
+  const WithdrawRoute({List<PageRouteInfo>? children})
+    : super(WithdrawRoute.name, initialChildren: children);
+
+  static const String name = 'WithdrawRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const WithdrawScreen();
     },
   );
 }

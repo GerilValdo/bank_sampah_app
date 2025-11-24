@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/feature/admin/dashboard/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -199,23 +200,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         'icon': FontAwesomeIcons.sackDollar,
         'title': 'Manage Deposits',
         'color': const Color(0xFFF59E0B),
+        'onTap': () {
+          context.pushRoute(AdminTransactionRoute());
+        },
       },
       {
         'icon': FontAwesomeIcons.userGear,
         'title': 'Manage Users',
         'color': Colors.purple,
+        'onTap': () {},
       },
-      // {
-      //   'icon': FontAwesomeIcons.truck,
-      //   'title': 'Manage Pickups',
-      //   'color': Colors.indigo,
-      // },
-      // {
-      //   'icon': FontAwesomeIcons.chartLine,
-      //   'title': 'View Reports',
-      //   'color': Colors.orange,
-      // },
     ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -236,11 +232,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             childAspectRatio: 1.5,
           ),
           itemBuilder: (context, index) {
-            final items = actionData[index];
+            final item = actionData[index];
             return _actionCard(
-              icon: items['icon'],
-              title: items['title'],
-              color: items['color'],
+              icon: item['icon'],
+              title: item['title'],
+              color: item['color'],
+              onTap: item['onTap'],
             );
           },
         ),
@@ -252,32 +249,35 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     required IconData icon,
     required String title,
     required Color color,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      // width: 165,
-      // height: 100,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-          ),
-        ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            ),
+          ],
+        ),
       ),
     );
   }

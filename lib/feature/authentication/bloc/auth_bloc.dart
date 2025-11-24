@@ -18,7 +18,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<_Register>(_onRegister);
   }
 
-  /// 🔹 Cek apakah user sudah login dari SharedPreferences
   Future<void> _onLoadUser(_LoadUser event, Emitter<AuthState> emit) async {
     emit(const AuthState.loading());
 
@@ -32,19 +31,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// 🔹 Logout
   Future<void> _onLogout(_Logout event, Emitter<AuthState> emit) async {
     await AuthPrefsService.logout();
     emit(const AuthState.unauthenticated());
   }
 
-  /// 🔹 Login dari SQLite melalui datasource
   Future<void> _onLogin(_Login event, Emitter<AuthState> emit) async {
     emit(const AuthState.loading());
     try {
       final userData = await _localDatasource.getUserByEmail(
         event.email.trim(),
       );
+
       if (userData == null) {
         emit(const AuthState.error('No account found. Please register first.'));
         return;
@@ -55,7 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user.password == event.password.trim()) {
         await AuthPrefsService.saveUser(user, role: user.role);
         emit(AuthState.authenticated(user));
-        emit(AuthState.initial());
+        return;
       } else {
         emit(const AuthState.error('Invalid email or password'));
       }
@@ -64,30 +62,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// 🔹 Register user baru ke SQLite via datasource
   Future<void> _onRegister(_Register event, Emitter<AuthState> emit) async {
     emit(const AuthState.loading());
 
     final user = UserModel(
       name: event.name,
       email: event.email.trim(),
-      phoneNumber: int.parse(event.phoneNumber.trim()),
+      phoneNumber: int.parse(event.phoneNumber),
       password: event.password.trim(),
       totalPoints: 0,
       role: 'user',
     );
 
     try {
-      // Simpan ke database
       await _localDatasource.insertUser(user.toJson());
 
-      // Simpan data ke shared preferences
-      await AuthPrefsService.saveUser(user, role: 'user');
-
-      // ✅ Setelah register, jangan langsung authenticated
-      // emit(const AuthState.unauthenticated());
-
-      // ✅ Beri pesan sukses
       emit(const AuthState.success('Account created successfully 🎉'));
     } catch (e) {
       emit(AuthState.error('Registration failed: ${e.toString()}'));

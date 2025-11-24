@@ -2,7 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:bank_sampah_app/feature/dashboard/screen/dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/history/view/screen/history_screen.dart';
 import 'package:bank_sampah_app/feature/profile/screen/profile_screen.dart';
-import 'package:bank_sampah_app/feature/rewards/screen/rewards_screen.dart';
+import 'package:bank_sampah_app/feature/rewards/screen/withdraw_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = const [
     DashboardScreen(),
     HistoryScreen(),
-    RewardsScreen(),
+    WithdrawScreen(),
     ProfileScreen(),
   ];
 

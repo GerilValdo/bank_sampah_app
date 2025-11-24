@@ -7,6 +7,7 @@ class DatabaseHelper {
   static const _tableNameCategories = 'categories';
   static const _tableUsers = 'users';
   static const _tableNameDeposit = 'deposits';
+  static const _tableNameWithdraw = 'withdraw';
 
   static Database? _database;
 
@@ -56,6 +57,21 @@ class DatabaseHelper {
         ''');
 
         await db.execute('''
+          CREATE TABLE $_tableNameWithdraw(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            userId INTEGER NOT NULL,
+            pointsRequested INTEGER NOT NULL,
+            amount REAL NOT NULL,
+            status TEXT NOT NULL,
+            paymentMethod TEXT,
+            phone TEXT,
+            notes TEXT,
+            createdAt TEXT NOT NULL,
+            updatedAt TEXT
+          )
+        ''');
+
+        await db.execute('''
           CREATE TABLE $_tableUsers(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
@@ -65,6 +81,7 @@ class DatabaseHelper {
             totalPoints INTEGER DEFAULT 0,
             profileImage TEXT,
             createdAt TEXT,
+            address TEXT,
             role TEXT DEFAULT 'user'
           )
         ''');
