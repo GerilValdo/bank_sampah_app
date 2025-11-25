@@ -2,8 +2,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/constants/export.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
-import 'package:bank_sampah_app/core/services/auth_prefs_service.dart';
-import 'package:bank_sampah_app/feature/authentication/bloc/auth_bloc.dart';
+import 'package:bank_sampah_app/feature/authentication/data/service/auth_prefs_service.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
