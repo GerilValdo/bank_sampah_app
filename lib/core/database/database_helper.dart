@@ -76,7 +76,7 @@ class DatabaseHelper {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             email TEXT,
-            phoneNumber INTEGER,
+            phoneNumber TEXT,
             password TEXT,
             totalPoints INTEGER DEFAULT 0,
             profileImage TEXT,
@@ -88,7 +88,7 @@ class DatabaseHelper {
 
         await db.execute('''
           INSERT INTO $_tableUsers (id, name, email, phoneNumber, password, role) VALUES
-          (1, 'Valdo', 'tes123@gmail.com', 081245124545, '123123123', 'admin');
+          (1, 'Valdo', 'tes123@gmail.com', '081245124545', '123123123', 'admin');
         ''');
       },
     );

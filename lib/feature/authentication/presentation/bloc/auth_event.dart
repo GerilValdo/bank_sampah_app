@@ -21,4 +21,5 @@ abstract class AuthEvent with _$AuthEvent {
     required String phoneNumber,
     required String password,
   }) = _Register;
+  
 }

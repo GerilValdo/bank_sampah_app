@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'deposit_model.freezed.dart';
@@ -22,4 +23,10 @@ abstract class DepositModel with _$DepositModel {
 
   factory DepositModel.fromJson(Map<String, dynamic> json) =>
       _$DepositModelFromJson(json);
+
+  factory DepositModel.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> doc) {
+  final data = doc.data()!;
+  return DepositModel.fromJson({...data, "id": doc.id});
+}
 }

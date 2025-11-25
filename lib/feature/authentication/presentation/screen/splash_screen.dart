@@ -55,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen>
                 context.replaceRoute(MainRoute());
               }
             },
-            unauthenticated: () => context.replaceRoute(LoginRoute()),
+            unauthenticated: () => context.replaceRoute(FirebaseLoginRoute()),
             orElse: () {},
           );
         },

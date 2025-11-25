@@ -108,6 +108,107 @@ class DepositWasteRouteArgs {
 }
 
 /// generated route for
+/// [FirebaseDashboardScreen]
+class FirebaseDashboardRoute extends PageRouteInfo<void> {
+  const FirebaseDashboardRoute({List<PageRouteInfo>? children})
+    : super(FirebaseDashboardRoute.name, initialChildren: children);
+
+  static const String name = 'FirebaseDashboardRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const FirebaseDashboardScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [FirebaseLoginScreen]
+class FirebaseLoginRoute extends PageRouteInfo<void> {
+  const FirebaseLoginRoute({List<PageRouteInfo>? children})
+    : super(FirebaseLoginRoute.name, initialChildren: children);
+
+  static const String name = 'FirebaseLoginRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const FirebaseLoginScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [FirebaseMainScreen]
+class FirebaseMainRoute extends PageRouteInfo<FirebaseMainRouteArgs> {
+  FirebaseMainRoute({
+    Key? key,
+    int initialIndex = 0,
+    List<PageRouteInfo>? children,
+  }) : super(
+         FirebaseMainRoute.name,
+         args: FirebaseMainRouteArgs(key: key, initialIndex: initialIndex),
+         rawPathParams: {'initialIndex': initialIndex},
+         initialChildren: children,
+       );
+
+  static const String name = 'FirebaseMainRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<FirebaseMainRouteArgs>(
+        orElse: () => FirebaseMainRouteArgs(
+          initialIndex: pathParams.getInt('initialIndex', 0),
+        ),
+      );
+      return FirebaseMainScreen(key: args.key, initialIndex: args.initialIndex);
+    },
+  );
+}
+
+class FirebaseMainRouteArgs {
+  const FirebaseMainRouteArgs({this.key, this.initialIndex = 0});
+
+  final Key? key;
+
+  final int initialIndex;
+
+  @override
+  String toString() {
+    return 'FirebaseMainRouteArgs{key: $key, initialIndex: $initialIndex}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! FirebaseMainRouteArgs) return false;
+    return key == other.key && initialIndex == other.initialIndex;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ initialIndex.hashCode;
+}
+
+/// generated route for
+/// [FirebaseRegisterScreen]
+class FirebaseRegisterRoute extends PageRouteInfo<void> {
+  const FirebaseRegisterRoute({List<PageRouteInfo>? children})
+    : super(FirebaseRegisterRoute.name, initialChildren: children);
+
+  static const String name = 'FirebaseRegisterRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const FirebaseRegisterScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [HistoryScreen]
 class HistoryRoute extends PageRouteInfo<void> {
   const HistoryRoute({List<PageRouteInfo>? children})
