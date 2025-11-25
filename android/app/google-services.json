@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "560018437880",
+    "project_id": "sampahku-6dbd5",
+    "storage_bucket": "sampahku-6dbd5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560018437880:android:d11be2c0f3ecd5cf05ed0d",
+        "android_client_info": {
+          "package_name": "com.ppkd.sampahku"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBeD64pEItLygs7WF94s6mU3LBnqLNPx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -10,12 +10,17 @@ import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_sour
 import 'package:bank_sampah_app/feature/history/view/bloc/history_bloc.dart';
 import 'package:bank_sampah_app/feature/rewards/bloc/withdraw_bloc.dart';
 import 'package:bank_sampah_app/feature/rewards/database/withdraw_local_datasource.dart';
+import 'package:bank_sampah_app/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 
