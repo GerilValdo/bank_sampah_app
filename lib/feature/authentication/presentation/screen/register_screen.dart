@@ -56,13 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         state.whenOrNull(
-          loading: () {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                const SnackBar(content: Text('Processing registration...')),
-              );
-          },
+          loading: () {},
           success: (message) async {
             if (!context.mounted) return;
             ScaffoldMessenger.of(context)

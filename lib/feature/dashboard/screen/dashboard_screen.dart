@@ -6,7 +6,7 @@ import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/bloc/auth_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
-import 'package:bank_sampah_app/feature/history/view/bloc/history_bloc.dart';
+import 'package:bank_sampah_app/feature/history/presentation/bloc/history_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';

@@ -209,6 +209,22 @@ class FirebaseRegisterRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [HistoryFirebaseScreen]
+class HistoryFirebaseRoute extends PageRouteInfo<void> {
+  const HistoryFirebaseRoute({List<PageRouteInfo>? children})
+    : super(HistoryFirebaseRoute.name, initialChildren: children);
+
+  static const String name = 'HistoryFirebaseRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const HistoryFirebaseScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [HistoryScreen]
 class HistoryRoute extends PageRouteInfo<void> {
   const HistoryRoute({List<PageRouteInfo>? children})
@@ -290,6 +306,22 @@ class MainRouteArgs {
 }
 
 /// generated route for
+/// [ProfileFirebaseScreen]
+class ProfileFirebaseRoute extends PageRouteInfo<void> {
+  const ProfileFirebaseRoute({List<PageRouteInfo>? children})
+    : super(ProfileFirebaseRoute.name, initialChildren: children);
+
+  static const String name = 'ProfileFirebaseRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const ProfileFirebaseScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [ProfileScreen]
 class ProfileRoute extends PageRouteInfo<void> {
   const ProfileRoute({List<PageRouteInfo>? children})
@@ -333,6 +365,22 @@ class SplashRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const SplashScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [WithdrawFirebaseScreen]
+class WithdrawFirebaseRoute extends PageRouteInfo<void> {
+  const WithdrawFirebaseRoute({List<PageRouteInfo>? children})
+    : super(WithdrawFirebaseRoute.name, initialChildren: children);
+
+  static const String name = 'WithdrawFirebaseRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const WithdrawFirebaseScreen();
     },
   );
 }

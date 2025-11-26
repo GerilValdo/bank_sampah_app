@@ -55,13 +55,7 @@ class _FirebaseRegisterScreenState extends State<FirebaseRegisterScreen> {
       listener: (context, state) {
         state.whenOrNull(
           loading: () {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Processing registration..."),
-                duration: Duration(milliseconds: 1200),
-              ),
-            );
+        
           },
 
           success: (message) async {

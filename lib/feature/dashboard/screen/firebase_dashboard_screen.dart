@@ -3,10 +3,10 @@ import 'package:bank_sampah_app/core/constants/app_color.dart';
 import 'package:bank_sampah_app/core/constants/app_style.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
-import 'package:bank_sampah_app/feature/authentication/presentation/bloc/auth_bloc.dart';
-import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_bloc.dart';
-import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
-import 'package:bank_sampah_app/feature/history/view/bloc/history_bloc.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
+import 'package:bank_sampah_app/feature/deposit/models/deposit_firebase_model.dart';
+import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_firebase_bloc.dart';
+import 'package:bank_sampah_app/feature/history/presentation/bloc/history_firebase_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,8 @@ class FirebaseDashboardScreen extends StatefulWidget {
   static const String id = '/firebase-dashboard';
 
   @override
-  State<FirebaseDashboardScreen> createState() => _FirebaseDashboardScreenState();
+  State<FirebaseDashboardScreen> createState() =>
+      _FirebaseDashboardScreenState();
 }
 
 class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
@@ -38,8 +39,21 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<DepositBloc>().add(DepositEvent.loadDeposits());
-    context.read<AuthBloc>().add(AuthEvent.loadUser());
+
+    final authState = context.read<FirebaseAuthBloc>().state;
+    final user = authState.maybeWhen(
+      authenticated: (u) => u,
+      orElse: () => null,
+    );
+
+    if (user != null) {
+      context.read<DepositFirebaseBloc>().add(
+        DepositFirebaseEvent.loadDeposits(user.uid!),
+      );
+      context.read<HistoryFirebaseBloc>().add(
+        HistoryFirebaseEvent.loadTransactions(user.uid!),
+      );
+    }
   }
 
   @override
@@ -49,18 +63,18 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     final width = size.width;
 
     return Scaffold(
-      backgroundColor: Colors.white.withValues(alpha: 0.9),
+      backgroundColor: Colors.white.withOpacity(0.9),
       body: SingleChildScrollView(
         child: Stack(
           children: [
-            // 🌿 Background Gradient Header
+            // 🌿 Background Header (gradient)
             Container(
               height: height * 0.27,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(40),
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xFF50C878).withValues(alpha: 0.7),
+                    const Color(0xFF50C878).withOpacity(0.7),
                     Colors.teal,
                   ],
                   center: Alignment.topLeft,
@@ -69,7 +83,7 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
               ),
             ),
 
-            // 🌿 Content
+            // 🌿 Main Content
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: width * 0.06,
@@ -81,7 +95,7 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
                   _buildHeader(),
                   const SizedBox(height: 25),
                   _buildPointsCard(),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 65),
                   _buildQuickActions(context),
                   const SizedBox(height: 10),
                   _buildRecentActivity(context),
@@ -94,163 +108,125 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     );
   }
 
+  // =====================================================
   // HEADER
+  // =====================================================
   Widget _buildHeader() {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        return state.when(
-          success: (message) =>
-              Text(message, style: TextStyle(color: Colors.green)),
-          error: (message) =>
-              Text(message, style: TextStyle(color: Colors.red)),
-          initial: () => const Center(child: CircularProgressIndicator()),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          unauthenticated: () => ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              height: 48,
-              width: 48,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(50),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/logoLama.webp'),
-                ),
-              ),
-            ),
-            subtitle: Text(
-              'Please login first',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            trailing: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: Colors.white.withValues(alpha: 0.3),
-              ),
-              child: const Icon(
-                Icons.workspace_premium_outlined,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(
-              'Welcome, Guest',
-              style: TextStyle(color: Colors.white70),
-            ),
-          ),
-          authenticated: (user) => ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              height: 48,
-              width: 48,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(50),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/logoLama.webp'),
-                ),
-              ),
-            ),
-            title: const Text(
-              'Welcome back,',
-              style: TextStyle(color: Colors.white70),
-            ),
-            subtitle: Text(
-              user.name,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            trailing: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: Colors.white.withValues(alpha: 0.3),
-              ),
-              child: const Icon(
-                Icons.workspace_premium_outlined,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // POINTS CARD
-  Widget _buildPointsCard() {
-    return BlocBuilder<AuthBloc, AuthState>(
+    return BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
       builder: (context, state) {
         return state.maybeWhen(
-          authenticated: (user) => Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF50C878).withValues(alpha: 0.7),
-                      Colors.teal,
-                    ],
+          authenticated: (user) {
+            final username = user.username ?? "";
+            final initials = username.isNotEmpty
+                ? username
+                      .split(" ")
+                      .map((e) => e[0])
+                      .take(2)
+                      .join()
+                      .toUpperCase()
+                : "?";
+
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(
+                radius: 24,
+                backgroundColor: Colors.white24,
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: const Icon(FontAwesomeIcons.coins, color: Colors.white),
               ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Total Points",
-                    style: AppTextStyle.semiBold(color: AppColor.background),
-                  ),
-                  Text(
-                    user.totalPoints.toString(),
-                    style: AppTextStyle.bold(
-                      color: AppColor.background,
-                      fontSize: 22,
-                    ),
-                  ),
-                ],
+              title: const Text(
+                'Welcome back,',
+                style: TextStyle(color: Colors.white70),
               ),
-            ],
-          ),
-          orElse: () {
-            return SizedBox();
+              subtitle: Text(
+                username,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              trailing: Icon(
+                Icons.workspace_premium_outlined,
+                color: Colors.white.withOpacity(0.7),
+              ),
+            );
           },
+          orElse: () => const SizedBox(),
         );
       },
     );
   }
 
+  // =====================================================
+  // POINTS CARD
+  // =====================================================
+  Widget _buildPointsCard() {
+    return BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
+      builder: (context, state) {
+        return state.maybeWhen(
+          authenticated: (user) {
+            return Row(
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF50C878).withOpacity(0.7),
+                        Colors.teal,
+                      ],
+                    ),
+                  ),
+                  child: const Icon(
+                    FontAwesomeIcons.coins,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 12),
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Total Points",
+                      style: AppTextStyle.semiBold(color: AppColor.background),
+                    ),
+                    Text(
+                      user.totalPoints.toString(),
+                      style: AppTextStyle.bold(
+                        color: AppColor.background,
+                        fontSize: 22,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+          orElse: () => const SizedBox(),
+        );
+      },
+    );
+  }
+
+  // =====================================================
   // QUICK ACTIONS
+  // =====================================================
   Widget _buildQuickActions(BuildContext context) {
-    final List<Map<String, dynamic>> actions = [
+    final actions = [
       {
         'icon': FontAwesomeIcons.trashCan,
         'label': 'Deposit Waste',
         'gradient': [Colors.teal, const Color(0xFF50C878)],
       },
-      // {
-      //   'icon': FontAwesomeIcons.truck,
-      //   'label': 'Pickup Request',
-      //   'gradient': [Colors.blueAccent, Colors.lightBlue],
-      // },
-      // {
-      //   'icon': FontAwesomeIcons.bookOpen,
-      //   'label': 'Education',
-      //   'gradient': [Colors.orange, Colors.deepOrangeAccent],
-      // },
       {
         'icon': FontAwesomeIcons.gift,
         'label': 'Rewards',
@@ -261,36 +237,30 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 25),
-        Text('Quick Actions', style: AppTextStyle.semiBold(fontSize: 16)),
+        Text("Quick Actions", style: AppTextStyle.semiBold(fontSize: 16)),
         const SizedBox(height: 10),
+
         GridView.builder(
           padding: EdgeInsets.zero,
-          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: actions.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 12,
             mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
             childAspectRatio: 1.2,
           ),
-          itemCount: actions.length,
           itemBuilder: (context, index) {
             final item = actions[index];
+
             return _buildActionCard(
-              icon: item['icon'],
-              label: item['label'],
-              gradient: item['gradient'],
+              icon: item['icon'] as IconData,
+              label: item['label'] as String,
+              gradient: (item['gradient'] as List).cast<Color>(),
               onTap: () {
                 if (index == 0) {
-                  context.pushRoute(DepositWasteRoute()).then((value) {
-                    context.read<DepositBloc>().add(
-                      DepositEvent.loadDeposits(),
-                    );
-                    context.read<HistoryBloc>().add(
-                      HistoryEvent.loadTransactions(),
-                    );
-                  });
+                  context.pushRoute(DepositWasteRoute());
                 }
                 if (index == 1) {
                   context.pushRoute(MainRoute(initialIndex: 2));
@@ -324,8 +294,8 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
                 width: 45,
                 height: 45,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
                   gradient: LinearGradient(colors: gradient),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: Colors.white, size: 20),
               ),
@@ -333,8 +303,8 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
               Text(
                 label,
                 style: const TextStyle(
-                  fontWeight: FontWeight.w500,
                   fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -344,7 +314,9 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     );
   }
 
+  // =====================================================
   // RECENT ACTIVITY
+  // =====================================================
   Widget _buildRecentActivity(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,28 +326,26 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
           children: [
             const Text(
               'Recent Activity',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             TextButton(onPressed: () {}, child: const Text('View All')),
           ],
         ),
-        BlocBuilder<DepositBloc, DepositState>(
+
+        BlocBuilder<DepositFirebaseBloc, DepositFirebaseState>(
           builder: (context, state) {
-            if (state.isLoading) {
-              return Center(child: CircularProgressIndicator());
-            }
-            if (state.deposits.isEmpty) {
-              return Center(child: const Text("No Data"));
-            }
-            final data = state.deposits;
+            if (state.isLoading)
+              return const Center(child: CircularProgressIndicator());
+            if (state.deposits.isEmpty)
+              return const Center(child: Text("No Data"));
+
             return ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: data.length,
+              itemCount: state.deposits.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                final activity = data[index];
-                return _buildActivityCard(activity);
+                final d = state.deposits[index];
+                return _buildActivityCard(d);
               },
             );
           },
@@ -384,122 +354,67 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     );
   }
 
-  Widget _buildActivityCard(DepositModel data) {
+  Widget _buildActivityCard(DepositFirebaseModel data) {
     final statusColor = getStatusColor(data.status);
-    return Dismissible(
-      key: ValueKey(data.id), // pastikan tiap item punya ID unik
-      direction: DismissDirection.endToStart, // geser ke kiri untuk hapus
-      background: Container(
-        alignment: Alignment.centerRight,
-        decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      confirmDismiss: (direction) async {
-        // konfirmasi sebelum hapus
-        return await showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Hapus Data'),
-            content: const Text('Yakin ingin menghapus data ini?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(false),
-                child: const Text('Batal'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(true),
-                child: const Text('Hapus'),
-              ),
-            ],
-          ),
-        );
-      },
-      onDismissed: (direction) {
-        // Hapus data dari sumber data (misalnya Bloc, SQLite, dsb)
-        context.read<DepositBloc>().add(DepositEvent.deleteDeposit(data.id!));
-        context.read<HistoryBloc>().add(HistoryEvent.loadTransactions());
+    final createdText = DateFormat('dd MMM yyyy').format(data.createdAt);
 
-        // Feedback visual
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${data.nameCategory} dihapus')));
-      },
-      child: Card(
-        elevation: 3,
-        margin: const EdgeInsets.only(bottom: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        child: InkWell(
-          onTap: () {
-            context.pushRoute(DepositWasteRoute(deposit: data)).then((value) {
-              // setelah update selesai, refresh data lagi
-              context.read<DepositBloc>().add(DepositEvent.loadDeposits());
-              context.read<HistoryBloc>().add(HistoryEvent.loadTransactions());
-            });
-          },
-          child: ListTile(
-            leading: Container(
-              height: 36,
-              width: 36,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: statusColor.withValues(alpha: 0.15),
-              ),
-              child: Icon(
-                mapIconName(data.iconNameCategory ?? ''),
-                color: Colors.green,
-                size: 16,
-              ),
-            ),
-            title: Text(
-              data.nameCategory ?? '',
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Row(
-              children: [
-                Text('${data.weight.toString()}kg'),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4),
-                  child: Text('•'),
-                ),
-                Text(DateFormat('dd MMM yyyy').format(data.createdAt)),
-              ],
-            ),
-            trailing: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '+${data.totalPoints.toString()}',
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: getStatusColor(data.status).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    data.status,
-                    style: TextStyle(
-                      color: getStatusColor(data.status),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+    return Card(
+      elevation: 3,
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: ListTile(
+        leading: Container(
+          height: 36,
+          width: 36,
+          decoration: BoxDecoration(
+            color: statusColor.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(10),
           ),
+          child: Icon(
+            mapIconName(data.iconNameCategory ?? ""),
+            size: 16,
+            color: Colors.green,
+          ),
+        ),
+        title: Text(
+          data.nameCategory ?? "",
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Row(
+          children: [
+            Text("${data.weight} kg"),
+            const SizedBox(width: 4),
+            const Text("•"),
+            const SizedBox(width: 4),
+            Text(createdText),
+          ],
+        ),
+        trailing: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              "+${data.totalPoints}",
+              style: const TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: statusColor.withOpacity(0.1),
+              ),
+              child: Text(
+                data.status,
+                style: TextStyle(
+                  color: statusColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

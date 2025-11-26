@@ -8,10 +8,14 @@ import 'package:bank_sampah_app/feature/deposit/presentation/bloc/category_bloc.
 import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/database/category_local_data_source.dart';
 import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_source.dart';
-import 'package:bank_sampah_app/feature/history/view/bloc/history_bloc.dart';
-import 'package:bank_sampah_app/feature/rewards/bloc/withdraw_bloc.dart';
-import 'package:bank_sampah_app/feature/rewards/database/withdraw_local_datasource.dart';
+import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_firebase_bloc.dart';
+import 'package:bank_sampah_app/feature/history/presentation/bloc/history_bloc.dart';
+import 'package:bank_sampah_app/feature/history/presentation/bloc/history_firebase_bloc.dart';
+import 'package:bank_sampah_app/feature/withdraw/bloc/withdraw_bloc.dart';
+import 'package:bank_sampah_app/feature/withdraw/bloc/withdraw_firebase_bloc.dart';
+import 'package:bank_sampah_app/feature/withdraw/database/withdraw_local_datasource.dart';
 import 'package:bank_sampah_app/firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,9 +48,18 @@ class MyApp extends StatelessWidget {
           create: (context) => HistoryBloc(DepositLocalDataSource()),
         ),
         BlocProvider(create: (context) => AuthBloc(UserLocalDatasource())),
-        BlocProvider(create: (context) => FirebaseAuthBloc()),
         BlocProvider(
           create: (context) => WithdrawBloc(WithdrawLocalDataSource()),
+        ),
+        BlocProvider(create: (context) => FirebaseAuthBloc()),
+        BlocProvider(
+          create: (context) => DepositFirebaseBloc(FirebaseFirestore.instance),
+        ),
+        BlocProvider(
+          create: (context) => HistoryFirebaseBloc(FirebaseFirestore.instance),
+        ),
+        BlocProvider(
+          create: (context) => WithdrawFirebaseBloc(FirebaseFirestore.instance),
         ),
       ],
       child: MaterialApp.router(

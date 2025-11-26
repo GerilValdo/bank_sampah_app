@@ -1,19 +1,19 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:bank_sampah_app/feature/authentication/presentation/bloc/auth_bloc.dart';
-import 'package:bank_sampah_app/feature/rewards/bloc/withdraw_bloc.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
+import 'package:bank_sampah_app/feature/withdraw/bloc/withdraw_firebase_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 @RoutePage()
-class WithdrawScreen extends StatefulWidget {
-  const WithdrawScreen({super.key});
-  static const String id = '/withdraw';
+class WithdrawFirebaseScreen extends StatefulWidget {
+  const WithdrawFirebaseScreen({super.key});
+  static const String id = '/withdraw-firebase';
 
   @override
-  State<WithdrawScreen> createState() => _WithdrawScreenState();
+  State<WithdrawFirebaseScreen> createState() => _WithdrawFirebaseScreenState();
 }
 
-class _WithdrawScreenState extends State<WithdrawScreen> {
+class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
   final TextEditingController _pointsCtrl = TextEditingController();
   final TextEditingController _phoneCtrl = TextEditingController();
   String? paymentMethod;
@@ -24,7 +24,11 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFB),
-      body: BlocConsumer<WithdrawBloc, WithdrawState>(
+
+      // =======================================================================
+      // LISTENER BLOC: WithdrawFirebaseBloc
+      // =======================================================================
+      body: BlocConsumer<WithdrawFirebaseBloc, WithdrawFirebaseState>(
         listener: (context, state) {
           if (state.successMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -35,9 +39,21 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
             );
             context.router.pop();
           }
+
+          if (state.errorMessage != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.errorMessage!),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         },
+
         builder: (context, state) {
-          final authState = context.watch<AuthBloc>().state;
+          // 🔥 Ambil user dari FirebaseAuthBloc
+          final authState = context.watch<FirebaseAuthBloc>().state;
+
           final user = authState.maybeWhen(
             authenticated: (u) => u,
             orElse: () => null,
@@ -69,12 +85,8 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 26,
-                      ),
+                      onTap: () => context.router.pop(),
+                      child: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -86,7 +98,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       "Your available points",
                       style: TextStyle(color: Colors.white70, fontSize: 13),
                     ),
@@ -103,7 +115,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                 ),
               ),
 
-              // =============== FLOATING CONTENT =================
+              // ================= FLOATING CONTENT =================
               Positioned(
                 top: size.height * 0.20,
                 left: 0,
@@ -178,7 +190,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
               DropdownMenuItem(value: "dana", child: Text("DANA")),
               DropdownMenuItem(value: "bank", child: Text("Bank Transfer")),
             ],
-            onChanged: (val) => setState(() => paymentMethod = val),
+            onChanged: (v) => setState(() => paymentMethod = v),
             decoration: InputDecoration(
               labelText: "Payment Method",
               prefixIcon: const Icon(
@@ -275,9 +287,10 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
 
           final amount = (points * 100).toDouble();
 
-          context.read<WithdrawBloc>().add(
-            WithdrawEvent.createRequest(
-              userId: user.id!,
+          // 🔥 KIRIM EVENT KE WithdrawFirebaseBloc
+          context.read<WithdrawFirebaseBloc>().add(
+            WithdrawFirebaseEvent.createRequest(
+              userId: user.uid,
               pointsRequested: points,
               amount: amount,
               paymentMethod: paymentMethod!,

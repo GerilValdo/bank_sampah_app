@@ -40,9 +40,7 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
       listener: (context, state) {
         state.whenOrNull(
           loading: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Processing login...")),
-            );
+            
           },
           authenticated: (user) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();

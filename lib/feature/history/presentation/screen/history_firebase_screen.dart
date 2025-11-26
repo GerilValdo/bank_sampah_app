@@ -1,35 +1,43 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:bank_sampah_app/feature/history/view/bloc/history_bloc.dart';
-import 'package:bank_sampah_app/feature/history/widgets/transaction_card.dart';
-// import 'package:bank_sampah_app/core/constants/app_style.dart';
-// import 'package:bank_sampah_app/core/constants/export.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
+import 'package:bank_sampah_app/feature/history/presentation/bloc/history_firebase_bloc.dart';
+import 'package:bank_sampah_app/feature/history/presentation/widgets/firebase_transaction_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 @RoutePage()
-class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
-  static const String id = '/history';
+class HistoryFirebaseScreen extends StatefulWidget {
+  const HistoryFirebaseScreen({super.key});
+  static const String id = '/history-firebase';
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  State<HistoryFirebaseScreen> createState() => _HistoryFirebaseScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
-  String selectedCategory = 'All';
-
+class _HistoryFirebaseScreenState extends State<HistoryFirebaseScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    context.read<HistoryBloc>().add(HistoryEvent.loadTransactions());
+
+    /// Ambil User dari AuthBloc
+    final user = context.read<FirebaseAuthBloc>().state.maybeWhen(
+      authenticated: (u) => u,
+      orElse: () => null,
+    );
+
+    /// Jika user ada → load transaksi berdasarkan uid
+    if (user != null) {
+      context.read<HistoryFirebaseBloc>().add(
+        HistoryFirebaseEvent.loadTransactions(user.uid!),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFB),
-      body: BlocBuilder<HistoryBloc, HistoryState>(
+      body: BlocBuilder<HistoryFirebaseBloc, HistoryFirebaseState>(
         builder: (context, state) {
           if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -43,9 +51,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
           return Column(
             children: [
-              _buildHeader(context, state),
+              _buildHeader(state),
               const SizedBox(height: 10),
-              _buildCategoryTabs(context, state.selectedCategory),
+              _buildCategoryTabs(state.selectedCategory),
               const SizedBox(height: 12),
               Expanded(
                 child: transactions.isEmpty
@@ -54,7 +62,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemCount: transactions.length,
                         itemBuilder: (context, index) {
-                          return TransactionCard(data: transactions[index]);
+                          return FirebaseTransactionCard(
+                            data: transactions[index],
+                          );
                         },
                       ),
               ),
@@ -65,8 +75,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
+  // ===========================================================================
   // HEADER
-  Widget _buildHeader(BuildContext context, HistoryState state) {
+  // ===========================================================================
+  Widget _buildHeader(HistoryFirebaseState state) {
     return Container(
       padding: const EdgeInsets.only(top: 50, left: 16, right: 16, bottom: 16),
       decoration: const BoxDecoration(
@@ -83,19 +95,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const SizedBox(width: 4),
-              const Text(
-                'Transaction History',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+          const Text(
+            'Transaction History',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+
           const SizedBox(height: 8),
           const Padding(
             padding: EdgeInsets.only(left: 12),
@@ -104,7 +112,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
           ),
+
           const SizedBox(height: 20),
+
+          /// SUMMARY BOX
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
@@ -145,12 +156,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  // CATEGORY FILTER
-  Widget _buildCategoryTabs(BuildContext context, String selectedCategory) {
+  // ===========================================================================
+  // CATEGORY FILTER TABS
+  // ===========================================================================
+  Widget _buildCategoryTabs(String selectedCategory) {
     final tabs = ['All', 'Completed', 'Pending', 'Rejected'];
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -166,11 +180,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: tabs.map((tab) {
           final isActive = tab == selectedCategory;
+
           return Expanded(
             child: GestureDetector(
               onTap: () {
-                context.read<HistoryBloc>().add(
-                  HistoryEvent.filterChanged(tab),
+                context.read<HistoryFirebaseBloc>().add(
+                  HistoryFirebaseEvent.filterChanged(tab),
                 );
               },
               child: AnimatedContainer(
@@ -183,14 +198,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      tab,
-                      style: TextStyle(
-                        color: isActive ? Colors.white : Colors.grey[700],
-                        fontWeight: FontWeight.w600,
-                      ),
+                  child: Text(
+                    tab,
+                    style: TextStyle(
+                      color: isActive ? Colors.white : Colors.grey[700],
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

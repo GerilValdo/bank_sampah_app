@@ -10,11 +10,14 @@ import 'package:bank_sampah_app/feature/dashboard/screen/dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/dashboard/screen/firebase_dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
 import 'package:bank_sampah_app/feature/deposit/presentation/screen/deposit_waste_screen.dart';
-import 'package:bank_sampah_app/feature/history/view/screen/history_screen.dart';
+import 'package:bank_sampah_app/feature/history/presentation/screen/history_firebase_screen.dart';
+import 'package:bank_sampah_app/feature/history/presentation/screen/history_screen.dart';
 import 'package:bank_sampah_app/feature/main/screen/firebase_main_screen.dart';
 import 'package:bank_sampah_app/feature/main/screen/main_screen.dart';
+import 'package:bank_sampah_app/feature/profile/screen/profile_firebase_screen.dart';
 import 'package:bank_sampah_app/feature/profile/screen/profile_screen.dart';
-import 'package:bank_sampah_app/feature/rewards/screen/withdraw_screen.dart';
+import 'package:bank_sampah_app/feature/withdraw/screen/withdraw_firebase_screen.dart';
+import 'package:bank_sampah_app/feature/withdraw/screen/withdraw_screen.dart';
 import 'package:flutter/material.dart';
 
 part 'app_router.gr.dart';
@@ -41,10 +44,16 @@ class AppRouter extends RootStackRouter {
       path: FirebaseDashboardScreen.id,
     ),
     AutoRoute(page: HistoryRoute.page, path: HistoryScreen.id),
+    AutoRoute(page: HistoryFirebaseRoute.page, path: HistoryFirebaseScreen.id),
     AutoRoute(page: ProfileRoute.page, path: ProfileScreen.id),
+    AutoRoute(page: ProfileFirebaseRoute.page, path: ProfileFirebaseScreen.id),
     AutoRoute(page: MainRoute.page, path: MainScreen.id),
     AutoRoute(page: FirebaseMainRoute.page, path: FirebaseMainScreen.id),
     AutoRoute(page: WithdrawRoute.page, path: WithdrawScreen.id),
+    AutoRoute(
+      page: WithdrawFirebaseRoute.page,
+      path: WithdrawFirebaseScreen.id,
+    ),
     AutoRoute(page: DepositWasteRoute.page, path: DepositWasteScreen.id),
     AutoRoute(page: AdminDashboardRoute.page, path: AdminDashboardScreen.id),
     AutoRoute(

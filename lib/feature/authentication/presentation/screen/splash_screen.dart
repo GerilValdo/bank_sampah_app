@@ -2,8 +2,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/constants/export.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
-import 'package:bank_sampah_app/feature/authentication/data/service/auth_prefs_service.dart';
-import 'package:bank_sampah_app/feature/authentication/presentation/bloc/auth_bloc.dart';
+// import 'package:bank_sampah_app/feature/authentication/data/service/auth_prefs_service.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Jalankan pengecekan login setelah animasi selesai
     Future.delayed(const Duration(seconds: 3), () {
-      context.read<AuthBloc>().add(AuthEvent.loadUser());
+      context.read<FirebaseAuthBloc>().add(FirebaseAuthEvent.loadUser());
     });
   }
 
@@ -43,16 +43,16 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocListener<AuthBloc, AuthState>(
+      body: BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
         listener: (context, state) async {
           await Future.delayed(const Duration(milliseconds: 1000));
           state.maybeWhen(
             authenticated: (user) async {
-              final role = await AuthPrefsService.getRole();
-              if (role == 'admin') {
+              // final role = await AuthPrefsService.getRole();
+              if (user.role == 'admin') {
                 context.replaceRoute(AdminDashboardRoute());
               } else {
-                context.replaceRoute(MainRoute());
+                context.replaceRoute(FirebaseMainRoute());
               }
             },
             unauthenticated: () => context.replaceRoute(FirebaseLoginRoute()),
