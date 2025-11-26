@@ -17,4 +17,11 @@ abstract class FirebaseAuthEvent with _$FirebaseAuthEvent {
   const factory FirebaseAuthEvent.logout() = _Logout;
 
   const factory FirebaseAuthEvent.loadUser() = _LoadUser;
+
+  const factory FirebaseAuthEvent.updateProfile({
+  required String username,
+  required String phoneNumber,
+  required String address,
+}) = _UpdateProfile;
+
 }

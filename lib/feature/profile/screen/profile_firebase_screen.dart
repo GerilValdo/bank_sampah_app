@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
+import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_firebase_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,45 +22,148 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
   void initState() {
     // Load user from Firestore
     context.read<FirebaseAuthBloc>().add(const FirebaseAuthEvent.loadUser());
+    // Load deposits user
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      context.read<DepositFirebaseBloc>().add(
+        DepositFirebaseEvent.loadDeposits(uid),
+      );
+    }
     super.initState();
+  }
+
+  void _showEditProfileDialog(user) {
+    final usernameCtrl = TextEditingController(text: user.username);
+    final phoneCtrl = TextEditingController(text: user.phoneNumber ?? "");
+    final addressCtrl = TextEditingController(text: user.address ?? "");
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Edit Profile"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: usernameCtrl,
+                  decoration: const InputDecoration(labelText: "Username"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: phoneCtrl,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: "Phone Number"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: addressCtrl,
+                  decoration: const InputDecoration(labelText: "Address"),
+                ),
+              ],
+            ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
+              builder: (context, state) {
+                final isLoading = state.maybeWhen(
+                  loading: () => true,
+                  orElse: () => false,
+                );
+
+                return TextButton(
+                  onPressed: isLoading
+                      ? null // disable saat loading
+                      : () {
+                          context.read<FirebaseAuthBloc>().add(
+                            FirebaseAuthEvent.updateProfile(
+                              username: usernameCtrl.text.trim(),
+                              phoneNumber: phoneCtrl.text.trim(),
+                              address: addressCtrl.text.trim(),
+                            ),
+                          );
+                        },
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.teal,
+                          ),
+                        )
+                      : const Text(
+                          "Save",
+                          style: TextStyle(color: Colors.teal),
+                        ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFB),
-      body: BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
-        builder: (context, state) {
-          return state.when(
-            initial: () => const Center(child: CircularProgressIndicator()),
-            loading: () => const Center(child: CircularProgressIndicator()),
+    return BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          success: (msg) {
+            // Tutup dialog jika sedang terbuka
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
 
-            unauthenticated: () =>
-                const Center(child: Text("You are logged out")),
+            // Tampilkan snackbar sukses
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(msg), backgroundColor: Colors.green),
+            );
+          },
+          orElse: () {},
+        );
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8FAFB),
+        body: BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
 
-            // ==========================
-            // USER BERHASIL DI LOAD
-            // ==========================
-            authenticated: (user) {
-              return ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  _buildHeader(context, user),
-                  const SizedBox(height: 20),
-                  _buildPersonalInfoSection(user),
-                  const SizedBox(height: 16),
-                  _buildSettingsSection(),
-                  const SizedBox(height: 24),
-                  _buildLogoutButton(),
-                  const SizedBox(height: 30),
-                ],
-              );
-            },
+              unauthenticated: () =>
+                  const Center(child: Text("You are logged out")),
 
-            error: (e) => Center(child: Text(e)),
-            success: (_) => const SizedBox(),
-          );
-        },
+              // ==========================
+              // USER BERHASIL DI LOAD
+              // ==========================
+              authenticated: (user) {
+                return ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _buildHeader(context, user),
+                    const SizedBox(height: 20),
+                    _buildPersonalInfoSection(user),
+                    // const SizedBox(height: 16),
+                    // _buildSettingsSection(),
+                    const SizedBox(height: 24),
+                    _buildLogoutButton(),
+                    const SizedBox(height: 30),
+                  ],
+                );
+              },
+
+              error: (e) => Center(child: Text(e)),
+              success: (_) => const SizedBox(),
+            );
+          },
+        ),
       ),
     );
   }
@@ -143,7 +248,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
 
               // edit button
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  _showEditProfileDialog(user);
+                },
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: const BoxDecoration(
@@ -158,20 +265,42 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
 
           const SizedBox(height: 20),
 
-          // SUMMARY
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _SummaryItem(value: '${user.totalPoints}', label: 'Points'),
-                _SummaryItem(value: user.email, label: 'Email'),
-              ],
-            ),
+          // SUMMARY (Updated)
+          BlocBuilder<DepositFirebaseBloc, DepositFirebaseState>(
+            builder: (context, depState) {
+              final deposits = depState.deposits;
+
+              final totalPoints = deposits.fold<int>(
+                0,
+                (sum, d) => sum + (d.totalPoints),
+              );
+
+              final totalWeights = deposits.fold<double>(
+                0,
+                (sum, d) => sum + (d.weight),
+              );
+
+              final totalDeposits = deposits.length;
+
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _SummaryItem(value: '$totalPoints', label: 'Points'),
+                    _SummaryItem(value: '$totalDeposits', label: 'Deposits'),
+                    _SummaryItem(
+                      value: totalWeights.toStringAsFixed(1),
+                      label: 'Weight (kg)',
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -229,35 +358,35 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
   // ===============================
   // SETTINGS
   // ===============================
-  Widget _buildSettingsSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: _cardDecoration(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Settings',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-            ),
-            const SizedBox(height: 16),
+  // Widget _buildSettingsSection() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 16),
+  //     child: Container(
+  //       padding: const EdgeInsets.all(16),
+  //       decoration: _cardDecoration(),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           const Text(
+  //             'Settings',
+  //             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+  //           ),
+  //           const SizedBox(height: 16),
 
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: _iconBox(Icons.notifications, Colors.amber),
-              title: const Text('Notifications'),
-              trailing: Switch(
-                value: notificationsEnabled,
-                onChanged: (v) => setState(() => notificationsEnabled = v),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  //           ListTile(
+  //             contentPadding: EdgeInsets.zero,
+  //             leading: _iconBox(Icons.notifications, Colors.amber),
+  //             title: const Text('Notifications'),
+  //             trailing: Switch(
+  //               value: notificationsEnabled,
+  //               onChanged: (v) => setState(() => notificationsEnabled = v),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // ===============================
   // LOGOUT BUTTON

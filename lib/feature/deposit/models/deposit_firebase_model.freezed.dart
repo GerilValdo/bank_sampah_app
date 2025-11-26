@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$DepositFirebaseModel {
 
  String? get id;// Firestore document id
- int get categoryId; double get weight; int get totalPoints; String get status;// e.g. 'pending', 'completed', 'rejected'
+ String get categoryId; double get weight; int get totalPoints; String get status;// e.g. 'pending', 'completed', 'rejected'
  String? get imageUrl;// can be storage URL
  String? get notes;@TimestampConverter() DateTime get createdAt; String? get reason; String? get nameCategory; int? get pointsPerKgCategory; String? get iconNameCategory; String? get userId;
 /// Create a copy of DepositFirebaseModel
@@ -51,7 +51,7 @@ abstract mixin class $DepositFirebaseModelCopyWith<$Res>  {
   factory $DepositFirebaseModelCopyWith(DepositFirebaseModel value, $Res Function(DepositFirebaseModel) _then) = _$DepositFirebaseModelCopyWithImpl;
 @useResult
 $Res call({
- String? id, int categoryId, double weight, int totalPoints, String status, String? imageUrl, String? notes,@TimestampConverter() DateTime createdAt, String? reason, String? nameCategory, int? pointsPerKgCategory, String? iconNameCategory, String? userId
+ String? id, String categoryId, double weight, int totalPoints, String status, String? imageUrl, String? notes,@TimestampConverter() DateTime createdAt, String? reason, String? nameCategory, int? pointsPerKgCategory, String? iconNameCategory, String? userId
 });
 
 
@@ -72,7 +72,7 @@ class _$DepositFirebaseModelCopyWithImpl<$Res>
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: null == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
-as int,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
+as String,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
 as double,totalPoints: null == totalPoints ? _self.totalPoints : totalPoints // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -168,7 +168,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  int categoryId,  double weight,  int totalPoints,  String status,  String? imageUrl,  String? notes, @TimestampConverter()  DateTime createdAt,  String? reason,  String? nameCategory,  int? pointsPerKgCategory,  String? iconNameCategory,  String? userId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String categoryId,  double weight,  int totalPoints,  String status,  String? imageUrl,  String? notes, @TimestampConverter()  DateTime createdAt,  String? reason,  String? nameCategory,  int? pointsPerKgCategory,  String? iconNameCategory,  String? userId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DepositFirebaseModel() when $default != null:
 return $default(_that.id,_that.categoryId,_that.weight,_that.totalPoints,_that.status,_that.imageUrl,_that.notes,_that.createdAt,_that.reason,_that.nameCategory,_that.pointsPerKgCategory,_that.iconNameCategory,_that.userId);case _:
@@ -189,7 +189,7 @@ return $default(_that.id,_that.categoryId,_that.weight,_that.totalPoints,_that.s
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  int categoryId,  double weight,  int totalPoints,  String status,  String? imageUrl,  String? notes, @TimestampConverter()  DateTime createdAt,  String? reason,  String? nameCategory,  int? pointsPerKgCategory,  String? iconNameCategory,  String? userId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String categoryId,  double weight,  int totalPoints,  String status,  String? imageUrl,  String? notes, @TimestampConverter()  DateTime createdAt,  String? reason,  String? nameCategory,  int? pointsPerKgCategory,  String? iconNameCategory,  String? userId)  $default,) {final _that = this;
 switch (_that) {
 case _DepositFirebaseModel():
 return $default(_that.id,_that.categoryId,_that.weight,_that.totalPoints,_that.status,_that.imageUrl,_that.notes,_that.createdAt,_that.reason,_that.nameCategory,_that.pointsPerKgCategory,_that.iconNameCategory,_that.userId);case _:
@@ -209,7 +209,7 @@ return $default(_that.id,_that.categoryId,_that.weight,_that.totalPoints,_that.s
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  int categoryId,  double weight,  int totalPoints,  String status,  String? imageUrl,  String? notes, @TimestampConverter()  DateTime createdAt,  String? reason,  String? nameCategory,  int? pointsPerKgCategory,  String? iconNameCategory,  String? userId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String categoryId,  double weight,  int totalPoints,  String status,  String? imageUrl,  String? notes, @TimestampConverter()  DateTime createdAt,  String? reason,  String? nameCategory,  int? pointsPerKgCategory,  String? iconNameCategory,  String? userId)?  $default,) {final _that = this;
 switch (_that) {
 case _DepositFirebaseModel() when $default != null:
 return $default(_that.id,_that.categoryId,_that.weight,_that.totalPoints,_that.status,_that.imageUrl,_that.notes,_that.createdAt,_that.reason,_that.nameCategory,_that.pointsPerKgCategory,_that.iconNameCategory,_that.userId);case _:
@@ -229,7 +229,7 @@ class _DepositFirebaseModel implements DepositFirebaseModel {
 
 @override final  String? id;
 // Firestore document id
-@override final  int categoryId;
+@override final  String categoryId;
 @override final  double weight;
 @override final  int totalPoints;
 @override final  String status;
@@ -277,7 +277,7 @@ abstract mixin class _$DepositFirebaseModelCopyWith<$Res> implements $DepositFir
   factory _$DepositFirebaseModelCopyWith(_DepositFirebaseModel value, $Res Function(_DepositFirebaseModel) _then) = __$DepositFirebaseModelCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, int categoryId, double weight, int totalPoints, String status, String? imageUrl, String? notes,@TimestampConverter() DateTime createdAt, String? reason, String? nameCategory, int? pointsPerKgCategory, String? iconNameCategory, String? userId
+ String? id, String categoryId, double weight, int totalPoints, String status, String? imageUrl, String? notes,@TimestampConverter() DateTime createdAt, String? reason, String? nameCategory, int? pointsPerKgCategory, String? iconNameCategory, String? userId
 });
 
 
@@ -298,7 +298,7 @@ class __$DepositFirebaseModelCopyWithImpl<$Res>
   return _then(_DepositFirebaseModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: null == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
-as int,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
+as String,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
 as double,totalPoints: null == totalPoints ? _self.totalPoints : totalPoints // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable

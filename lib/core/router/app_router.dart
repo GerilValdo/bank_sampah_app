@@ -8,7 +8,9 @@ import 'package:bank_sampah_app/feature/authentication/presentation/screen/regis
 import 'package:bank_sampah_app/feature/authentication/presentation/screen/splash_screen.dart';
 import 'package:bank_sampah_app/feature/dashboard/screen/dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/dashboard/screen/firebase_dashboard_screen.dart';
+import 'package:bank_sampah_app/feature/deposit/models/deposit_firebase_model.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_model.dart';
+import 'package:bank_sampah_app/feature/deposit/presentation/screen/deposit_firebase_screen.dart';
 import 'package:bank_sampah_app/feature/deposit/presentation/screen/deposit_waste_screen.dart';
 import 'package:bank_sampah_app/feature/history/presentation/screen/history_firebase_screen.dart';
 import 'package:bank_sampah_app/feature/history/presentation/screen/history_screen.dart';
@@ -55,6 +57,7 @@ class AppRouter extends RootStackRouter {
       path: WithdrawFirebaseScreen.id,
     ),
     AutoRoute(page: DepositWasteRoute.page, path: DepositWasteScreen.id),
+    AutoRoute(page: DepositFirebaseRoute.page, path: DepositFirebaseScreen.id),
     AutoRoute(page: AdminDashboardRoute.page, path: AdminDashboardScreen.id),
     AutoRoute(
       page: AdminTransactionRoute.page,

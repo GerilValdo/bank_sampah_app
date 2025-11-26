@@ -10,7 +10,7 @@ _DepositFirebaseModel _$DepositFirebaseModelFromJson(
   Map<String, dynamic> json,
 ) => _DepositFirebaseModel(
   id: json['id'] as String?,
-  categoryId: (json['categoryId'] as num).toInt(),
+  categoryId: json['categoryId'] as String,
   weight: (json['weight'] as num).toDouble(),
   totalPoints: (json['totalPoints'] as num).toInt(),
   status: json['status'] as String,

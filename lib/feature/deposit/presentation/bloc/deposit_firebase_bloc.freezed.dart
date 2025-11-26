@@ -474,7 +474,7 @@ as String,
 /// @nodoc
 mixin _$DepositFirebaseState {
 
- List<DepositFirebaseModel> get deposits; bool get isLoading; String? get errorMessage;
+ List<DepositFirebaseModel> get deposits; bool get isLoading; String? get errorMessage; String? get successMessage;
 /// Create a copy of DepositFirebaseState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -485,16 +485,16 @@ $DepositFirebaseStateCopyWith<DepositFirebaseState> get copyWith => _$DepositFir
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DepositFirebaseState&&const DeepCollectionEquality().equals(other.deposits, deposits)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DepositFirebaseState&&const DeepCollectionEquality().equals(other.deposits, deposits)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.successMessage, successMessage) || other.successMessage == successMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(deposits),isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(deposits),isLoading,errorMessage,successMessage);
 
 @override
 String toString() {
-  return 'DepositFirebaseState(deposits: $deposits, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'DepositFirebaseState(deposits: $deposits, isLoading: $isLoading, errorMessage: $errorMessage, successMessage: $successMessage)';
 }
 
 
@@ -505,7 +505,7 @@ abstract mixin class $DepositFirebaseStateCopyWith<$Res>  {
   factory $DepositFirebaseStateCopyWith(DepositFirebaseState value, $Res Function(DepositFirebaseState) _then) = _$DepositFirebaseStateCopyWithImpl;
 @useResult
 $Res call({
- List<DepositFirebaseModel> deposits, bool isLoading, String? errorMessage
+ List<DepositFirebaseModel> deposits, bool isLoading, String? errorMessage, String? successMessage
 });
 
 
@@ -522,11 +522,12 @@ class _$DepositFirebaseStateCopyWithImpl<$Res>
 
 /// Create a copy of DepositFirebaseState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? deposits = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? deposits = null,Object? isLoading = null,Object? errorMessage = freezed,Object? successMessage = freezed,}) {
   return _then(_self.copyWith(
 deposits: null == deposits ? _self.deposits : deposits // ignore: cast_nullable_to_non_nullable
 as List<DepositFirebaseModel>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String?,successMessage: freezed == successMessage ? _self.successMessage : successMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -612,10 +613,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<DepositFirebaseModel> deposits,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<DepositFirebaseModel> deposits,  bool isLoading,  String? errorMessage,  String? successMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DepositFirebaseState() when $default != null:
-return $default(_that.deposits,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.deposits,_that.isLoading,_that.errorMessage,_that.successMessage);case _:
   return orElse();
 
 }
@@ -633,10 +634,10 @@ return $default(_that.deposits,_that.isLoading,_that.errorMessage);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<DepositFirebaseModel> deposits,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<DepositFirebaseModel> deposits,  bool isLoading,  String? errorMessage,  String? successMessage)  $default,) {final _that = this;
 switch (_that) {
 case _DepositFirebaseState():
-return $default(_that.deposits,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.deposits,_that.isLoading,_that.errorMessage,_that.successMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -653,10 +654,10 @@ return $default(_that.deposits,_that.isLoading,_that.errorMessage);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<DepositFirebaseModel> deposits,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<DepositFirebaseModel> deposits,  bool isLoading,  String? errorMessage,  String? successMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _DepositFirebaseState() when $default != null:
-return $default(_that.deposits,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.deposits,_that.isLoading,_that.errorMessage,_that.successMessage);case _:
   return null;
 
 }
@@ -668,7 +669,7 @@ return $default(_that.deposits,_that.isLoading,_that.errorMessage);case _:
 
 
 class _DepositFirebaseState implements DepositFirebaseState {
-  const _DepositFirebaseState({final  List<DepositFirebaseModel> deposits = const [], this.isLoading = false, this.errorMessage}): _deposits = deposits;
+  const _DepositFirebaseState({final  List<DepositFirebaseModel> deposits = const [], this.isLoading = false, this.errorMessage, this.successMessage}): _deposits = deposits;
   
 
  final  List<DepositFirebaseModel> _deposits;
@@ -680,6 +681,7 @@ class _DepositFirebaseState implements DepositFirebaseState {
 
 @override@JsonKey() final  bool isLoading;
 @override final  String? errorMessage;
+@override final  String? successMessage;
 
 /// Create a copy of DepositFirebaseState
 /// with the given fields replaced by the non-null parameter values.
@@ -691,16 +693,16 @@ _$DepositFirebaseStateCopyWith<_DepositFirebaseState> get copyWith => __$Deposit
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DepositFirebaseState&&const DeepCollectionEquality().equals(other._deposits, _deposits)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DepositFirebaseState&&const DeepCollectionEquality().equals(other._deposits, _deposits)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.successMessage, successMessage) || other.successMessage == successMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_deposits),isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_deposits),isLoading,errorMessage,successMessage);
 
 @override
 String toString() {
-  return 'DepositFirebaseState(deposits: $deposits, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'DepositFirebaseState(deposits: $deposits, isLoading: $isLoading, errorMessage: $errorMessage, successMessage: $successMessage)';
 }
 
 
@@ -711,7 +713,7 @@ abstract mixin class _$DepositFirebaseStateCopyWith<$Res> implements $DepositFir
   factory _$DepositFirebaseStateCopyWith(_DepositFirebaseState value, $Res Function(_DepositFirebaseState) _then) = __$DepositFirebaseStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<DepositFirebaseModel> deposits, bool isLoading, String? errorMessage
+ List<DepositFirebaseModel> deposits, bool isLoading, String? errorMessage, String? successMessage
 });
 
 
@@ -728,11 +730,12 @@ class __$DepositFirebaseStateCopyWithImpl<$Res>
 
 /// Create a copy of DepositFirebaseState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? deposits = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? deposits = null,Object? isLoading = null,Object? errorMessage = freezed,Object? successMessage = freezed,}) {
   return _then(_DepositFirebaseState(
 deposits: null == deposits ? _self._deposits : deposits // ignore: cast_nullable_to_non_nullable
 as List<DepositFirebaseModel>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String?,successMessage: freezed == successMessage ? _self.successMessage : successMessage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

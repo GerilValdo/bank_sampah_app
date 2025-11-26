@@ -59,6 +59,55 @@ class DashboardRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [DepositFirebaseScreen]
+class DepositFirebaseRoute extends PageRouteInfo<DepositFirebaseRouteArgs> {
+  DepositFirebaseRoute({
+    Key? key,
+    DepositFirebaseModel? deposit,
+    List<PageRouteInfo>? children,
+  }) : super(
+         DepositFirebaseRoute.name,
+         args: DepositFirebaseRouteArgs(key: key, deposit: deposit),
+         initialChildren: children,
+       );
+
+  static const String name = 'DepositFirebaseRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<DepositFirebaseRouteArgs>(
+        orElse: () => const DepositFirebaseRouteArgs(),
+      );
+      return DepositFirebaseScreen(key: args.key, deposit: args.deposit);
+    },
+  );
+}
+
+class DepositFirebaseRouteArgs {
+  const DepositFirebaseRouteArgs({this.key, this.deposit});
+
+  final Key? key;
+
+  final DepositFirebaseModel? deposit;
+
+  @override
+  String toString() {
+    return 'DepositFirebaseRouteArgs{key: $key, deposit: $deposit}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DepositFirebaseRouteArgs) return false;
+    return key == other.key && deposit == other.deposit;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ deposit.hashCode;
+}
+
+/// generated route for
 /// [DepositWasteScreen]
 class DepositWasteRoute extends PageRouteInfo<DepositWasteRouteArgs> {
   DepositWasteRoute({

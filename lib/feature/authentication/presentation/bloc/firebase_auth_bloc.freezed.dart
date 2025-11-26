@@ -55,14 +55,15 @@ extension FirebaseAuthEventPatterns on FirebaseAuthEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Register value)?  register,TResult Function( _Login value)?  login,TResult Function( _Logout value)?  logout,TResult Function( _LoadUser value)?  loadUser,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Register value)?  register,TResult Function( _Login value)?  login,TResult Function( _Logout value)?  logout,TResult Function( _LoadUser value)?  loadUser,TResult Function( _UpdateProfile value)?  updateProfile,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Register() when register != null:
 return register(_that);case _Login() when login != null:
 return login(_that);case _Logout() when logout != null:
 return logout(_that);case _LoadUser() when loadUser != null:
-return loadUser(_that);case _:
+return loadUser(_that);case _UpdateProfile() when updateProfile != null:
+return updateProfile(_that);case _:
   return orElse();
 
 }
@@ -80,14 +81,15 @@ return loadUser(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Register value)  register,required TResult Function( _Login value)  login,required TResult Function( _Logout value)  logout,required TResult Function( _LoadUser value)  loadUser,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Register value)  register,required TResult Function( _Login value)  login,required TResult Function( _Logout value)  logout,required TResult Function( _LoadUser value)  loadUser,required TResult Function( _UpdateProfile value)  updateProfile,}){
 final _that = this;
 switch (_that) {
 case _Register():
 return register(_that);case _Login():
 return login(_that);case _Logout():
 return logout(_that);case _LoadUser():
-return loadUser(_that);case _:
+return loadUser(_that);case _UpdateProfile():
+return updateProfile(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -104,14 +106,15 @@ return loadUser(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Register value)?  register,TResult? Function( _Login value)?  login,TResult? Function( _Logout value)?  logout,TResult? Function( _LoadUser value)?  loadUser,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Register value)?  register,TResult? Function( _Login value)?  login,TResult? Function( _Logout value)?  logout,TResult? Function( _LoadUser value)?  loadUser,TResult? Function( _UpdateProfile value)?  updateProfile,}){
 final _that = this;
 switch (_that) {
 case _Register() when register != null:
 return register(_that);case _Login() when login != null:
 return login(_that);case _Logout() when logout != null:
 return logout(_that);case _LoadUser() when loadUser != null:
-return loadUser(_that);case _:
+return loadUser(_that);case _UpdateProfile() when updateProfile != null:
+return updateProfile(_that);case _:
   return null;
 
 }
@@ -128,13 +131,14 @@ return loadUser(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String username,  String email,  String password,  String phoneNumber)?  register,TResult Function( String email,  String password)?  login,TResult Function()?  logout,TResult Function()?  loadUser,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String username,  String email,  String password,  String phoneNumber)?  register,TResult Function( String email,  String password)?  login,TResult Function()?  logout,TResult Function()?  loadUser,TResult Function( String username,  String phoneNumber,  String address)?  updateProfile,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Register() when register != null:
 return register(_that.username,_that.email,_that.password,_that.phoneNumber);case _Login() when login != null:
 return login(_that.email,_that.password);case _Logout() when logout != null:
 return logout();case _LoadUser() when loadUser != null:
-return loadUser();case _:
+return loadUser();case _UpdateProfile() when updateProfile != null:
+return updateProfile(_that.username,_that.phoneNumber,_that.address);case _:
   return orElse();
 
 }
@@ -152,13 +156,14 @@ return loadUser();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String username,  String email,  String password,  String phoneNumber)  register,required TResult Function( String email,  String password)  login,required TResult Function()  logout,required TResult Function()  loadUser,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String username,  String email,  String password,  String phoneNumber)  register,required TResult Function( String email,  String password)  login,required TResult Function()  logout,required TResult Function()  loadUser,required TResult Function( String username,  String phoneNumber,  String address)  updateProfile,}) {final _that = this;
 switch (_that) {
 case _Register():
 return register(_that.username,_that.email,_that.password,_that.phoneNumber);case _Login():
 return login(_that.email,_that.password);case _Logout():
 return logout();case _LoadUser():
-return loadUser();case _:
+return loadUser();case _UpdateProfile():
+return updateProfile(_that.username,_that.phoneNumber,_that.address);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -175,13 +180,14 @@ return loadUser();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String username,  String email,  String password,  String phoneNumber)?  register,TResult? Function( String email,  String password)?  login,TResult? Function()?  logout,TResult? Function()?  loadUser,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String username,  String email,  String password,  String phoneNumber)?  register,TResult? Function( String email,  String password)?  login,TResult? Function()?  logout,TResult? Function()?  loadUser,TResult? Function( String username,  String phoneNumber,  String address)?  updateProfile,}) {final _that = this;
 switch (_that) {
 case _Register() when register != null:
 return register(_that.username,_that.email,_that.password,_that.phoneNumber);case _Login() when login != null:
 return login(_that.email,_that.password);case _Logout() when logout != null:
 return logout();case _LoadUser() when loadUser != null:
-return loadUser();case _:
+return loadUser();case _UpdateProfile() when updateProfile != null:
+return updateProfile(_that.username,_that.phoneNumber,_that.address);case _:
   return null;
 
 }
@@ -392,6 +398,76 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _UpdateProfile implements FirebaseAuthEvent {
+  const _UpdateProfile({required this.username, required this.phoneNumber, required this.address});
+  
+
+ final  String username;
+ final  String phoneNumber;
+ final  String address;
+
+/// Create a copy of FirebaseAuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateProfileCopyWith<_UpdateProfile> get copyWith => __$UpdateProfileCopyWithImpl<_UpdateProfile>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateProfile&&(identical(other.username, username) || other.username == username)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.address, address) || other.address == address));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,username,phoneNumber,address);
+
+@override
+String toString() {
+  return 'FirebaseAuthEvent.updateProfile(username: $username, phoneNumber: $phoneNumber, address: $address)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateProfileCopyWith<$Res> implements $FirebaseAuthEventCopyWith<$Res> {
+  factory _$UpdateProfileCopyWith(_UpdateProfile value, $Res Function(_UpdateProfile) _then) = __$UpdateProfileCopyWithImpl;
+@useResult
+$Res call({
+ String username, String phoneNumber, String address
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateProfileCopyWithImpl<$Res>
+    implements _$UpdateProfileCopyWith<$Res> {
+  __$UpdateProfileCopyWithImpl(this._self, this._then);
+
+  final _UpdateProfile _self;
+  final $Res Function(_UpdateProfile) _then;
+
+/// Create a copy of FirebaseAuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? username = null,Object? phoneNumber = null,Object? address = null,}) {
+  return _then(_UpdateProfile(
+username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String,phoneNumber: null == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
+as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 /// @nodoc
 mixin _$FirebaseAuthState {

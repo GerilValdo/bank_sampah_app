@@ -29,9 +29,9 @@ class _SplashScreenState extends State<SplashScreen>
     )..forward();
 
     // Jalankan pengecekan login setelah animasi selesai
-    Future.delayed(const Duration(seconds: 3), () {
-      context.read<FirebaseAuthBloc>().add(FirebaseAuthEvent.loadUser());
-    });
+    context.read<FirebaseAuthBloc>().add(FirebaseAuthEvent.loadUser());
+    // Future.delayed(const Duration(seconds: 3), () {
+    // });
   }
 
   @override
@@ -44,18 +44,18 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
-        listener: (context, state) async {
-          await Future.delayed(const Duration(milliseconds: 1000));
+        listener: (context, state) {
           state.maybeWhen(
-            authenticated: (user) async {
-              // final role = await AuthPrefsService.getRole();
+            authenticated: (user) {
               if (user.role == 'admin') {
                 context.replaceRoute(AdminDashboardRoute());
               } else {
                 context.replaceRoute(FirebaseMainRoute());
               }
             },
-            unauthenticated: () => context.replaceRoute(FirebaseLoginRoute()),
+            unauthenticated: () {
+              context.replaceRoute(FirebaseLoginRoute());
+            },
             orElse: () {},
           );
         },

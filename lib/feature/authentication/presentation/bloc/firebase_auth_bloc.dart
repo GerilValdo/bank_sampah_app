@@ -17,6 +17,7 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
     on<_Login>(_login);
     on<_Logout>(_logout);
     on<_LoadUser>(_loadUser);
+    on<_UpdateProfile>(_updateProfile);
   }
 
   /// REGISTER
@@ -81,9 +82,39 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
 
   /// LOAD USER (Auto login)
   Future<void> _loadUser(
-      _LoadUser event, Emitter<FirebaseAuthState> emit) async {
-    emit(const FirebaseAuthState.loading());
+    _LoadUser event, Emitter<FirebaseAuthState> emit) async {
 
+  final current = _auth.currentUser;
+
+  // Tidak ada user yang login
+  if (current == null) {
+    emit(const FirebaseAuthState.unauthenticated());
+    return;
+  }
+
+  try {
+    final snap = await _firestore.collection("users").doc(current.uid).get();
+
+    if (!snap.exists) {
+      emit(const FirebaseAuthState.unauthenticated());
+      return;
+    }
+
+    final model = UserFirebaseModel.fromJson(snap.data()!);
+
+    emit(FirebaseAuthState.authenticated(model));
+  } catch (e) {
+    emit(FirebaseAuthState.unauthenticated());
+  }
+}
+
+Future<void> _updateProfile(
+  _UpdateProfile event,
+  Emitter<FirebaseAuthState> emit,
+) async {
+  emit(const FirebaseAuthState.loading());
+
+  try {
     final current = _auth.currentUser;
 
     if (current == null) {
@@ -91,11 +122,24 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
       return;
     }
 
-    final snap =
-        await _firestore.collection("users").doc(current.uid).get();
+    // Update data Firestore
+    await _firestore.collection("users").doc(current.uid).update({
+      "username": event.username,
+      "phoneNumber": event.phoneNumber,
+      "address": event.address,
+      "updateAt": DateTime.now().toIso8601String(),
+    });
 
+    // Load ulang user
+    final snap = await _firestore.collection("users").doc(current.uid).get();
     final model = UserFirebaseModel.fromJson(snap.data()!);
 
     emit(FirebaseAuthState.authenticated(model));
+    emit(const FirebaseAuthState.success("Profile updated successfully"));
+  } catch (e) {
+    emit(FirebaseAuthState.error("Failed to update profile: $e"));
   }
+}
+
+
 }

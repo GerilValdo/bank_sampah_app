@@ -6,5 +6,6 @@ abstract class DepositFirebaseState with _$DepositFirebaseState {
     @Default([]) List<DepositFirebaseModel> deposits,
     @Default(false) bool isLoading,
     String? errorMessage,
+    String? successMessage,
   }) = _DepositFirebaseState;
 }

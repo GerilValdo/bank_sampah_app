@@ -5,6 +5,7 @@ import 'package:bank_sampah_app/feature/authentication/presentation/bloc/auth_bl
 import 'package:bank_sampah_app/feature/authentication/data/datasource/user_local_datasource.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/presentation/bloc/category_bloc.dart';
+import 'package:bank_sampah_app/feature/deposit/presentation/bloc/category_firebase_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/database/category_local_data_source.dart';
 import 'package:bank_sampah_app/feature/deposit/database/deposit_local_data_source.dart';
@@ -40,6 +41,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => CategoryBloc(CategoryLocalDataSource()),
+        ),
+        BlocProvider(
+          create: (context) => CategoryFirebaseBloc(),
         ),
         BlocProvider(
           create: (context) => DepositBloc(DepositLocalDataSource()),

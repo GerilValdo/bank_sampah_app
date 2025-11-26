@@ -8,7 +8,7 @@ part 'deposit_firebase_model.g.dart';
 abstract class DepositFirebaseModel with _$DepositFirebaseModel {
   factory DepositFirebaseModel({
     String? id, // Firestore document id
-    required int categoryId,
+    required String categoryId,
     required double weight,
     required int totalPoints,
     required String status, // e.g. 'pending', 'completed', 'rejected'
@@ -26,7 +26,8 @@ abstract class DepositFirebaseModel with _$DepositFirebaseModel {
       _$DepositFirebaseModelFromJson(json);
 
   factory DepositFirebaseModel.fromFirestore(
-      DocumentSnapshot<Map<String, dynamic>> doc) {
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final data = doc.data() ?? <String, dynamic>{};
     // attach doc id
     return DepositFirebaseModel.fromJson({...data, 'id': doc.id});

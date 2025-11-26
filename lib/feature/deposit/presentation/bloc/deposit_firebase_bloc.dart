@@ -20,12 +20,18 @@ class DepositFirebaseBloc
     on<_DeleteDeposit>(_onDeleteDeposit);
   }
 
-  /// ✅ Load deposits by userId
+  /// =============================
+  /// LOAD DEPOSITS
+  /// =============================
   Future<void> _onLoadDeposits(
     _LoadDeposits event,
     Emitter<DepositFirebaseState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      successMessage: null,
+    ));
 
     try {
       final query = await firestore
@@ -38,7 +44,10 @@ class DepositFirebaseBloc
           .map((e) => DepositFirebaseModel.fromFirestore(e))
           .toList();
 
-      emit(state.copyWith(isLoading: false, deposits: deposits));
+      emit(state.copyWith(
+        isLoading: false,
+        deposits: deposits,
+      ));
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
@@ -47,45 +56,96 @@ class DepositFirebaseBloc
     }
   }
 
-  /// ✅ Add deposit
+  /// =============================
+  /// ADD DEPOSIT
+  /// =============================
   Future<void> _onAddDeposit(
     _AddDeposit event,
     Emitter<DepositFirebaseState> emit,
   ) async {
+    emit(state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      successMessage: null,
+    ));
+
     try {
       await firestore.collection('deposits').add(event.deposit.toJson());
+
+      // reload data
       add(DepositFirebaseEvent.loadDeposits(event.deposit.userId!));
+
+      emit(state.copyWith(
+        isLoading: false,
+        successMessage: "Deposit successfully submitted!",
+      ));
     } catch (e) {
-      emit(state.copyWith(errorMessage: e.toString()));
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
     }
   }
 
-  /// ✅ Update deposit
+  /// =============================
+  /// UPDATE DEPOSIT
+  /// =============================
   Future<void> _onUpdateDeposit(
     _UpdateDeposit event,
     Emitter<DepositFirebaseState> emit,
   ) async {
+    emit(state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      successMessage: null,
+    ));
+
     try {
       await firestore
           .collection('deposits')
           .doc(event.deposit.id)
           .update(event.deposit.toJson());
 
+      // reload list
       add(DepositFirebaseEvent.loadDeposits(event.deposit.userId!));
+
+      emit(state.copyWith(
+        isLoading: false,
+        successMessage: "Deposit updated successfully!",
+      ));
     } catch (e) {
-      emit(state.copyWith(errorMessage: e.toString()));
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
     }
   }
 
-  /// ✅ Delete deposit
+  /// =============================
+  /// DELETE DEPOSIT
+  /// =============================
   Future<void> _onDeleteDeposit(
     _DeleteDeposit event,
     Emitter<DepositFirebaseState> emit,
   ) async {
+    emit(state.copyWith(
+      isLoading: true,
+      errorMessage: null,
+      successMessage: null,
+    ));
+
     try {
       await firestore.collection('deposits').doc(event.id).delete();
+
+      emit(state.copyWith(
+        isLoading: false,
+        successMessage: "Deposit deleted successfully!",
+      ));
     } catch (e) {
-      emit(state.copyWith(errorMessage: e.toString()));
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
     }
   }
 }
