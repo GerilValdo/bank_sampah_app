@@ -29,9 +29,9 @@ class _SplashScreenState extends State<SplashScreen>
     )..forward();
 
     // Jalankan pengecekan login setelah animasi selesai
-    context.read<FirebaseAuthBloc>().add(FirebaseAuthEvent.loadUser());
-    // Future.delayed(const Duration(seconds: 3), () {
-    // });
+    Future.delayed(const Duration(seconds: 3), () {
+      context.read<FirebaseAuthBloc>().add(FirebaseAuthEvent.loadUser());
+    });
   }
 
   @override

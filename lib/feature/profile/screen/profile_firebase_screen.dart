@@ -18,112 +18,228 @@ class ProfileFirebaseScreen extends StatefulWidget {
 class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
   bool notificationsEnabled = true;
 
+  // FLAG untuk mengetahui apakah dialog edit sedang terbuka
+  bool _isEditDialogOpen = false;
+
   @override
   void initState() {
-    // Load user from Firestore
+    super.initState();
+
     context.read<FirebaseAuthBloc>().add(const FirebaseAuthEvent.loadUser());
-    // Load deposits user
+
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
       context.read<DepositFirebaseBloc>().add(
         DepositFirebaseEvent.loadDeposits(uid),
       );
     }
-    super.initState();
   }
 
+  // ================================================================
+  // EDIT PROFILE DIALOG
+  // ================================================================
   void _showEditProfileDialog(user) {
     final usernameCtrl = TextEditingController(text: user.username);
     final phoneCtrl = TextEditingController(text: user.phoneNumber ?? "");
     final addressCtrl = TextEditingController(text: user.address ?? "");
 
+    _isEditDialogOpen = true;
+
     showDialog(
       context: context,
+      barrierDismissible: true,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("Edit Profile"),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: usernameCtrl,
-                  decoration: const InputDecoration(labelText: "Username"),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: phoneCtrl,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: "Phone Number"),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: addressCtrl,
-                  decoration: const InputDecoration(labelText: "Address"),
-                ),
-              ],
-            ),
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
           ),
+          backgroundColor: const Color(0xFFF2F8F6),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 28),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Edit Profile",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0DA18C),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
 
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
-            BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
-              builder: (context, state) {
-                final isLoading = state.maybeWhen(
-                  loading: () => true,
-                  orElse: () => false,
-                );
+                  _buildInputField(label: "Username", controller: usernameCtrl),
+                  const SizedBox(height: 16),
 
-                return TextButton(
-                  onPressed: isLoading
-                      ? null // disable saat loading
-                      : () {
-                          context.read<FirebaseAuthBloc>().add(
-                            FirebaseAuthEvent.updateProfile(
-                              username: usernameCtrl.text.trim(),
-                              phoneNumber: phoneCtrl.text.trim(),
-                              address: addressCtrl.text.trim(),
+                  _buildInputField(
+                    label: "Phone Number",
+                    controller: phoneCtrl,
+                    inputType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 16),
+
+                  _buildInputField(label: "Address", controller: addressCtrl),
+                  const SizedBox(height: 28),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: Color(0xFF9BA4AE),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+
+                      BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
+                        builder: (context, state) {
+                          final isLoading = state.maybeWhen(
+                            loading: () => true,
+                            orElse: () => false,
+                          );
+
+                          return ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0DA18C),
+                              shadowColor: const Color(
+                                0xFF0DA18C,
+                              ).withOpacity(0.25),
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 26,
+                                vertical: 12,
+                              ),
                             ),
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    context.read<FirebaseAuthBloc>().add(
+                                      FirebaseAuthEvent.updateProfile(
+                                        username: usernameCtrl.text.trim(),
+                                        phoneNumber: phoneCtrl.text.trim(),
+                                        address: addressCtrl.text.trim(),
+                                      ),
+                                    );
+                                  },
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 18,
+                                    width: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Save",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                           );
                         },
-                  child: isLoading
-                      ? const SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.teal,
-                          ),
-                        )
-                      : const Text(
-                          "Save",
-                          style: TextStyle(color: Colors.teal),
-                        ),
-                );
-              },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         );
       },
+    ).then((_) {
+      _isEditDialogOpen = false;
+    });
+  }
+
+  // ================================================================
+  // INPUT FIELD UI
+  // ================================================================
+  Widget _buildInputField({
+    required String label,
+    required TextEditingController controller,
+    TextInputType inputType = TextInputType.text,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            color: Colors.grey.shade700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 5,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: inputType,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
+  // ================================================================
+  // LISTENER UTAMA (PERBAIKAN UTAMA DISINI)
+  // ================================================================
   @override
   Widget build(BuildContext context) {
     return BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
       listener: (context, state) {
         state.maybeWhen(
           success: (msg) {
-            // Tutup dialog jika sedang terbuka
-            if (Navigator.canPop(context)) {
+            // Tutup dialog edit jika sedang terbuka
+            if (_isEditDialogOpen && Navigator.canPop(context)) {
               Navigator.pop(context);
+              _isEditDialogOpen = false;
             }
 
-            // Tampilkan snackbar sukses
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(msg), backgroundColor: Colors.green),
+            );
+
+            // 🔥 Reload user agar UI kembali ke authenticated state
+            context.read<FirebaseAuthBloc>().add(
+              const FirebaseAuthEvent.loadUser(),
             );
           },
           orElse: () {},
@@ -136,13 +252,10 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
             return state.when(
               initial: () => const Center(child: CircularProgressIndicator()),
               loading: () => const Center(child: CircularProgressIndicator()),
-
               unauthenticated: () =>
                   const Center(child: Text("You are logged out")),
 
-              // ==========================
-              // USER BERHASIL DI LOAD
-              // ==========================
+              // USER LOADED
               authenticated: (user) {
                 return ListView(
                   padding: EdgeInsets.zero,
@@ -150,8 +263,6 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
                     _buildHeader(context, user),
                     const SizedBox(height: 20),
                     _buildPersonalInfoSection(user),
-                    // const SizedBox(height: 16),
-                    // _buildSettingsSection(),
                     const SizedBox(height: 24),
                     _buildLogoutButton(),
                     const SizedBox(height: 30),
@@ -168,9 +279,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ===============================
+  // ================================================================
   // HEADER
-  // ===============================
+  // ================================================================
   Widget _buildHeader(BuildContext context, user) {
     final initials = _getInitials(user.username);
 
@@ -246,11 +357,8 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
                 ),
               ),
 
-              // edit button
               GestureDetector(
-                onTap: () {
-                  _showEditProfileDialog(user);
-                },
+                onTap: () => _showEditProfileDialog(user),
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: const BoxDecoration(
@@ -265,37 +373,45 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
 
           const SizedBox(height: 20),
 
-          // SUMMARY (Updated)
           BlocBuilder<DepositFirebaseBloc, DepositFirebaseState>(
             builder: (context, depState) {
-              final deposits = depState.deposits;
+              // tetap hitung total deposits dan total weight dari deposit
+              final approvedDeposits = depState.deposits
+                  .where((d) => d.status.toLowerCase() == "completed")
+                  .toList();
 
-              final totalPoints = deposits.fold<int>(
-                0,
-                (sum, d) => sum + (d.totalPoints),
+              final totalWeights = approvedDeposits.fold(
+                0.0,
+                (sum, d) => sum + d.weight,
               );
 
-              final totalWeights = deposits.fold<double>(
-                0,
-                (sum, d) => sum + (d.weight),
+              final totalDeposits = approvedDeposits.length;
+
+              // 🔥 TOTAL POINTS DARI USER MODEL (BUKAN DARI DEPOSIT)
+              final user = context.read<FirebaseAuthBloc>().state.maybeWhen(
+                authenticated: (u) => u,
+                orElse: () => null,
               );
 
-              final totalDeposits = deposits.length;
+              final totalPoints = user?.totalPoints ?? 0;
 
               return Container(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _SummaryItem(value: '$totalPoints', label: 'Points'),
-                    _SummaryItem(value: '$totalDeposits', label: 'Deposits'),
+                    _SummaryItem(value: '$totalPoints', label: 'Total Points'),
+                    _SummaryItem(
+                      value: '$totalDeposits',
+                      label: 'Total Deposits',
+                    ),
                     _SummaryItem(
                       value: totalWeights.toStringAsFixed(1),
-                      label: 'Weight (kg)',
+                      label: 'Total Weight (kg)',
                     ),
                   ],
                 ),
@@ -307,9 +423,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ===============================
-  // PERSONAL INFO SECTION
-  // ===============================
+  // ================================================================
+  // INFO SECTION
+  // ================================================================
   Widget _buildPersonalInfoSection(user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -355,42 +471,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ===============================
-  // SETTINGS
-  // ===============================
-  // Widget _buildSettingsSection() {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 16),
-  //     child: Container(
-  //       padding: const EdgeInsets.all(16),
-  //       decoration: _cardDecoration(),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           const Text(
-  //             'Settings',
-  //             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-  //           ),
-  //           const SizedBox(height: 16),
-
-  //           ListTile(
-  //             contentPadding: EdgeInsets.zero,
-  //             leading: _iconBox(Icons.notifications, Colors.amber),
-  //             title: const Text('Notifications'),
-  //             trailing: Switch(
-  //               value: notificationsEnabled,
-  //               onChanged: (v) => setState(() => notificationsEnabled = v),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // ===============================
+  // ================================================================
   // LOGOUT BUTTON
-  // ===============================
+  // ================================================================
   Widget _buildLogoutButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -441,9 +524,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ===============================
-  // REUSABLE WIDGETS
-  // ===============================
+  // ================================================================
+  // HELPERS
+  // ================================================================
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
       color: Colors.white,
@@ -514,8 +597,7 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
   }
 }
 
-// SUMMARY WIDGET --------------------------------------------------------
-
+// SUMMARY ITEM
 class _SummaryItem extends StatelessWidget {
   final String value;
   final String label;

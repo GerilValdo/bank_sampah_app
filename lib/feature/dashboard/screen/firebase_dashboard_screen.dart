@@ -5,8 +5,10 @@ import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/models/deposit_firebase_model.dart';
+import 'package:bank_sampah_app/feature/deposit/presentation/bloc/category_firebase_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_firebase_bloc.dart';
 import 'package:bank_sampah_app/feature/history/presentation/bloc/history_firebase_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -46,13 +48,22 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
       orElse: () => null,
     );
 
+    // 🔥 LOAD CATEGORY SEKALI SAJA DI DASHBOARD
+    context.read<CategoryFirebaseBloc>().add(
+      const CategoryFirebaseEvent.loadCategories(),
+    );
+
     if (user != null) {
       context.read<DepositFirebaseBloc>().add(
         DepositFirebaseEvent.loadDeposits(user.uid!),
       );
+
       context.read<HistoryFirebaseBloc>().add(
         HistoryFirebaseEvent.loadTransactions(user.uid!),
       );
+
+      // 🔥 RELOAD USER UNTUK UPDATE TOTAL POINTS
+      context.read<FirebaseAuthBloc>().add(const FirebaseAuthEvent.loadUser());
     }
   }
 
@@ -177,6 +188,7 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white, width: 2),
                     borderRadius: BorderRadius.circular(15),
                     gradient: LinearGradient(
                       colors: [
@@ -199,6 +211,8 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
                       "Total Points",
                       style: AppTextStyle.semiBold(color: AppColor.background),
                     ),
+
+                    // 🔥 PAKAI TOTAL POINTS DARI USER MODEL
                     Text(
                       user.totalPoints.toString(),
                       style: AppTextStyle.bold(
@@ -260,7 +274,7 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
               gradient: (item['gradient'] as List).cast<Color>(),
               onTap: () {
                 if (index == 0) {
-                  context.pushRoute(DepositWasteRoute());
+                  context.pushRoute(DepositFirebaseRoute());
                 }
                 if (index == 1) {
                   context.pushRoute(MainRoute(initialIndex: 2));
@@ -340,6 +354,7 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
               return const Center(child: Text("No Data"));
 
             return ListView.builder(
+              padding: EdgeInsets.zero,
               itemCount: state.deposits.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -358,63 +373,135 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     final statusColor = getStatusColor(data.status);
     final createdText = DateFormat('dd MMM yyyy').format(data.createdAt);
 
-    return Card(
-      elevation: 3,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: ListTile(
-        leading: Container(
-          height: 36,
-          width: 36,
-          decoration: BoxDecoration(
-            color: statusColor.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            mapIconName(data.iconNameCategory ?? ""),
-            size: 16,
-            color: Colors.green,
-          ),
+    return Dismissible(
+      key: ValueKey(data.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(15),
         ),
-        title: Text(
-          data.nameCategory ?? "",
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        subtitle: Row(
-          children: [
-            Text("${data.weight} kg"),
-            const SizedBox(width: 4),
-            const Text("•"),
-            const SizedBox(width: 4),
-            Text(createdText),
-          ],
-        ),
-        trailing: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              "+${data.totalPoints}",
-              style: const TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+
+      // 🚀 KONFIRMASI DELETE
+      confirmDismiss: (direction) async {
+        return await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Hapus Data'),
+            content: const Text('Yakin ingin menghapus data ini?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: const Text('Batal'),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: const Text('Hapus'),
+              ),
+            ],
+          ),
+        );
+      },
+
+      // 🚀 AKSI DELETE
+      onDismissed: (direction) {
+        context.read<DepositFirebaseBloc>().add(
+          DepositFirebaseEvent.deleteDeposit(data.id!),
+        );
+        context.read<HistoryFirebaseBloc>().add(
+          HistoryFirebaseEvent.loadTransactions(
+            FirebaseAuth.instance.currentUser!.uid,
+          ),
+        );
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${data.nameCategory} dihapus')));
+      },
+
+      child: Card(
+        elevation: 3,
+        margin: const EdgeInsets.only(bottom: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: InkWell(
+          onTap: () {
+            // 🚀 UPDATE: Ketika item ditekan, buka DepositFirebaseScreen
+            context.pushRoute(DepositFirebaseRoute(deposit: data)).then((
+              value,
+            ) {
+              final uid = FirebaseAuth.instance.currentUser?.uid;
+              if (uid != null) {
+                context.read<DepositFirebaseBloc>().add(
+                  DepositFirebaseEvent.loadDeposits(uid),
+                );
+                context.read<HistoryFirebaseBloc>().add(
+                  HistoryFirebaseEvent.loadTransactions(uid),
+                );
+              }
+            });
+          },
+          child: ListTile(
+            leading: Container(
+              height: 36,
+              width: 36,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: statusColor.withOpacity(0.1),
+                color: statusColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Text(
-                data.status,
-                style: TextStyle(
-                  color: statusColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+              child: Icon(
+                mapIconName(data.iconNameCategory ?? ""),
+                size: 16,
+                color: Colors.green,
               ),
             ),
-          ],
+            title: Text(
+              data.nameCategory ?? "",
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            subtitle: Row(
+              children: [
+                Text("${data.weight} kg"),
+                const SizedBox(width: 4),
+                const Text("•"),
+                const SizedBox(width: 4),
+                Text(createdText),
+              ],
+            ),
+            trailing: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "+${data.totalPoints}",
+                  style: const TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: statusColor.withOpacity(0.1),
+                  ),
+                  child: Text(
+                    data.status,
+                    style: TextStyle(
+                      color: statusColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

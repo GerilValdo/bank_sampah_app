@@ -14,9 +14,14 @@ class WithdrawFirebaseScreen extends StatefulWidget {
 }
 
 class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
-  final TextEditingController _pointsCtrl = TextEditingController();
-  final TextEditingController _phoneCtrl = TextEditingController();
-  String? paymentMethod;
+  int? selectedAmount;
+
+  final withdrawPackages = [
+    {"amount": 10000, "points": 100},
+    {"amount": 20000, "points": 200},
+    {"amount": 50000, "points": 500},
+    {"amount": 100000, "points": 1000},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +30,6 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFB),
 
-      // =======================================================================
-      // LISTENER BLOC: WithdrawFirebaseBloc
-      // =======================================================================
       body: BlocConsumer<WithdrawFirebaseBloc, WithdrawFirebaseState>(
         listener: (context, state) {
           if (state.successMessage != null) {
@@ -51,7 +53,6 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
         },
 
         builder: (context, state) {
-          // 🔥 Ambil user dari FirebaseAuthBloc
           final authState = context.watch<FirebaseAuthBloc>().state;
 
           final user = authState.maybeWhen(
@@ -59,14 +60,12 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
             orElse: () => null,
           );
 
-          if (user == null) {
-            return const Center(child: Text("Not logged in"));
-          }
+          if (user == null) return const Center(child: Text("Not logged in"));
 
           return Stack(
             clipBehavior: Clip.none,
             children: [
-              // ================= HEADER =================
+              // HEADER
               Container(
                 height: size.height * 0.25,
                 width: double.infinity,
@@ -89,20 +88,21 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                       child: const Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     const SizedBox(height: 16),
+
                     const Text(
-                      "Withdraw Points",
+                      "Withdraw Cash",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 26,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
+
                     const Text(
                       "Your available points",
                       style: TextStyle(color: Colors.white70, fontSize: 13),
                     ),
-                    const SizedBox(height: 4),
                     Text(
                       "${user.totalPoints} pts",
                       style: const TextStyle(
@@ -115,9 +115,9 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                 ),
               ),
 
-              // ================= FLOATING CONTENT =================
+              // FLOATING CONTENT
               Positioned(
-                top: size.height * 0.20,
+                top: size.height * 0.28,
                 left: 0,
                 right: 0,
                 child: SingleChildScrollView(
@@ -126,18 +126,14 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                     children: [
                       Material(
                         elevation: 8,
-                        borderRadius: BorderRadius.circular(20),
-                        child: _buildInputCard(),
+                        borderRadius: BorderRadius.circular(22),
+                        shadowColor: Colors.teal.withOpacity(0.2),
+                        child: _buildPackageSelection(user.totalPoints),
                       ),
-                      const SizedBox(height: 22),
-                      Material(
-                        elevation: 4,
-                        borderRadius: BorderRadius.circular(20),
-                        child: _buildSummaryCard(),
-                      ),
+
                       const SizedBox(height: 30),
                       _buildSubmitButton(user),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -149,110 +145,105 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
     );
   }
 
-  // ================= INPUT CARD =================
-  Widget _buildInputCard() {
+  // ================= PACKAGE SELECTION =================
+  Widget _buildPackageSelection(int userPoints) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Withdraw Amount",
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-          ),
-          const SizedBox(height: 14),
-
-          TextField(
-            controller: _pointsCtrl,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: "Points to withdraw",
-              prefixIcon: const Icon(Icons.toll, color: Colors.teal),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+            "Choose Withdraw Amount",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 17,
+              color: Colors.black87,
             ),
-            onChanged: (_) => setState(() {}),
           ),
-
           const SizedBox(height: 20),
 
-          DropdownButtonFormField<String>(
-            value: paymentMethod,
-            items: const [
-              DropdownMenuItem(value: "cash", child: Text("Cash (in person)")),
-              DropdownMenuItem(value: "gopay", child: Text("Gopay")),
-              DropdownMenuItem(value: "ovo", child: Text("OVO")),
-              DropdownMenuItem(value: "dana", child: Text("DANA")),
-              DropdownMenuItem(value: "bank", child: Text("Bank Transfer")),
-            ],
-            onChanged: (v) => setState(() => paymentMethod = v),
-            decoration: InputDecoration(
-              labelText: "Payment Method",
-              prefixIcon: const Icon(
-                Icons.account_balance_wallet,
-                color: Colors.teal,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          TextField(
-            controller: _phoneCtrl,
-            decoration: InputDecoration(
-              labelText: paymentMethod == "cash"
-                  ? "Phone (optional)"
-                  : "Account / Phone Number",
-              prefixIcon: const Icon(Icons.phone, color: Colors.teal),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================= SUMMARY CARD =================
-  Widget _buildSummaryCard() {
-    final points = int.tryParse(_pointsCtrl.text) ?? 0;
-    final amount = points * 100;
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.teal.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.monetization_on, color: Colors.teal, size: 30),
-          const SizedBox(width: 12),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Estimated Value",
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-              ),
-              Text(
-                "Rp ${amount.toStringAsFixed(0)}",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Colors.teal,
+            children: withdrawPackages.map((pkg) {
+              final amount = pkg["amount"] as int;
+              final points = pkg["points"] as int;
+
+              final canWithdraw = userPoints >= points;
+              final isSelected = selectedAmount == amount;
+
+              return GestureDetector(
+                onTap: () {
+                  if (canWithdraw) {
+                    setState(() => selectedAmount = amount);
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 14),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? Colors.teal.withOpacity(0.12)
+                        : Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isSelected
+                          ? Colors.teal
+                          : canWithdraw
+                          ? Colors.grey.shade300
+                          : Colors.red.shade200,
+                      width: isSelected ? 2 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.attach_money,
+                        size: 26,
+                        color: isSelected
+                            ? Colors.teal
+                            : canWithdraw
+                            ? Colors.teal
+                            : Colors.red,
+                      ),
+                      const SizedBox(width: 12),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Rp ${amount.toString()}",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: canWithdraw
+                                    ? Colors.black87
+                                    : Colors.red.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "$points pts required",
+                              style: TextStyle(
+                                color: canWithdraw
+                                    ? Colors.grey.shade700
+                                    : Colors.red.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      if (isSelected)
+                        const Icon(Icons.check_circle, color: Colors.teal),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              );
+            }).toList(),
           ),
         ],
       ),
@@ -261,58 +252,48 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
 
   // ================= SUBMIT BUTTON =================
   Widget _buildSubmitButton(user) {
+    final pkg = withdrawPackages.firstWhere(
+      (p) => p["amount"] == selectedAmount,
+      orElse: () => {},
+    );
+
+    final amount = pkg["amount"] ?? 0;
+    final points = pkg["points"] ?? 0;
+
+    final canSubmit = selectedAmount != null && user.totalPoints >= points;
+
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 55,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.teal,
+          backgroundColor: canSubmit ? Colors.teal : Colors.grey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),
-          elevation: 4,
+          elevation: 5,
         ),
-        onPressed: () {
-          final points = int.tryParse(_pointsCtrl.text) ?? 0;
-
-          if (points <= 0) {
-            _showError("Enter valid points!");
-            return;
-          }
-
-          if (paymentMethod == null) {
-            _showError("Choose a payment method!");
-            return;
-          }
-
-          final amount = (points * 100).toDouble();
-
-          // 🔥 KIRIM EVENT KE WithdrawFirebaseBloc
-          context.read<WithdrawFirebaseBloc>().add(
-            WithdrawFirebaseEvent.createRequest(
-              userId: user.uid,
-              pointsRequested: points,
-              amount: amount,
-              paymentMethod: paymentMethod!,
-              phone: _phoneCtrl.text.isEmpty ? null : _phoneCtrl.text,
-            ),
-          );
-        },
+        onPressed: canSubmit
+            ? () {
+                context.read<WithdrawFirebaseBloc>().add(
+                  WithdrawFirebaseEvent.createRequest(
+                    userId: user.uid,
+                    pointsRequested: points,
+                    amount: amount.toDouble(),
+                    paymentMethod: "cash",
+                  ),
+                );
+              }
+            : null,
         child: const Text(
-          "Submit Withdraw Request",
+          "Request Withdraw",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 17,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
     );
-  }
-
-  void _showError(String msg) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
   }
 }

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$CategoryFirebaseModel {
 
  String? get id;// firestore doc id
- String get name; String get iconName;@JsonKey(name: 'points_per_kg') int get pointsPerKg;
+ int get idCategory; String get name; String get iconName; int get pointsPerKg;
 /// Create a copy of CategoryFirebaseModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $CategoryFirebaseModelCopyWith<CategoryFirebaseModel> get copyWith => _$Category
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CategoryFirebaseModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.pointsPerKg, pointsPerKg) || other.pointsPerKg == pointsPerKg));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CategoryFirebaseModel&&(identical(other.id, id) || other.id == id)&&(identical(other.idCategory, idCategory) || other.idCategory == idCategory)&&(identical(other.name, name) || other.name == name)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.pointsPerKg, pointsPerKg) || other.pointsPerKg == pointsPerKg));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,iconName,pointsPerKg);
+int get hashCode => Object.hash(runtimeType,id,idCategory,name,iconName,pointsPerKg);
 
 @override
 String toString() {
-  return 'CategoryFirebaseModel(id: $id, name: $name, iconName: $iconName, pointsPerKg: $pointsPerKg)';
+  return 'CategoryFirebaseModel(id: $id, idCategory: $idCategory, name: $name, iconName: $iconName, pointsPerKg: $pointsPerKg)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $CategoryFirebaseModelCopyWith<$Res>  {
   factory $CategoryFirebaseModelCopyWith(CategoryFirebaseModel value, $Res Function(CategoryFirebaseModel) _then) = _$CategoryFirebaseModelCopyWithImpl;
 @useResult
 $Res call({
- String? id, String name, String iconName,@JsonKey(name: 'points_per_kg') int pointsPerKg
+ String? id, int idCategory, String name, String iconName, int pointsPerKg
 });
 
 
@@ -66,10 +66,11 @@ class _$CategoryFirebaseModelCopyWithImpl<$Res>
 
 /// Create a copy of CategoryFirebaseModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = null,Object? iconName = null,Object? pointsPerKg = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? idCategory = null,Object? name = null,Object? iconName = null,Object? pointsPerKg = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,idCategory: null == idCategory ? _self.idCategory : idCategory // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,iconName: null == iconName ? _self.iconName : iconName // ignore: cast_nullable_to_non_nullable
 as String,pointsPerKg: null == pointsPerKg ? _self.pointsPerKg : pointsPerKg // ignore: cast_nullable_to_non_nullable
 as int,
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String name,  String iconName, @JsonKey(name: 'points_per_kg')  int pointsPerKg)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  int idCategory,  String name,  String iconName,  int pointsPerKg)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CategoryFirebaseModel() when $default != null:
-return $default(_that.id,_that.name,_that.iconName,_that.pointsPerKg);case _:
+return $default(_that.id,_that.idCategory,_that.name,_that.iconName,_that.pointsPerKg);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.id,_that.name,_that.iconName,_that.pointsPerKg);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String name,  String iconName, @JsonKey(name: 'points_per_kg')  int pointsPerKg)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  int idCategory,  String name,  String iconName,  int pointsPerKg)  $default,) {final _that = this;
 switch (_that) {
 case _CategoryFirebaseModel():
-return $default(_that.id,_that.name,_that.iconName,_that.pointsPerKg);case _:
+return $default(_that.id,_that.idCategory,_that.name,_that.iconName,_that.pointsPerKg);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.id,_that.name,_that.iconName,_that.pointsPerKg);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String name,  String iconName, @JsonKey(name: 'points_per_kg')  int pointsPerKg)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  int idCategory,  String name,  String iconName,  int pointsPerKg)?  $default,) {final _that = this;
 switch (_that) {
 case _CategoryFirebaseModel() when $default != null:
-return $default(_that.id,_that.name,_that.iconName,_that.pointsPerKg);case _:
+return $default(_that.id,_that.idCategory,_that.name,_that.iconName,_that.pointsPerKg);case _:
   return null;
 
 }
@@ -213,14 +214,15 @@ return $default(_that.id,_that.name,_that.iconName,_that.pointsPerKg);case _:
 @JsonSerializable()
 
 class _CategoryFirebaseModel implements CategoryFirebaseModel {
-   _CategoryFirebaseModel({this.id, required this.name, required this.iconName, @JsonKey(name: 'points_per_kg') required this.pointsPerKg});
+   _CategoryFirebaseModel({this.id, required this.idCategory, required this.name, required this.iconName, required this.pointsPerKg});
   factory _CategoryFirebaseModel.fromJson(Map<String, dynamic> json) => _$CategoryFirebaseModelFromJson(json);
 
 @override final  String? id;
 // firestore doc id
+@override final  int idCategory;
 @override final  String name;
 @override final  String iconName;
-@override@JsonKey(name: 'points_per_kg') final  int pointsPerKg;
+@override final  int pointsPerKg;
 
 /// Create a copy of CategoryFirebaseModel
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategoryFirebaseModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.pointsPerKg, pointsPerKg) || other.pointsPerKg == pointsPerKg));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategoryFirebaseModel&&(identical(other.id, id) || other.id == id)&&(identical(other.idCategory, idCategory) || other.idCategory == idCategory)&&(identical(other.name, name) || other.name == name)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.pointsPerKg, pointsPerKg) || other.pointsPerKg == pointsPerKg));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,iconName,pointsPerKg);
+int get hashCode => Object.hash(runtimeType,id,idCategory,name,iconName,pointsPerKg);
 
 @override
 String toString() {
-  return 'CategoryFirebaseModel(id: $id, name: $name, iconName: $iconName, pointsPerKg: $pointsPerKg)';
+  return 'CategoryFirebaseModel(id: $id, idCategory: $idCategory, name: $name, iconName: $iconName, pointsPerKg: $pointsPerKg)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$CategoryFirebaseModelCopyWith<$Res> implements $CategoryF
   factory _$CategoryFirebaseModelCopyWith(_CategoryFirebaseModel value, $Res Function(_CategoryFirebaseModel) _then) = __$CategoryFirebaseModelCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String name, String iconName,@JsonKey(name: 'points_per_kg') int pointsPerKg
+ String? id, int idCategory, String name, String iconName, int pointsPerKg
 });
 
 
@@ -272,10 +274,11 @@ class __$CategoryFirebaseModelCopyWithImpl<$Res>
 
 /// Create a copy of CategoryFirebaseModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = null,Object? iconName = null,Object? pointsPerKg = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? idCategory = null,Object? name = null,Object? iconName = null,Object? pointsPerKg = null,}) {
   return _then(_CategoryFirebaseModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,idCategory: null == idCategory ? _self.idCategory : idCategory // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,iconName: null == iconName ? _self.iconName : iconName // ignore: cast_nullable_to_non_nullable
 as String,pointsPerKg: null == pointsPerKg ? _self.pointsPerKg : pointsPerKg // ignore: cast_nullable_to_non_nullable
 as int,

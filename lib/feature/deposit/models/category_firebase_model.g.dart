@@ -10,16 +10,18 @@ _CategoryFirebaseModel _$CategoryFirebaseModelFromJson(
   Map<String, dynamic> json,
 ) => _CategoryFirebaseModel(
   id: json['id'] as String?,
+  idCategory: (json['idCategory'] as num).toInt(),
   name: json['name'] as String,
   iconName: json['iconName'] as String,
-  pointsPerKg: (json['points_per_kg'] as num).toInt(),
+  pointsPerKg: (json['pointsPerKg'] as num).toInt(),
 );
 
 Map<String, dynamic> _$CategoryFirebaseModelToJson(
   _CategoryFirebaseModel instance,
 ) => <String, dynamic>{
   'id': instance.id,
+  'idCategory': instance.idCategory,
   'name': instance.name,
   'iconName': instance.iconName,
-  'points_per_kg': instance.pointsPerKg,
+  'pointsPerKg': instance.pointsPerKg,
 };

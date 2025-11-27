@@ -8,9 +8,10 @@ part 'category_firebase_model.g.dart';
 abstract class CategoryFirebaseModel with _$CategoryFirebaseModel {
   factory CategoryFirebaseModel({
     String? id, // firestore doc id
+    required int idCategory,
     required String name,
     required String iconName,
-    @JsonKey(name: 'points_per_kg') required int pointsPerKg,
+    required int pointsPerKg,
   }) = _CategoryFirebaseModel;
 
   factory CategoryFirebaseModel.fromJson(Map<String, dynamic> json) =>

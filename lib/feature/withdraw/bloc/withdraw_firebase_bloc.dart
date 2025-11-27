@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-
 part 'withdraw_firebase_event.dart';
 part 'withdraw_firebase_state.dart';
 part 'withdraw_firebase_bloc.freezed.dart';
@@ -12,8 +11,7 @@ class WithdrawFirebaseBloc
     extends Bloc<WithdrawFirebaseEvent, WithdrawFirebaseState> {
   final FirebaseFirestore firestore;
 
-  WithdrawFirebaseBloc(this.firestore)
-      : super(const WithdrawFirebaseState()) {
+  WithdrawFirebaseBloc(this.firestore) : super(const WithdrawFirebaseState()) {
     on<_CreateRequest>(_onCreateRequest);
     on<_LoadRequests>(_onLoadRequests);
   }
@@ -25,7 +23,9 @@ class WithdrawFirebaseBloc
     _CreateRequest event,
     Emitter<WithdrawFirebaseState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, successMessage: null, errorMessage: null));
+    emit(
+      state.copyWith(isLoading: true, successMessage: null, errorMessage: null),
+    );
 
     try {
       final now = DateTime.now();
@@ -48,10 +48,12 @@ class WithdrawFirebaseBloc
         "updateAt": now,
       });
 
-      emit(state.copyWith(
-        isLoading: false,
-        successMessage: "Withdraw request submitted successfully!",
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          successMessage: "Withdraw request submitted successfully!",
+        ),
+      );
 
       // reload user's withdraw history
       add(WithdrawFirebaseEvent.loadRequests(event.userId));
@@ -85,15 +87,14 @@ class WithdrawFirebaseBloc
           .map((doc) => WithdrawRequestFirebaseModel.fromFirestore(doc))
           .toList();
 
+      emit(state.copyWith(isLoading: false, withdraws: list));
+    } catch (e) {
       emit(
         state.copyWith(
           isLoading: false,
-          withdraws: list,
+          errorMessage: "Failed to load history: $e",
         ),
       );
-    } catch (e) {
-      emit(state.copyWith(
-          isLoading: false, errorMessage: "Failed to load history: $e"));
     }
   }
 }

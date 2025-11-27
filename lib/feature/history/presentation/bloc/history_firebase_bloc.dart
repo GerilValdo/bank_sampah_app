@@ -12,8 +12,7 @@ class HistoryFirebaseBloc
     extends Bloc<HistoryFirebaseEvent, HistoryFirebaseState> {
   final FirebaseFirestore firestore;
 
-  HistoryFirebaseBloc(this.firestore)
-      : super(const HistoryFirebaseState()) {
+  HistoryFirebaseBloc(this.firestore) : super(const HistoryFirebaseState()) {
     on<_LoadTransactions>(_onLoadTransactions);
     on<_FilterChanged>(_onFilterChanged);
   }
@@ -31,12 +30,14 @@ class HistoryFirebaseBloc
       final query = await firestore
           .collection('deposits')
           .where('userId', isEqualTo: event.userId)
-          .orderBy('createdAt', descending: true)
           .get();
 
       final transactions = query.docs
           .map((e) => DepositFirebaseModel.fromFirestore(e))
           .toList();
+
+      /// 🔥 SORTING MANUAL (DESCENDING)
+      transactions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       emit(
         state.copyWith(
@@ -44,19 +45,22 @@ class HistoryFirebaseBloc
           allTransactions: transactions,
           filteredTransactions: transactions,
           selectedCategory: "All",
-          completedCount:
-              transactions.where((e) => e.status == "completed").length,
-          pendingCount:
-              transactions.where((e) => e.status == "pending").length,
-          rejectedCount:
-              transactions.where((e) => e.status == "rejected").length,
+          completedCount: transactions
+              .where((e) => e.status == "completed")
+              .length,
+          pendingCount: transactions.where((e) => e.status == "pending").length,
+          rejectedCount: transactions
+              .where((e) => e.status == "rejected")
+              .length,
         ),
       );
     } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: 'Failed loading transactions: $e',
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Failed loading transactions: $e',
+        ),
+      );
     }
   }
 
