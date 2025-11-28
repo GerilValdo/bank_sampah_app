@@ -1,3 +1,4 @@
+import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +13,10 @@ part 'deposit_firebase_bloc.freezed.dart';
 class DepositFirebaseBloc
     extends Bloc<DepositFirebaseEvent, DepositFirebaseState> {
   final FirebaseFirestore firestore;
+  final FirebaseAuthBloc authBloc;
 
-  DepositFirebaseBloc(this.firestore) : super(const DepositFirebaseState()) {
+  DepositFirebaseBloc(this.firestore, this.authBloc)
+    : super(const DepositFirebaseState()) {
     on<_LoadDeposits>(_onLoadDeposits);
     on<_AddDeposit>(_onAddDeposit);
     on<_UpdateDeposit>(_onUpdateDeposit);
@@ -112,6 +115,7 @@ class DepositFirebaseBloc
             "totalPoints": currentPoints + event.deposit.totalPoints,
           });
         }
+        authBloc.add(FirebaseAuthEvent.loadUser());
       }
 
       // reload list

@@ -1,3 +1,4 @@
+import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
 import 'package:bank_sampah_app/feature/withdraw/models/withdraw_request_firebase_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +11,10 @@ part 'withdraw_firebase_bloc.freezed.dart';
 class WithdrawFirebaseBloc
     extends Bloc<WithdrawFirebaseEvent, WithdrawFirebaseState> {
   final FirebaseFirestore firestore;
+  final FirebaseAuthBloc authBloc;
 
-  WithdrawFirebaseBloc(this.firestore) : super(const WithdrawFirebaseState()) {
+  WithdrawFirebaseBloc(this.firestore, this.authBloc)
+    : super(const WithdrawFirebaseState()) {
     on<_CreateRequest>(_onCreateRequest);
     on<_LoadRequests>(_onLoadRequests);
   }
@@ -47,6 +50,9 @@ class WithdrawFirebaseBloc
         "totalPoints": FieldValue.increment(-event.pointsRequested),
         "updateAt": now,
       });
+
+      // ⭐ RELOAD USER (AGAR TOTAL POINTS TERBARU MASUK KE UI)
+      authBloc.add(const FirebaseAuthEvent.loadUser());
 
       emit(
         state.copyWith(

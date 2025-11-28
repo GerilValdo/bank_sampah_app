@@ -19,6 +19,7 @@ import 'package:bank_sampah_app/feature/main/screen/main_screen.dart';
 import 'package:bank_sampah_app/feature/profile/screen/profile_firebase_screen.dart';
 import 'package:bank_sampah_app/feature/profile/screen/profile_screen.dart';
 import 'package:bank_sampah_app/feature/withdraw/screen/withdraw_firebase_screen.dart';
+import 'package:bank_sampah_app/feature/withdraw/screen/withdraw_history_firebase_screen.dart';
 import 'package:bank_sampah_app/feature/withdraw/screen/withdraw_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -52,6 +53,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: MainRoute.page, path: MainScreen.id),
     AutoRoute(page: FirebaseMainRoute.page, path: FirebaseMainScreen.id),
     AutoRoute(page: WithdrawRoute.page, path: WithdrawScreen.id),
+    AutoRoute(page: WithdrawHistoryFirebaseRoute.page, path: WithdrawHistoryFirebaseScreen.id),
     AutoRoute(
       page: WithdrawFirebaseRoute.page,
       path: WithdrawFirebaseScreen.id,

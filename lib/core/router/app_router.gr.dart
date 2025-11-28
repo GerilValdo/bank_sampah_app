@@ -435,6 +435,22 @@ class WithdrawFirebaseRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [WithdrawHistoryFirebaseScreen]
+class WithdrawHistoryFirebaseRoute extends PageRouteInfo<void> {
+  const WithdrawHistoryFirebaseRoute({List<PageRouteInfo>? children})
+    : super(WithdrawHistoryFirebaseRoute.name, initialChildren: children);
+
+  static const String name = 'WithdrawHistoryFirebaseRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const WithdrawHistoryFirebaseScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [WithdrawScreen]
 class WithdrawRoute extends PageRouteInfo<void> {
   const WithdrawRoute({List<PageRouteInfo>? children})

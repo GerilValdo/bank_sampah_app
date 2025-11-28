@@ -22,7 +22,9 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
 
   /// REGISTER
   Future<void> _register(
-      _Register event, Emitter<FirebaseAuthState> emit) async {
+    _Register event,
+    Emitter<FirebaseAuthState> emit,
+  ) async {
     emit(const FirebaseAuthState.loading());
 
     try {
@@ -64,8 +66,7 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
       );
 
       final user = cred.user!;
-      final snap =
-          await _firestore.collection('users').doc(user.uid).get();
+      final snap = await _firestore.collection('users').doc(user.uid).get();
 
       final model = UserFirebaseModel.fromJson(snap.data()!);
       emit(FirebaseAuthState.authenticated(model));
@@ -82,39 +83,9 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
 
   /// LOAD USER (Auto login)
   Future<void> _loadUser(
-    _LoadUser event, Emitter<FirebaseAuthState> emit) async {
-
-  final current = _auth.currentUser;
-
-  // Tidak ada user yang login
-  if (current == null) {
-    emit(const FirebaseAuthState.unauthenticated());
-    return;
-  }
-
-  try {
-    final snap = await _firestore.collection("users").doc(current.uid).get();
-
-    if (!snap.exists) {
-      emit(const FirebaseAuthState.unauthenticated());
-      return;
-    }
-
-    final model = UserFirebaseModel.fromJson(snap.data()!);
-
-    emit(FirebaseAuthState.authenticated(model));
-  } catch (e) {
-    emit(FirebaseAuthState.unauthenticated());
-  }
-}
-
-Future<void> _updateProfile(
-  _UpdateProfile event,
-  Emitter<FirebaseAuthState> emit,
-) async {
-  emit(const FirebaseAuthState.loading());
-
-  try {
+    _LoadUser event,
+    Emitter<FirebaseAuthState> emit,
+  ) async {
     final current = _auth.currentUser;
 
     if (current == null) {
@@ -122,24 +93,56 @@ Future<void> _updateProfile(
       return;
     }
 
-    // Update data Firestore
-    await _firestore.collection("users").doc(current.uid).update({
-      "username": event.username,
-      "phoneNumber": event.phoneNumber,
-      "address": event.address,
-      "updateAt": DateTime.now().toIso8601String(),
-    });
+    try {
+      final snap = await _firestore.collection("users").doc(current.uid).get();
 
-    // Load ulang user
-    final snap = await _firestore.collection("users").doc(current.uid).get();
-    final model = UserFirebaseModel.fromJson(snap.data()!);
+      if (!snap.exists) {
+        emit(const FirebaseAuthState.unauthenticated());
+        return;
+      }
 
-    emit(FirebaseAuthState.authenticated(model));
-    emit(const FirebaseAuthState.success("Profile updated successfully"));
-  } catch (e) {
-    emit(FirebaseAuthState.error("Failed to update profile: $e"));
+      final model = UserFirebaseModel.fromJson(snap.data()!);
+
+      // ⭐ Paksa UI rebuild (penting!)
+      emit(const FirebaseAuthState.loading());
+
+      // ⭐ Emit authenticated dengan data baru
+      emit(FirebaseAuthState.authenticated(model));
+    } catch (e) {
+      emit(const FirebaseAuthState.unauthenticated());
+    }
   }
-}
 
+  Future<void> _updateProfile(
+    _UpdateProfile event,
+    Emitter<FirebaseAuthState> emit,
+  ) async {
+    emit(const FirebaseAuthState.loading());
 
+    try {
+      final current = _auth.currentUser;
+
+      if (current == null) {
+        emit(const FirebaseAuthState.unauthenticated());
+        return;
+      }
+
+      // Update data Firestore
+      await _firestore.collection("users").doc(current.uid).update({
+        "username": event.username,
+        "phoneNumber": event.phoneNumber,
+        "address": event.address,
+        "updateAt": DateTime.now().toIso8601String(),
+      });
+
+      // Load ulang user
+      final snap = await _firestore.collection("users").doc(current.uid).get();
+      final model = UserFirebaseModel.fromJson(snap.data()!);
+
+      emit(FirebaseAuthState.authenticated(model));
+      emit(const FirebaseAuthState.success("Profile updated successfully"));
+    } catch (e) {
+      emit(FirebaseAuthState.error("Failed to update profile: $e"));
+    }
+  }
 }

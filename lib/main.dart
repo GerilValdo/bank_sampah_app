@@ -42,9 +42,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => CategoryBloc(CategoryLocalDataSource()),
         ),
-        BlocProvider(
-          create: (context) => CategoryFirebaseBloc(),
-        ),
+        BlocProvider(create: (context) => CategoryFirebaseBloc()),
         BlocProvider(
           create: (context) => DepositBloc(DepositLocalDataSource()),
         ),
@@ -57,13 +55,16 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (context) => FirebaseAuthBloc()),
         BlocProvider(
-          create: (context) => DepositFirebaseBloc(FirebaseFirestore.instance),
+          create: (context) => DepositFirebaseBloc(
+            FirebaseFirestore.instance,
+            context.read<FirebaseAuthBloc>(),
+          ),
         ),
         BlocProvider(
           create: (context) => HistoryFirebaseBloc(FirebaseFirestore.instance),
         ),
         BlocProvider(
-          create: (context) => WithdrawFirebaseBloc(FirebaseFirestore.instance),
+          create: (context) => WithdrawFirebaseBloc(FirebaseFirestore.instance, context.read<FirebaseAuthBloc>()),
         ),
       ],
       child: MaterialApp.router(

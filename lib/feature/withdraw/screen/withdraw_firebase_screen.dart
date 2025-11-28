@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
 import 'package:bank_sampah_app/feature/withdraw/bloc/withdraw_firebase_bloc.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +26,12 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFB),
 
       body: BlocConsumer<WithdrawFirebaseBloc, WithdrawFirebaseState>(
+        listenWhen: (previous, current) =>
+            previous.successMessage != current.successMessage,
         listener: (context, state) {
           if (state.successMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -39,7 +40,7 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                 backgroundColor: Colors.green,
               ),
             );
-            context.router.pop();
+            // context.router.pop();
           }
 
           if (state.errorMessage != null) {
@@ -54,7 +55,6 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
 
         builder: (context, state) {
           final authState = context.watch<FirebaseAuthBloc>().state;
-
           final user = authState.maybeWhen(
             authenticated: (u) => u,
             orElse: () => null,
@@ -62,12 +62,10 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
 
           if (user == null) return const Center(child: Text("Not logged in"));
 
-          return Stack(
-            clipBehavior: Clip.none,
+          return Column(
             children: [
-              // HEADER
+              // =================== HEADER ===================
               Container(
-                height: size.height * 0.25,
                 width: double.infinity,
                 padding: const EdgeInsets.only(top: 55, left: 20, right: 20),
                 decoration: const BoxDecoration(
@@ -83,20 +81,33 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      onTap: () => context.router.pop(),
-                      child: const Icon(Icons.arrow_back, color: Colors.white),
-                    ),
-                    const SizedBox(height: 16),
+                    // 🔥 BARIS TITLE + HISTORY BUTTON
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Withdraw Cash",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
 
-                    const Text(
-                      "Withdraw Cash",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                      ),
+                        // 🔥 HISTORY BUTTON DI KANAN ATAS
+                        GestureDetector(
+                          onTap: () {
+                            context.pushRoute(WithdrawHistoryFirebaseRoute());
+                          },
+                          child: const Icon(
+                            Icons.history,
+                            color: Colors.white,
+                            size: 26,
+                          ),
+                        ),
+                      ],
                     ),
+
                     const SizedBox(height: 10),
 
                     const Text(
@@ -111,23 +122,24 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
 
-              // FLOATING CONTENT
-              Positioned(
-                top: size.height * 0.28,
-                left: 0,
-                right: 0,
+              // =================== MAIN CONTENT ===================
+              Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 25,
+                  ),
                   child: Column(
                     children: [
                       Material(
-                        elevation: 8,
+                        elevation: 2,
                         borderRadius: BorderRadius.circular(22),
-                        shadowColor: Colors.teal.withOpacity(0.2),
                         child: _buildPackageSelection(user.totalPoints),
                       ),
 
@@ -175,11 +187,9 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
               final isSelected = selectedAmount == amount;
 
               return GestureDetector(
-                onTap: () {
-                  if (canWithdraw) {
-                    setState(() => selectedAmount = amount);
-                  }
-                },
+                onTap: canWithdraw
+                    ? () => setState(() => selectedAmount = amount)
+                    : null,
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 14),
                   padding: const EdgeInsets.all(16),
@@ -215,7 +225,7 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Rp ${amount.toString()}",
+                              "Rp $amount",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -252,15 +262,17 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
 
   // ================= SUBMIT BUTTON =================
   Widget _buildSubmitButton(user) {
+    if (selectedAmount == null) {
+      return _disabledButton("Request Withdraw");
+    }
+
     final pkg = withdrawPackages.firstWhere(
       (p) => p["amount"] == selectedAmount,
-      orElse: () => {},
     );
 
-    final amount = pkg["amount"] ?? 0;
-    final points = pkg["points"] ?? 0;
-
-    final canSubmit = selectedAmount != null && user.totalPoints >= points;
+    final amount = pkg["amount"]!;
+    final points = pkg["points"]!;
+    final canSubmit = user.totalPoints >= points;
 
     return SizedBox(
       width: double.infinity,
@@ -288,6 +300,30 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
         child: const Text(
           "Request Withdraw",
           style: TextStyle(
+            color: Colors.white,
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _disabledButton(String text) {
+    return SizedBox(
+      width: double.infinity,
+      height: 55,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.grey,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+        ),
+        onPressed: null,
+        child: Text(
+          text,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 17,
             fontWeight: FontWeight.w600,
