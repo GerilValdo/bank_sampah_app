@@ -62,7 +62,6 @@ class _SplashScreenState extends State<SplashScreen>
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 🌈 Gradient background
             const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -77,26 +76,24 @@ class _SplashScreenState extends State<SplashScreen>
               ),
             ),
 
-            // 🌟 Animated content
             FadeTransition(
               opacity: _fadeController,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 🔹 Logo animation
                   ZoomIn(
                     duration: const Duration(milliseconds: 1000),
                     child: Hero(
                       tag: 'appLogo',
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.85,
                         // height: MediaQuery.of(context).size.height ,
                         // decoration: BoxDecoration(
-                        //   color: Colors.white.withOpacity(0.2),
+                        //   color: Colors.white.withValues(0.2),
                         //   shape: BoxShape.circle,
                         // boxShadow: [
                         //   BoxShadow(
-                        //     color: Colors.black.withOpacity(0.15),
+                        //     color: Colors.black.withValues(0.15),
                         //     blurRadius: 20,
                         //   ),
                         // ],
@@ -114,7 +111,6 @@ class _SplashScreenState extends State<SplashScreen>
 
                   // const SizedBox(height: 30),
 
-                  // 🔹 App name with fade + slide
                   // FadeInUp(
                   //   delay: const Duration(milliseconds: 800),
                   //   duration: const Duration(milliseconds: 900),
@@ -145,7 +141,6 @@ class _SplashScreenState extends State<SplashScreen>
 
                   const SizedBox(height: 40),
 
-                  // 🔹 Animated Dots (loading indicator)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [

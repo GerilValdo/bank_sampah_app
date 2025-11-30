@@ -14,61 +14,30 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WithdrawFirebaseEvent {
 
- String get userId;
-/// Create a copy of WithdrawFirebaseEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$WithdrawFirebaseEventCopyWith<WithdrawFirebaseEvent> get copyWith => _$WithdrawFirebaseEventCopyWithImpl<WithdrawFirebaseEvent>(this as WithdrawFirebaseEvent, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WithdrawFirebaseEvent&&(identical(other.userId, userId) || other.userId == userId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WithdrawFirebaseEvent);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,userId);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'WithdrawFirebaseEvent(userId: $userId)';
+  return 'WithdrawFirebaseEvent()';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $WithdrawFirebaseEventCopyWith<$Res>  {
-  factory $WithdrawFirebaseEventCopyWith(WithdrawFirebaseEvent value, $Res Function(WithdrawFirebaseEvent) _then) = _$WithdrawFirebaseEventCopyWithImpl;
-@useResult
-$Res call({
- String userId
-});
-
-
-
-
-}
-/// @nodoc
-class _$WithdrawFirebaseEventCopyWithImpl<$Res>
-    implements $WithdrawFirebaseEventCopyWith<$Res> {
-  _$WithdrawFirebaseEventCopyWithImpl(this._self, this._then);
-
-  final WithdrawFirebaseEvent _self;
-  final $Res Function(WithdrawFirebaseEvent) _then;
-
-/// Create a copy of WithdrawFirebaseEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,}) {
-  return _then(_self.copyWith(
-userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
+class $WithdrawFirebaseEventCopyWith<$Res>  {
+$WithdrawFirebaseEventCopyWith(WithdrawFirebaseEvent _, $Res Function(WithdrawFirebaseEvent) __);
 }
 
 
@@ -86,12 +55,13 @@ extension WithdrawFirebaseEventPatterns on WithdrawFirebaseEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _CreateRequest value)?  createRequest,TResult Function( _LoadRequests value)?  loadRequests,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _CreateRequest value)?  createRequest,TResult Function( _LoadRequests value)?  loadRequests,TResult Function( _UpdateStatus value)?  updateStatus,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _CreateRequest() when createRequest != null:
 return createRequest(_that);case _LoadRequests() when loadRequests != null:
-return loadRequests(_that);case _:
+return loadRequests(_that);case _UpdateStatus() when updateStatus != null:
+return updateStatus(_that);case _:
   return orElse();
 
 }
@@ -109,12 +79,13 @@ return loadRequests(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _CreateRequest value)  createRequest,required TResult Function( _LoadRequests value)  loadRequests,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _CreateRequest value)  createRequest,required TResult Function( _LoadRequests value)  loadRequests,required TResult Function( _UpdateStatus value)  updateStatus,}){
 final _that = this;
 switch (_that) {
 case _CreateRequest():
 return createRequest(_that);case _LoadRequests():
-return loadRequests(_that);case _:
+return loadRequests(_that);case _UpdateStatus():
+return updateStatus(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -131,12 +102,13 @@ return loadRequests(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _CreateRequest value)?  createRequest,TResult? Function( _LoadRequests value)?  loadRequests,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _CreateRequest value)?  createRequest,TResult? Function( _LoadRequests value)?  loadRequests,TResult? Function( _UpdateStatus value)?  updateStatus,}){
 final _that = this;
 switch (_that) {
 case _CreateRequest() when createRequest != null:
 return createRequest(_that);case _LoadRequests() when loadRequests != null:
-return loadRequests(_that);case _:
+return loadRequests(_that);case _UpdateStatus() when updateStatus != null:
+return updateStatus(_that);case _:
   return null;
 
 }
@@ -153,11 +125,12 @@ return loadRequests(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String userId,  int pointsRequested,  double amount,  String paymentMethod,  String? phone)?  createRequest,TResult Function( String userId)?  loadRequests,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String userId,  int pointsRequested,  double amount,  String paymentMethod,  String? phone)?  createRequest,TResult Function( String userId)?  loadRequests,TResult Function( String requestId,  String newStatus)?  updateStatus,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreateRequest() when createRequest != null:
 return createRequest(_that.userId,_that.pointsRequested,_that.amount,_that.paymentMethod,_that.phone);case _LoadRequests() when loadRequests != null:
-return loadRequests(_that.userId);case _:
+return loadRequests(_that.userId);case _UpdateStatus() when updateStatus != null:
+return updateStatus(_that.requestId,_that.newStatus);case _:
   return orElse();
 
 }
@@ -175,11 +148,12 @@ return loadRequests(_that.userId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String userId,  int pointsRequested,  double amount,  String paymentMethod,  String? phone)  createRequest,required TResult Function( String userId)  loadRequests,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String userId,  int pointsRequested,  double amount,  String paymentMethod,  String? phone)  createRequest,required TResult Function( String userId)  loadRequests,required TResult Function( String requestId,  String newStatus)  updateStatus,}) {final _that = this;
 switch (_that) {
 case _CreateRequest():
 return createRequest(_that.userId,_that.pointsRequested,_that.amount,_that.paymentMethod,_that.phone);case _LoadRequests():
-return loadRequests(_that.userId);case _:
+return loadRequests(_that.userId);case _UpdateStatus():
+return updateStatus(_that.requestId,_that.newStatus);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,11 +170,12 @@ return loadRequests(_that.userId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String userId,  int pointsRequested,  double amount,  String paymentMethod,  String? phone)?  createRequest,TResult? Function( String userId)?  loadRequests,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String userId,  int pointsRequested,  double amount,  String paymentMethod,  String? phone)?  createRequest,TResult? Function( String userId)?  loadRequests,TResult? Function( String requestId,  String newStatus)?  updateStatus,}) {final _that = this;
 switch (_that) {
 case _CreateRequest() when createRequest != null:
 return createRequest(_that.userId,_that.pointsRequested,_that.amount,_that.paymentMethod,_that.phone);case _LoadRequests() when loadRequests != null:
-return loadRequests(_that.userId);case _:
+return loadRequests(_that.userId);case _UpdateStatus() when updateStatus != null:
+return updateStatus(_that.requestId,_that.newStatus);case _:
   return null;
 
 }
@@ -215,7 +190,7 @@ class _CreateRequest implements WithdrawFirebaseEvent {
   const _CreateRequest({required this.userId, required this.pointsRequested, required this.amount, required this.paymentMethod, this.phone});
   
 
-@override final  String userId;
+ final  String userId;
  final  int pointsRequested;
  final  double amount;
  final  String paymentMethod;
@@ -223,7 +198,7 @@ class _CreateRequest implements WithdrawFirebaseEvent {
 
 /// Create a copy of WithdrawFirebaseEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 _$CreateRequestCopyWith<_CreateRequest> get copyWith => __$CreateRequestCopyWithImpl<_CreateRequest>(this, _$identity);
 
@@ -249,7 +224,7 @@ String toString() {
 /// @nodoc
 abstract mixin class _$CreateRequestCopyWith<$Res> implements $WithdrawFirebaseEventCopyWith<$Res> {
   factory _$CreateRequestCopyWith(_CreateRequest value, $Res Function(_CreateRequest) _then) = __$CreateRequestCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
  String userId, int pointsRequested, double amount, String paymentMethod, String? phone
 });
@@ -268,7 +243,7 @@ class __$CreateRequestCopyWithImpl<$Res>
 
 /// Create a copy of WithdrawFirebaseEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? pointsRequested = null,Object? amount = null,Object? paymentMethod = null,Object? phone = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? pointsRequested = null,Object? amount = null,Object? paymentMethod = null,Object? phone = freezed,}) {
   return _then(_CreateRequest(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,pointsRequested: null == pointsRequested ? _self.pointsRequested : pointsRequested // ignore: cast_nullable_to_non_nullable
@@ -289,11 +264,11 @@ class _LoadRequests implements WithdrawFirebaseEvent {
   const _LoadRequests(this.userId);
   
 
-@override final  String userId;
+ final  String userId;
 
 /// Create a copy of WithdrawFirebaseEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 _$LoadRequestsCopyWith<_LoadRequests> get copyWith => __$LoadRequestsCopyWithImpl<_LoadRequests>(this, _$identity);
 
@@ -319,7 +294,7 @@ String toString() {
 /// @nodoc
 abstract mixin class _$LoadRequestsCopyWith<$Res> implements $WithdrawFirebaseEventCopyWith<$Res> {
   factory _$LoadRequestsCopyWith(_LoadRequests value, $Res Function(_LoadRequests) _then) = __$LoadRequestsCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
  String userId
 });
@@ -338,9 +313,77 @@ class __$LoadRequestsCopyWithImpl<$Res>
 
 /// Create a copy of WithdrawFirebaseEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? userId = null,}) {
   return _then(_LoadRequests(
 null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _UpdateStatus implements WithdrawFirebaseEvent {
+  const _UpdateStatus(this.requestId, this.newStatus);
+  
+
+ final  String requestId;
+ final  String newStatus;
+
+/// Create a copy of WithdrawFirebaseEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UpdateStatusCopyWith<_UpdateStatus> get copyWith => __$UpdateStatusCopyWithImpl<_UpdateStatus>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UpdateStatus&&(identical(other.requestId, requestId) || other.requestId == requestId)&&(identical(other.newStatus, newStatus) || other.newStatus == newStatus));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,requestId,newStatus);
+
+@override
+String toString() {
+  return 'WithdrawFirebaseEvent.updateStatus(requestId: $requestId, newStatus: $newStatus)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$UpdateStatusCopyWith<$Res> implements $WithdrawFirebaseEventCopyWith<$Res> {
+  factory _$UpdateStatusCopyWith(_UpdateStatus value, $Res Function(_UpdateStatus) _then) = __$UpdateStatusCopyWithImpl;
+@useResult
+$Res call({
+ String requestId, String newStatus
+});
+
+
+
+
+}
+/// @nodoc
+class __$UpdateStatusCopyWithImpl<$Res>
+    implements _$UpdateStatusCopyWith<$Res> {
+  __$UpdateStatusCopyWithImpl(this._self, this._then);
+
+  final _UpdateStatus _self;
+  final $Res Function(_UpdateStatus) _then;
+
+/// Create a copy of WithdrawFirebaseEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? requestId = null,Object? newStatus = null,}) {
+  return _then(_UpdateStatus(
+null == requestId ? _self.requestId : requestId // ignore: cast_nullable_to_non_nullable
+as String,null == newStatus ? _self.newStatus : newStatus // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

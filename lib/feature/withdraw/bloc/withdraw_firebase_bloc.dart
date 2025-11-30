@@ -17,11 +17,10 @@ class WithdrawFirebaseBloc
     : super(const WithdrawFirebaseState()) {
     on<_CreateRequest>(_onCreateRequest);
     on<_LoadRequests>(_onLoadRequests);
+    on<_UpdateStatus>(_onUpdateStatus);
   }
 
-  // ===========================================================================
   // CREATE WITHDRAW REQUEST
-  // ===========================================================================
   Future<void> _onCreateRequest(
     _CreateRequest event,
     Emitter<WithdrawFirebaseState> emit,
@@ -45,13 +44,11 @@ class WithdrawFirebaseBloc
 
       await firestore.collection("withdraws").add(model.toJson());
 
-      // UPDATE USER POINTS
       await firestore.collection("users").doc(event.userId).update({
         "totalPoints": FieldValue.increment(-event.pointsRequested),
         "updateAt": now,
       });
 
-      // ⭐ RELOAD USER (AGAR TOTAL POINTS TERBARU MASUK KE UI)
       authBloc.add(const FirebaseAuthEvent.loadUser());
 
       emit(
@@ -61,7 +58,6 @@ class WithdrawFirebaseBloc
         ),
       );
 
-      // reload user's withdraw history
       add(WithdrawFirebaseEvent.loadRequests(event.userId));
     } catch (e) {
       emit(
@@ -73,34 +69,89 @@ class WithdrawFirebaseBloc
     }
   }
 
-  // ===========================================================================
   // LOAD USER WITHDRAW LIST
-  // ===========================================================================
   Future<void> _onLoadRequests(
-    _LoadRequests event,
-    Emitter<WithdrawFirebaseState> emit,
-  ) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+  _LoadRequests event,
+  Emitter<WithdrawFirebaseState> emit,
+) async {
+  emit(state.copyWith(isLoading: true, errorMessage: null));
 
-    try {
-      final query = await firestore
-          .collection("withdraws")
-          .where("userId", isEqualTo: event.userId)
-          .orderBy("createdAt", descending: true)
-          .get();
+  try {
+    final uid = event.userId.trim();
 
-      final list = query.docs
-          .map((doc) => WithdrawRequestFirebaseModel.fromFirestore(doc))
-          .toList();
+    final query = await firestore
+        .collection("withdraws")
+        .where("userId", isEqualTo: uid)
+        .orderBy("createdAt", descending: true)
+        .get();
 
-      emit(state.copyWith(isLoading: false, withdraws: list));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          isLoading: false,
-          errorMessage: "Failed to load history: $e",
-        ),
-      );
-    }
+    final list = query.docs
+        .map((doc) => WithdrawRequestFirebaseModel.fromFirestore(doc))
+        .toList();
+
+    emit(state.copyWith(isLoading: false, withdraws: list));
+  } catch (e) {
+    emit(state.copyWith(
+      isLoading: false,
+      errorMessage: "Failed to load history: $e",
+    ));
   }
+}
+
+
+  // UPDATE STATUS WITHDRAW
+Future<void> _onUpdateStatus(
+  _UpdateStatus event,
+  Emitter<WithdrawFirebaseState> emit,
+) async {
+  emit(state.copyWith(isLoading: true, errorMessage: null));
+
+  try {
+    final docRef = firestore.collection("withdraws").doc(event.requestId);
+    final snap = await docRef.get();
+
+    if (!snap.exists) {
+      emit(state.copyWith(isLoading: false, errorMessage: "Request not found"));
+      return;
+    }
+
+    final data = snap.data()!;
+    final userId = (data["userId"] ?? "") as String;
+    final previousStatus = (data["status"] ?? "pending") as String;
+
+    final pointsRequested = (data["pointsRequested"] as num).toInt();
+    final now = DateTime.now();
+
+    await docRef.update({
+      "status": event.newStatus,
+      "updatedAt": now,
+    });
+
+    if (event.newStatus == "rejected" && previousStatus != "rejected") {
+      await firestore.collection("users").doc(userId).update({
+        "totalPoints": FieldValue.increment(pointsRequested),
+        "updateAt": now,
+      });
+    }
+
+    if (previousStatus == "rejected" && event.newStatus != "rejected") {
+      await firestore.collection("users").doc(userId).update({
+        "totalPoints": FieldValue.increment(-pointsRequested),
+        "updateAt": now,
+      });
+    }
+
+    // refresh user points
+    authBloc.add(const FirebaseAuthEvent.loadUser());
+
+    // reload withdraw data
+    add(WithdrawFirebaseEvent.loadRequests(userId));
+
+    emit(state.copyWith(isLoading: false));
+  } catch (e) {
+    emit(state.copyWith(
+        isLoading: false, errorMessage: "Failed to update status: $e"));
+  }
+}
+
 }

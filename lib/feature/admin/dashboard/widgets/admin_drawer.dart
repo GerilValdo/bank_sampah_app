@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AdminDrawer extends StatelessWidget {
-  final String activeMenu; // menu yang sedang aktif
+  final String activeMenu;
   final Function(String) onMenuSelected;
 
   const AdminDrawer({
@@ -26,7 +26,6 @@ class AdminDrawer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ================= Header =================
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: Row(
@@ -60,7 +59,6 @@ class AdminDrawer extends StatelessWidget {
               ),
             ),
 
-            // ================= Profile Info =================
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: Container(
@@ -110,13 +108,12 @@ class AdminDrawer extends StatelessWidget {
             Divider(color: Colors.white.withValues(alpha: 0.3)),
             const SizedBox(height: 16),
 
-            // ================= Main Menu =================
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "MAIN MENU",
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
@@ -176,7 +173,7 @@ class AdminDrawer extends StatelessWidget {
                         Text(
                           "QUICK STATS",
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -209,7 +206,6 @@ class AdminDrawer extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
-                        // TODO: Tambahkan fungsi logout di sini
                         // contoh: context.read<AuthBloc>().add(AuthEvent.logout());
                         Navigator.pop(context);
                       },
@@ -283,15 +279,12 @@ class AdminDrawer extends StatelessWidget {
                 ],
               ),
             ),
-
-            // ================= Quick Stats =================
           ],
         ),
       ),
     );
   }
 
-  // ================= Widget Menu Item =================
   Widget _buildMenuItem({
     required IconData icon,
     required String title,
@@ -306,7 +299,7 @@ class AdminDrawer extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isActive ? Colors.white.withOpacity(0.1) : Colors.transparent,
+          color: isActive ? Colors.white.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -331,13 +324,12 @@ class AdminDrawer extends StatelessWidget {
     );
   }
 
-  // ================= Widget Quick Stats =================
   Widget _quickStatItem(String title, String value, {Color? color}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

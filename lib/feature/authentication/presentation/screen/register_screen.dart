@@ -94,7 +94,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // === Logo ===
                 Container(
                   height: height * 0.1,
                   width: height * 0.1,

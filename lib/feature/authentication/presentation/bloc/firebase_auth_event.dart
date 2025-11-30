@@ -22,6 +22,7 @@ abstract class FirebaseAuthEvent with _$FirebaseAuthEvent {
   required String username,
   required String phoneNumber,
   required String address,
+  File? imageFile,
 }) = _UpdateProfile;
 
 }

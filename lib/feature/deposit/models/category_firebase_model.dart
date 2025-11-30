@@ -7,7 +7,7 @@ part 'category_firebase_model.g.dart';
 @freezed
 abstract class CategoryFirebaseModel with _$CategoryFirebaseModel {
   factory CategoryFirebaseModel({
-    String? id, // firestore doc id
+    String? id, 
     required int idCategory,
     required String name,
     required String iconName,

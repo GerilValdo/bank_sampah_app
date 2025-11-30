@@ -23,7 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Hanya kirim event login, tanpa navigasi langsung
     context.read<AuthBloc>().add(
       AuthEvent.login(email: emailC.text, password: passwordC.text),
     );
@@ -37,7 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return BlocListener<AuthBloc, AuthState>(
       listenWhen: (previous, current) {
-        // 🔹 Hanya trigger kalau state-nya benar-benar berubah
         final isNowAuthenticated = current.maybeWhen(
           authenticated: (_) => true,
           orElse: () => false,
@@ -55,7 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
           orElse: () => false,
         );
 
-        // ✅ hanya trigger jika baru saja berpindah ke state ini
         return (!wasAuthenticated && isNowAuthenticated) ||
             (!wasError && isNowError);
       },
@@ -111,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'Welcome Back',
                     style: TextStyle(
-                      fontSize: width * 0.06, // responsive font
+                      fontSize: width * 0.06,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF006045),
                     ),

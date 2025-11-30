@@ -64,7 +64,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthState.loading());
 
     try {
-      // cek duplicate
       final exist = await _localDatasource.getUserByEmail(event.email.trim());
       if (exist != null) {
         emit(const AuthState.error("Email already registered"));

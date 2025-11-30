@@ -10,5 +10,11 @@ abstract class WithdrawFirebaseEvent with _$WithdrawFirebaseEvent {
     String? phone,
   }) = _CreateRequest;
 
-  const factory WithdrawFirebaseEvent.loadRequests(String userId) = _LoadRequests;
+  const factory WithdrawFirebaseEvent.loadRequests(String userId) =
+      _LoadRequests;
+
+  const factory WithdrawFirebaseEvent.updateStatus(
+    String requestId,
+    String newStatus,
+  ) = _UpdateStatus;
 }

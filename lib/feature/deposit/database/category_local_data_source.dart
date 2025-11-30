@@ -5,7 +5,6 @@ import '../models/category_model.dart';
 class CategoryLocalDataSource {
   static const _tableName = 'categories';
 
-  // ✅ CREATE
   Future<int> insertCategory(CategoryModel model) async {
     final db = await DatabaseHelper.getDatabase();
     return await db.insert(
@@ -15,14 +14,12 @@ class CategoryLocalDataSource {
     );
   }
 
-  // ✅ READ ALL
   Future<List<CategoryModel>> getAllCategories() async {
     final db = await DatabaseHelper.getDatabase();
     final result = await db.query(_tableName, orderBy: 'id ASC');
     return result.map((e) => CategoryModel.fromJson(e)).toList();
   }
 
-  // ✅ READ BY ID
   Future<CategoryModel?> getCategoryById(int id) async {
     final db = await DatabaseHelper.getDatabase();
     final result = await db.query(_tableName, where: 'id = ?', whereArgs: [id]);
@@ -30,7 +27,6 @@ class CategoryLocalDataSource {
     return CategoryModel.fromJson(result.first);
   }
 
-  // ✅ UPDATE
   Future<int> updateCategory(CategoryModel model) async {
     final db = await DatabaseHelper.getDatabase();
     return await db.update(
@@ -41,13 +37,11 @@ class CategoryLocalDataSource {
     );
   }
 
-  // ✅ DELETE
   Future<int> deleteCategory(int id) async {
     final db = await DatabaseHelper.getDatabase();
     return await db.delete(_tableName, where: 'id = ?', whereArgs: [id]);
   }
 
-  // ✅ CLEAR ALL
   Future<void> clearAllCategories() async {
     final db = await DatabaseHelper.getDatabase();
     await db.delete(_tableName);

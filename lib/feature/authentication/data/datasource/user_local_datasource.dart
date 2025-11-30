@@ -13,7 +13,7 @@ class UserLocalDatasource {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
-      print('DB Insert Error: $e');
+      // print('DB Insert Error: $e');
       return 0;
     }
   }
@@ -30,7 +30,7 @@ class UserLocalDatasource {
 
       return result.isNotEmpty ? result.first : null;
     } catch (e) {
-      print('DB Query Error: $e');
+      // print('DB Query Error: $e');
       return null;
     }
   }
@@ -40,7 +40,7 @@ class UserLocalDatasource {
       final db = await DatabaseHelper.getDatabase();
       return await db.query(_tableName);
     } catch (e) {
-      print('DB GetAll Error: $e');
+      // print('DB GetAll Error: $e');
       return [];
     }
   }
@@ -55,7 +55,7 @@ class UserLocalDatasource {
         whereArgs: [email],
       );
     } catch (e) {
-      print('DB Update Error: $e');
+      // print('DB Update Error: $e');
       return 0;
     }
   }
@@ -69,7 +69,7 @@ class UserLocalDatasource {
         whereArgs: [email],
       );
     } catch (e) {
-      print('DB Delete Error: $e');
+      // print('DB Delete Error: $e');
       return 0;
     }
   }

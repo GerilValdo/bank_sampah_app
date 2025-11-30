@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bank_sampah_app/core/services/cloudinary_service.dart';
 import 'package:bank_sampah_app/feature/authentication/data/models/user_firebase_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,7 +31,6 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
     emit(const FirebaseAuthState.loading());
 
     try {
-      // Firebase Auth create account
       final cred = await _auth.createUserWithEmailAndPassword(
         email: event.email,
         password: event.password,
@@ -36,7 +38,6 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
 
       final user = cred.user!;
 
-      // Create Firestore user model
       final model = UserFirebaseModel(
         uid: user.uid,
         username: event.username,
@@ -46,7 +47,6 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
         updateAt: DateTime.now(),
       );
 
-      // Save to Firestore
       await _firestore.collection('users').doc(user.uid).set(model.toJson());
 
       emit(const FirebaseAuthState.success("Account created successfully 🎉"));
@@ -55,7 +55,6 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
     }
   }
 
-  /// LOGIN
   Future<void> _login(_Login event, Emitter<FirebaseAuthState> emit) async {
     emit(const FirebaseAuthState.loading());
 
@@ -75,13 +74,11 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
     }
   }
 
-  /// LOGOUT
   Future<void> _logout(_Logout event, Emitter<FirebaseAuthState> emit) async {
     await _auth.signOut();
     emit(const FirebaseAuthState.unauthenticated());
   }
 
-  /// LOAD USER (Auto login)
   Future<void> _loadUser(
     _LoadUser event,
     Emitter<FirebaseAuthState> emit,
@@ -103,10 +100,8 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
 
       final model = UserFirebaseModel.fromJson(snap.data()!);
 
-      // ⭐ Paksa UI rebuild (penting!)
       emit(const FirebaseAuthState.loading());
 
-      // ⭐ Emit authenticated dengan data baru
       emit(FirebaseAuthState.authenticated(model));
     } catch (e) {
       emit(const FirebaseAuthState.unauthenticated());
@@ -127,15 +122,27 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
         return;
       }
 
-      // Update data Firestore
-      await _firestore.collection("users").doc(current.uid).update({
+      String? newPhotoUrl;
+
+      if (event.imageFile != null) {
+        newPhotoUrl = await CloudinaryService.uploadProfilePhoto(
+          event.imageFile!,
+        );
+      }
+
+      final updateData = {
         "username": event.username,
         "phoneNumber": event.phoneNumber,
         "address": event.address,
         "updateAt": DateTime.now().toIso8601String(),
-      });
+      };
 
-      // Load ulang user
+      if (newPhotoUrl != null) {
+        updateData["profileImage"] = newPhotoUrl;
+      }
+
+      await _firestore.collection("users").doc(current.uid).update(updateData);
+
       final snap = await _firestore.collection("users").doc(current.uid).get();
       final model = UserFirebaseModel.fromJson(snap.data()!);
 

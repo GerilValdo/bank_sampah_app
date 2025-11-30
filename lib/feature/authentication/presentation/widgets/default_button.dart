@@ -26,17 +26,17 @@ class DefaultButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor ?? AppColor.primary,
-        minimumSize: Size.fromHeight(48.h), // ✅ responsif tinggi tombol
+        minimumSize: Size.fromHeight(48.h),
         shape: RoundedRectangleBorder(
-          borderRadius: AppSpacing.radius12, // ✅ responsif border radius
+          borderRadius: AppSpacing.radius12, 
         ),
         elevation: useShadow ? 6 : 0,
         shadowColor: useShadow ? Colors.black.withValues(alpha: 0.2) : null,
-        padding: AppSpacing.vertical16, // ✅ padding internal responsif
+        padding: AppSpacing.vertical16, 
       ),
       child: isLoading
           ? SizedBox(
-              height: 20.w, // ✅ responsif loading indicator
+              height: 20.w, 
               width: 20.w,
               child: CircularProgressIndicator(
                 strokeWidth: 1.5,
@@ -46,7 +46,7 @@ class DefaultButton extends StatelessWidget {
           : Text(
               text ?? 'Lanjutkan',
               style: AppTextStyle.bold(
-                fontSize: AppFontSize.button, // ✅ gunakan fontSize responsif
+                fontSize: AppFontSize.button, 
                 color: textColor ?? Colors.white,
               ),
             ),

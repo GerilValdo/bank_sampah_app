@@ -17,9 +17,6 @@ class HistoryFirebaseBloc
     on<_FilterChanged>(_onFilterChanged);
   }
 
-  // ===========================================================================
-  // ✅ Load Transactions by userId
-  // ===========================================================================
   Future<void> _onLoadTransactions(
     _LoadTransactions event,
     Emitter<HistoryFirebaseState> emit,
@@ -36,7 +33,6 @@ class HistoryFirebaseBloc
           .map((e) => DepositFirebaseModel.fromFirestore(e))
           .toList();
 
-      /// 🔥 SORTING MANUAL (DESCENDING)
       transactions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       emit(
@@ -64,9 +60,6 @@ class HistoryFirebaseBloc
     }
   }
 
-  // ===========================================================================
-  // ✅ Filter Changed
-  // ===========================================================================
   Future<void> _onFilterChanged(
     _FilterChanged event,
     Emitter<HistoryFirebaseState> emit,

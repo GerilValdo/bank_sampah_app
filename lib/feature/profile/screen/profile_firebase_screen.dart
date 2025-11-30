@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/core/helpers/image_helper.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
 import 'package:bank_sampah_app/feature/deposit/presentation/bloc/deposit_firebase_bloc.dart';
@@ -18,7 +21,6 @@ class ProfileFirebaseScreen extends StatefulWidget {
 class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
   bool notificationsEnabled = true;
 
-  // FLAG untuk mengetahui apakah dialog edit sedang terbuka
   bool _isEditDialogOpen = false;
 
   @override
@@ -35,13 +37,16 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     }
   }
 
-  // ================================================================
+  
   // EDIT PROFILE DIALOG
-  // ================================================================
+  
   void _showEditProfileDialog(user) {
     final usernameCtrl = TextEditingController(text: user.username);
     final phoneCtrl = TextEditingController(text: user.phoneNumber ?? "");
     final addressCtrl = TextEditingController(text: user.address ?? "");
+
+    File? selectedImageFile; 
+    String? existingPhoto = user.profileImage; 
 
     _isEditDialogOpen = true;
 
@@ -49,115 +54,249 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-          ),
-          backgroundColor: const Color(0xFFF2F8F6),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 28),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Edit Profile",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0DA18C),
-                    ),
-                  ),
-                  const SizedBox(height: 22),
-
-                  _buildInputField(label: "Username", controller: usernameCtrl),
-                  const SizedBox(height: 16),
-
-                  _buildInputField(
-                    label: "Phone Number",
-                    controller: phoneCtrl,
-                    inputType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 16),
-
-                  _buildInputField(label: "Address", controller: addressCtrl),
-                  const SizedBox(height: 28),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(22),
+              ),
+              backgroundColor: const Color(0xFFF2F8F6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 28,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(
-                            color: Color(0xFF9BA4AE),
-                            fontWeight: FontWeight.w600,
-                          ),
+                      const Text(
+                        "Edit Profile",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0DA18C),
                         ),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(height: 22),
 
-                      BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
-                        builder: (context, state) {
-                          final isLoading = state.maybeWhen(
-                            loading: () => true,
-                            orElse: () => false,
-                          );
-
-                          return ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0DA18C),
-                              shadowColor: const Color(
-                                0xFF0DA18C,
-                              ).withOpacity(0.25),
-                              elevation: 3,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 26,
-                                vertical: 12,
-                              ),
-                            ),
-                            onPressed: isLoading
-                                ? null
-                                : () {
-                                    context.read<FirebaseAuthBloc>().add(
-                                      FirebaseAuthEvent.updateProfile(
-                                        username: usernameCtrl.text.trim(),
-                                        phoneNumber: phoneCtrl.text.trim(),
-                                        address: addressCtrl.text.trim(),
-                                      ),
-                                    );
-                                  },
-                            child: isLoading
-                                ? const SizedBox(
-                                    height: 18,
-                                    width: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    "Save",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
+                      // FOTO PROFILE 
+                      Center(
+                        child: Stack(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20),
                                     ),
                                   ),
-                          );
-                        },
+                                  builder: (_) => SafeArea(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        ListTile(
+                                          leading: const Icon(
+                                            Icons.photo_library,
+                                          ),
+                                          title: const Text(
+                                            "Pick from Gallery",
+                                          ),
+                                          onTap: () async {
+                                            final file =
+                                                await ImageHelper.pickGallery();
+                                            if (file != null) {
+                                              setStateDialog(() {
+                                                selectedImageFile = file;
+                                                existingPhoto = null;
+                                              });
+                                            }
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: const Icon(Icons.camera_alt),
+                                          title: const Text("Take a Photo"),
+                                          onTap: () async {
+                                            final file =
+                                                await ImageHelper.pickCamera();
+                                            if (file != null) {
+                                              setStateDialog(() {
+                                                selectedImageFile = file;
+                                                existingPhoto = null;
+                                              });
+                                            }
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: CircleAvatar(
+                                radius: 55,
+                                backgroundColor: Colors.grey.shade300,
+                                backgroundImage: selectedImageFile != null
+                                    ? FileImage(selectedImageFile!)
+                                          as ImageProvider
+                                    : (existingPhoto != null
+                                          ? NetworkImage(existingPhoto!)
+                                          : null),
+                                child:
+                                    (selectedImageFile == null &&
+                                        existingPhoto == null)
+                                    ? Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: const [
+                                          Icon(
+                                            Icons.camera_alt,
+                                            color: Colors.white,
+                                            size: 30,
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            "Upload",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : null,
+                              ),
+                            ),
+
+                            if (selectedImageFile != null ||
+                                existingPhoto != null)
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setStateDialog(() {
+                                      selectedImageFile = null;
+                                      existingPhoto = null;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      const SizedBox(height: 22),
+
+                      _buildInputField(
+                        label: "Username",
+                        controller: usernameCtrl,
+                      ),
+                      const SizedBox(height: 16),
+
+                      _buildInputField(
+                        label: "Phone Number",
+                        controller: phoneCtrl,
+                        inputType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 16),
+
+                      _buildInputField(
+                        label: "Address",
+                        controller: addressCtrl,
+                      ),
+                      const SizedBox(height: 28),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(
+                                color: Color(0xFF9BA4AE),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+
+                          BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
+                            builder: (context, state) {
+                              final isLoading = state.maybeWhen(
+                                loading: () => true,
+                                orElse: () => false,
+                              );
+
+                              return ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF0DA18C),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 26,
+                                    vertical: 12,
+                                  ),
+                                ),
+                                onPressed: isLoading
+                                    ? null
+                                    : () {
+                                        context.read<FirebaseAuthBloc>().add(
+                                          FirebaseAuthEvent.updateProfile(
+                                            username: usernameCtrl.text.trim(),
+                                            phoneNumber: phoneCtrl.text.trim(),
+                                            address: addressCtrl.text.trim(),
+                                            imageFile: selectedImageFile,
+                                          ),
+                                        );
+                                      },
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "Save",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     ).then((_) {
@@ -165,9 +304,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     });
   }
 
-  // ================================================================
+  
   // INPUT FIELD UI
-  // ================================================================
+  
   Widget _buildInputField({
     required String label,
     required TextEditingController controller,
@@ -191,7 +330,7 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 5,
                 offset: const Offset(0, 2),
               ),
@@ -218,16 +357,15 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ================================================================
-  // LISTENER UTAMA (PERBAIKAN UTAMA DISINI)
-  // ================================================================
+  
+
+  
   @override
   Widget build(BuildContext context) {
     return BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
       listener: (context, state) {
         state.maybeWhen(
           success: (msg) {
-            // Tutup dialog edit jika sedang terbuka
             if (_isEditDialogOpen && Navigator.canPop(context)) {
               Navigator.pop(context);
               _isEditDialogOpen = false;
@@ -237,7 +375,6 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
               SnackBar(content: Text(msg), backgroundColor: Colors.green),
             );
 
-            // 🔥 Reload user agar UI kembali ke authenticated state
             context.read<FirebaseAuthBloc>().add(
               const FirebaseAuthEvent.loadUser(),
             );
@@ -279,9 +416,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ================================================================
+  
   // HEADER
-  // ================================================================
+  
   Widget _buildHeader(BuildContext context, user) {
     final initials = _getInitials(user.username);
 
@@ -375,7 +512,6 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
 
           BlocBuilder<DepositFirebaseBloc, DepositFirebaseState>(
             builder: (context, depState) {
-              // tetap hitung total deposits dan total weight dari deposit
               final approvedDeposits = depState.deposits
                   .where((d) => d.status.toLowerCase() == "completed")
                   .toList();
@@ -387,7 +523,6 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
 
               final totalDeposits = approvedDeposits.length;
 
-              // 🔥 TOTAL POINTS DARI USER MODEL (BUKAN DARI DEPOSIT)
               final user = context.read<FirebaseAuthBloc>().state.maybeWhen(
                 authenticated: (u) => u,
                 orElse: () => null,
@@ -398,7 +533,7 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
               return Container(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -423,9 +558,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ================================================================
+  
   // INFO SECTION
-  // ================================================================
+  
   Widget _buildPersonalInfoSection(user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -448,7 +583,7 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
               color: Colors.teal,
             ),
 
-            Divider(height: 24, color: Colors.black.withOpacity(0.2)),
+            Divider(height: 24, color: Colors.black.withValues(alpha: 0.2)),
 
             _buildInfoTile(
               icon: Icons.phone,
@@ -457,7 +592,7 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
               color: Colors.indigo,
             ),
 
-            Divider(height: 24, color: Colors.black.withOpacity(0.2)),
+            Divider(height: 24, color: Colors.black.withValues(alpha: 0.2)),
 
             _buildInfoTile(
               icon: Icons.location_on,
@@ -471,9 +606,9 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ================================================================
+  
   // LOGOUT BUTTON
-  // ================================================================
+  
   Widget _buildLogoutButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -524,16 +659,16 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  // ================================================================
+  
   // HELPERS
-  // ================================================================
+  
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
       boxShadow: [
         BoxShadow(
-          color: Colors.green.withOpacity(0.08),
+          color: Colors.green.withValues(alpha: 0.08),
           blurRadius: 10,
           offset: const Offset(0, 3),
         ),
@@ -578,7 +713,7 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(icon, color: color, size: 20),

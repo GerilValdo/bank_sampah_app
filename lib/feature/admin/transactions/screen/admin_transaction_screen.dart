@@ -12,7 +12,7 @@ class AdminTransactionScreen extends StatefulWidget {
 }
 
 class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
-  int selectedTabIndex = 0; // 0: Pending, 1: Approved, 2: Rejected
+  int selectedTabIndex = 0; 
   final String sampleImagePath = '/mnt/data/Screenshot 2025-11-24 081429.png';
 
   @override
@@ -20,9 +20,7 @@ class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
     return Scaffold(
       body: Column(
         children: [
-          // Top curved header
           _buildHeader(context),
-          // Body content
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -35,10 +33,9 @@ class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
                   const SizedBox(height: 18),
                   _buildTabs(context),
                   const SizedBox(height: 18),
-                  // Transactions list - repeatable card(s)
                   _buildTransactionCard(context),
                   const SizedBox(height: 16),
-                  _buildTransactionCard(context), // duplicate to show list
+                  _buildTransactionCard(context), 
                 ],
               ),
             ),
@@ -105,7 +102,6 @@ class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
             ],
           ),
         ),
-        // decorative bottom rounded dark overlay to mimic image look
         Positioned(
           top: height - 24,
           left: 0,
@@ -113,7 +109,7 @@ class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
           child: Container(
             height: 48,
             decoration: const BoxDecoration(
-              color: Color(0xFFEFF3F6), // same as scaffold-like background
+              color: Color(0xFFEFF3F6), 
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(36),
                 topRight: Radius.circular(36),
@@ -283,12 +279,10 @@ class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // left info column
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // name + pending badge
                       Row(
                         children: [
                           const Expanded(
@@ -327,7 +321,6 @@ class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
                         style: TextStyle(fontSize: 13, color: Colors.black54),
                       ),
                       const SizedBox(height: 10),
-                      // two column details
                       Row(
                         children: [
                           Expanded(
@@ -475,7 +468,6 @@ class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
                     ],
                   ),
                 ),
-                // Right column: TRX id vertical
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -498,14 +490,11 @@ class _AdminTransactionScreenState extends State<AdminTransactionScreen> {
   }
 
   Widget _buildThumbnail() {
-    // Use FileImage with provided local path (the environment will transform if needed).
-    // If the file isn't available in your runtime, replace with a NetworkImage or AssetImage.
     try {
       final f = File(sampleImagePath);
       if (f.existsSync()) {
         return Image.file(f, fit: BoxFit.cover);
       } else {
-        // fallback colored placeholder
         return Container(
           color: const Color(0xFFE7EDF3),
           child: const Center(

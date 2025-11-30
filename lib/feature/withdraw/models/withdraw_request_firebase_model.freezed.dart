@@ -15,12 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WithdrawRequestFirebaseModel {
 
- String? get id;// doc id
- String get userId; int get pointsRequested; double get amount;// currency value
- String get paymentMethod;// e.g. 'gopay','bank'
- String? get phone;// recipient phone/account
-@TimestampConverter() DateTime get createdAt; String get status;// 'pending','approved','rejected'
- String? get reason;
+ String? get id; String get userId; int get pointsRequested; double get amount; String get paymentMethod; String? get phone;@TimestampConverter() DateTime get createdAt; String get status; String? get reason;
 /// Create a copy of WithdrawRequestFirebaseModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -226,18 +221,13 @@ class _WithdrawRequestFirebaseModel implements WithdrawRequestFirebaseModel {
   factory _WithdrawRequestFirebaseModel.fromJson(Map<String, dynamic> json) => _$WithdrawRequestFirebaseModelFromJson(json);
 
 @override final  String? id;
-// doc id
 @override final  String userId;
 @override final  int pointsRequested;
 @override final  double amount;
-// currency value
 @override final  String paymentMethod;
-// e.g. 'gopay','bank'
 @override final  String? phone;
-// recipient phone/account
 @override@TimestampConverter() final  DateTime createdAt;
 @override@JsonKey() final  String status;
-// 'pending','approved','rejected'
 @override final  String? reason;
 
 /// Create a copy of WithdrawRequestFirebaseModel

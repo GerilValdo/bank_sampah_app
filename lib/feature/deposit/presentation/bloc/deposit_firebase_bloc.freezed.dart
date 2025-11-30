@@ -128,11 +128,11 @@ return deleteDeposit(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String userId)?  loadDeposits,TResult Function( DepositFirebaseModel deposit)?  addDeposit,TResult Function( DepositFirebaseModel deposit)?  updateDeposit,TResult Function( String id)?  deleteDeposit,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String userId)?  loadDeposits,TResult Function( DepositFirebaseModel deposit,  File? imageFile)?  addDeposit,TResult Function( DepositFirebaseModel deposit)?  updateDeposit,TResult Function( String id)?  deleteDeposit,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoadDeposits() when loadDeposits != null:
 return loadDeposits(_that.userId);case _AddDeposit() when addDeposit != null:
-return addDeposit(_that.deposit);case _UpdateDeposit() when updateDeposit != null:
+return addDeposit(_that.deposit,_that.imageFile);case _UpdateDeposit() when updateDeposit != null:
 return updateDeposit(_that.deposit);case _DeleteDeposit() when deleteDeposit != null:
 return deleteDeposit(_that.id);case _:
   return orElse();
@@ -152,11 +152,11 @@ return deleteDeposit(_that.id);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String userId)  loadDeposits,required TResult Function( DepositFirebaseModel deposit)  addDeposit,required TResult Function( DepositFirebaseModel deposit)  updateDeposit,required TResult Function( String id)  deleteDeposit,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String userId)  loadDeposits,required TResult Function( DepositFirebaseModel deposit,  File? imageFile)  addDeposit,required TResult Function( DepositFirebaseModel deposit)  updateDeposit,required TResult Function( String id)  deleteDeposit,}) {final _that = this;
 switch (_that) {
 case _LoadDeposits():
 return loadDeposits(_that.userId);case _AddDeposit():
-return addDeposit(_that.deposit);case _UpdateDeposit():
+return addDeposit(_that.deposit,_that.imageFile);case _UpdateDeposit():
 return updateDeposit(_that.deposit);case _DeleteDeposit():
 return deleteDeposit(_that.id);case _:
   throw StateError('Unexpected subclass');
@@ -175,11 +175,11 @@ return deleteDeposit(_that.id);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String userId)?  loadDeposits,TResult? Function( DepositFirebaseModel deposit)?  addDeposit,TResult? Function( DepositFirebaseModel deposit)?  updateDeposit,TResult? Function( String id)?  deleteDeposit,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String userId)?  loadDeposits,TResult? Function( DepositFirebaseModel deposit,  File? imageFile)?  addDeposit,TResult? Function( DepositFirebaseModel deposit)?  updateDeposit,TResult? Function( String id)?  deleteDeposit,}) {final _that = this;
 switch (_that) {
 case _LoadDeposits() when loadDeposits != null:
 return loadDeposits(_that.userId);case _AddDeposit() when addDeposit != null:
-return addDeposit(_that.deposit);case _UpdateDeposit() when updateDeposit != null:
+return addDeposit(_that.deposit,_that.imageFile);case _UpdateDeposit() when updateDeposit != null:
 return updateDeposit(_that.deposit);case _DeleteDeposit() when deleteDeposit != null:
 return deleteDeposit(_that.id);case _:
   return null;
@@ -259,10 +259,11 @@ as String,
 
 
 class _AddDeposit implements DepositFirebaseEvent {
-  const _AddDeposit(this.deposit);
+  const _AddDeposit({required this.deposit, this.imageFile});
   
 
  final  DepositFirebaseModel deposit;
+ final  File? imageFile;
 
 /// Create a copy of DepositFirebaseEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -274,16 +275,16 @@ _$AddDepositCopyWith<_AddDeposit> get copyWith => __$AddDepositCopyWithImpl<_Add
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddDeposit&&(identical(other.deposit, deposit) || other.deposit == deposit));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddDeposit&&(identical(other.deposit, deposit) || other.deposit == deposit)&&(identical(other.imageFile, imageFile) || other.imageFile == imageFile));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,deposit);
+int get hashCode => Object.hash(runtimeType,deposit,imageFile);
 
 @override
 String toString() {
-  return 'DepositFirebaseEvent.addDeposit(deposit: $deposit)';
+  return 'DepositFirebaseEvent.addDeposit(deposit: $deposit, imageFile: $imageFile)';
 }
 
 
@@ -294,7 +295,7 @@ abstract mixin class _$AddDepositCopyWith<$Res> implements $DepositFirebaseEvent
   factory _$AddDepositCopyWith(_AddDeposit value, $Res Function(_AddDeposit) _then) = __$AddDepositCopyWithImpl;
 @useResult
 $Res call({
- DepositFirebaseModel deposit
+ DepositFirebaseModel deposit, File? imageFile
 });
 
 
@@ -311,10 +312,11 @@ class __$AddDepositCopyWithImpl<$Res>
 
 /// Create a copy of DepositFirebaseEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? deposit = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? deposit = null,Object? imageFile = freezed,}) {
   return _then(_AddDeposit(
-null == deposit ? _self.deposit : deposit // ignore: cast_nullable_to_non_nullable
-as DepositFirebaseModel,
+deposit: null == deposit ? _self.deposit : deposit // ignore: cast_nullable_to_non_nullable
+as DepositFirebaseModel,imageFile: freezed == imageFile ? _self.imageFile : imageFile // ignore: cast_nullable_to_non_nullable
+as File?,
   ));
 }
 

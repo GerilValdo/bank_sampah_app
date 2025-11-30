@@ -61,7 +61,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // === Top Stats Cards ===
           _buildTopStats(),
 
           const SizedBox(height: 25),
@@ -167,7 +166,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: color.withOpacity(0.15),
+                backgroundColor: color.withValues(alpha: 0.15),
                 child: Icon(icon, color: color, size: 18),
               ),
               // const Spacer(),
@@ -193,7 +192,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ============================
   Widget _buildQuickActions() {
     final List<Map<String, dynamic>> actionData = [
       {
@@ -282,7 +280,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ==============================
   Widget _buildPendingApprovals() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,7 +330,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -421,7 +418,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ============================
   Widget _buildTopContributors() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -449,7 +445,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -496,7 +492,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ============================
   Widget _sectionHeader(String title) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

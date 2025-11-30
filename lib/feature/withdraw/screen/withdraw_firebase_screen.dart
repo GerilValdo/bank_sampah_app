@@ -64,7 +64,7 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
 
           return Column(
             children: [
-              // =================== HEADER ===================
+              //  HEADER 
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.only(top: 55, left: 20, right: 20),
@@ -81,7 +81,6 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 🔥 BARIS TITLE + HISTORY BUTTON
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -94,7 +93,6 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                           ),
                         ),
 
-                        // 🔥 HISTORY BUTTON DI KANAN ATAS
                         GestureDetector(
                           onTap: () {
                             context.pushRoute(WithdrawHistoryFirebaseRoute());
@@ -128,7 +126,7 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                 ),
               ),
 
-              // =================== MAIN CONTENT ===================
+              //  MAIN CONTENT 
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
@@ -157,7 +155,7 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
     );
   }
 
-  // ================= PACKAGE SELECTION =================
+  //  PACKAGE SELECTION 
   Widget _buildPackageSelection(int userPoints) {
     return Container(
       padding: const EdgeInsets.all(22),
@@ -195,7 +193,7 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? Colors.teal.withOpacity(0.12)
+                        ? Colors.teal.withValues(alpha: 0.12)
                         : Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
@@ -260,7 +258,7 @@ class _WithdrawFirebaseScreenState extends State<WithdrawFirebaseScreen> {
     );
   }
 
-  // ================= SUBMIT BUTTON =================
+  //  SUBMIT BUTTON 
   Widget _buildSubmitButton(user) {
     if (selectedAmount == null) {
       return _disabledButton("Request Withdraw");

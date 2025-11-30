@@ -19,13 +19,11 @@ class _HistoryFirebaseScreenState extends State<HistoryFirebaseScreen> {
   void initState() {
     super.initState();
 
-    /// Ambil User dari AuthBloc
     final user = context.read<FirebaseAuthBloc>().state.maybeWhen(
       authenticated: (u) => u,
       orElse: () => null,
     );
 
-    /// Jika user ada → load transaksi berdasarkan uid
     if (user != null) {
       context.read<HistoryFirebaseBloc>().add(
         HistoryFirebaseEvent.loadTransactions(user.uid!),
@@ -75,9 +73,9 @@ class _HistoryFirebaseScreenState extends State<HistoryFirebaseScreen> {
     );
   }
 
-  // ===========================================================================
+  
   // HEADER
-  // ===========================================================================
+  
   Widget _buildHeader(HistoryFirebaseState state) {
     return Container(
       padding: const EdgeInsets.only(top: 50, left: 16, right: 16, bottom: 16),
@@ -119,7 +117,7 @@ class _HistoryFirebaseScreenState extends State<HistoryFirebaseScreen> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -156,9 +154,9 @@ class _HistoryFirebaseScreenState extends State<HistoryFirebaseScreen> {
     );
   }
 
-  // ===========================================================================
+  
   // CATEGORY FILTER TABS
-  // ===========================================================================
+  
   Widget _buildCategoryTabs(String selectedCategory) {
     final tabs = ['All', 'Completed', 'Pending', 'Rejected'];
 

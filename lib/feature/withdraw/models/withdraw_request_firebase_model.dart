@@ -5,24 +5,26 @@ part 'withdraw_request_firebase_model.freezed.dart';
 part 'withdraw_request_firebase_model.g.dart';
 
 @freezed
-abstract class WithdrawRequestFirebaseModel with _$WithdrawRequestFirebaseModel {
+abstract class WithdrawRequestFirebaseModel
+    with _$WithdrawRequestFirebaseModel {
   factory WithdrawRequestFirebaseModel({
-    String? id, // doc id
+    String? id, 
     required String userId,
     required int pointsRequested,
-    required double amount, // currency value
-    required String paymentMethod, // e.g. 'gopay','bank'
-    String? phone, // recipient phone/account
+    required double amount, 
+    required String paymentMethod, 
+    String? phone, 
     @TimestampConverter() required DateTime createdAt,
-    @Default('pending') String status, // 'pending','approved','rejected'
-    String? reason, // rejection reason
+    @Default('pending') String status, 
+    String? reason, 
   }) = _WithdrawRequestFirebaseModel;
 
   factory WithdrawRequestFirebaseModel.fromJson(Map<String, dynamic> json) =>
       _$WithdrawRequestFirebaseModelFromJson(json);
 
   factory WithdrawRequestFirebaseModel.fromFirestore(
-      DocumentSnapshot<Map<String, dynamic>> doc) {
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final data = doc.data() ?? <String, dynamic>{};
     return WithdrawRequestFirebaseModel.fromJson({...data, 'id': doc.id});
   }

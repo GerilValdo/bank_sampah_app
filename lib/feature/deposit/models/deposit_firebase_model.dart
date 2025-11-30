@@ -7,19 +7,19 @@ part 'deposit_firebase_model.g.dart';
 @freezed
 abstract class DepositFirebaseModel with _$DepositFirebaseModel {
   factory DepositFirebaseModel({
-    String? id, // Firestore document id
+    String? id, 
     required String categoryId,
     required double weight,
     required int totalPoints,
-    required String status, // e.g. 'pending', 'completed', 'rejected'
-    String? imageUrl, // can be storage URL
+    required String status, 
+    String? imageUrl, 
     String? notes,
     @TimestampConverter() required DateTime createdAt,
     String? reason,
     String? nameCategory,
     int? pointsPerKgCategory,
     String? iconNameCategory,
-    String? userId, // reference to user who deposited
+    String? userId, 
   }) = _DepositFirebaseModel;
 
   factory DepositFirebaseModel.fromJson(Map<String, dynamic> json) =>

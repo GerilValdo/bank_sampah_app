@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:bank_sampah_app/core/constants/app_color.dart';
 import 'package:bank_sampah_app/core/constants/app_style.dart';
 import 'package:bank_sampah_app/core/router/app_router.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
@@ -48,7 +47,6 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
       orElse: () => null,
     );
 
-    // 🔥 LOAD CATEGORY SEKALI SAJA DI DASHBOARD
     context.read<CategoryFirebaseBloc>().add(
       const CategoryFirebaseEvent.loadCategories(),
     );
@@ -62,7 +60,6 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
         HistoryFirebaseEvent.loadTransactions(user.uid!),
       );
 
-      // 🔥 RELOAD USER UNTUK UPDATE TOTAL POINTS
       context.read<FirebaseAuthBloc>().add(const FirebaseAuthEvent.loadUser());
     }
   }
@@ -70,48 +67,24 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final height = size.height;
     final width = size.width;
 
     return Scaffold(
-      backgroundColor: Colors.white.withOpacity(0.9),
+      backgroundColor: Colors.white.withValues(alpha: 0.9),
       body: SingleChildScrollView(
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🌿 Background Header (gradient)
-            Container(
-              height: height * 0.27,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(40),
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF50C878).withOpacity(0.7),
-                    Colors.teal,
-                  ],
-                  center: Alignment.topLeft,
-                  radius: 2,
-                ),
-              ),
-            ),
-
-            // 🌿 Main Content
+            _buildHeader(),
+            const SizedBox(height: 10),
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.06,
-                vertical: height * 0.05,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 25),
-                  _buildPointsCard(),
-                  const SizedBox(height: 65),
-                  _buildQuickActions(context),
-                  const SizedBox(height: 10),
-                  _buildRecentActivity(context),
-                ],
-              ),
+              padding: EdgeInsets.symmetric(horizontal: width * 0.06),
+              child: _buildQuickActions(context),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.06),
+              child: _buildRecentActivity(context),
             ),
           ],
         ),
@@ -119,9 +92,7 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     );
   }
 
-  // =====================================================
   // HEADER
-  // =====================================================
   Widget _buildHeader() {
     return BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
       builder: (context, state) {
@@ -137,103 +108,116 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
                       .toUpperCase()
                 : "?";
 
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.white24,
-                child: Text(
-                  initials,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(top: 60, bottom: 30),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF10B981), Color(0xFF14B8A6)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(30),
                 ),
               ),
-              title: const Text(
-                'Welcome back,',
-                style: TextStyle(color: Colors.white70),
+              child: Column(
+                children: [
+                  _buildAvatar(user.profileImage, initials),
+                  const SizedBox(height: 14),
+                  const Text(
+                    "Welcome 👋",
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  _buildFloatingPointsCard(user.totalPoints),
+                ],
               ),
-              subtitle: Text(
-                username,
+            );
+          },
+          orElse: () => const SizedBox(),
+        );
+      },
+    );
+  }
+
+  Widget _buildAvatar(String? photoUrl, String initials) {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 3),
+      ),
+      child: CircleAvatar(
+        radius: 38,
+        backgroundColor: Colors.white24,
+        backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+        child: photoUrl == null
+            ? Text(
+                initials,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              trailing: Icon(
-                Icons.workspace_premium_outlined,
-                color: Colors.white.withOpacity(0.7),
-              ),
-            );
-          },
-          orElse: () => const SizedBox(),
-        );
-      },
+              )
+            : null,
+      ),
     );
   }
 
-  // =====================================================
-  // POINTS CARD
-  // =====================================================
-  Widget _buildPointsCard() {
-    return BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
-      builder: (context, state) {
-        return state.maybeWhen(
-          authenticated: (user) {
-            return Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 2),
-                    borderRadius: BorderRadius.circular(15),
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF50C878).withOpacity(0.7),
-                        Colors.teal,
-                      ],
-                    ),
-                  ),
-                  child: const Icon(
-                    FontAwesomeIcons.coins,
-                    color: Colors.white,
-                  ),
+  Widget _buildFloatingPointsCard(int points) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.monetization_on_outlined,
+            color: Colors.white,
+            size: 22,
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Total Points",
+                style: TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+              Text(
+                points.toString(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(width: 12),
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Total Points",
-                      style: AppTextStyle.semiBold(color: AppColor.background),
-                    ),
-
-                    // 🔥 PAKAI TOTAL POINTS DARI USER MODEL
-                    Text(
-                      user.totalPoints.toString(),
-                      style: AppTextStyle.bold(
-                        color: AppColor.background,
-                        fontSize: 22,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            );
-          },
-          orElse: () => const SizedBox(),
-        );
-      },
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
-  // =====================================================
   // QUICK ACTIONS
-  // =====================================================
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
       {
@@ -243,7 +227,7 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
       },
       {
         'icon': FontAwesomeIcons.gift,
-        'label': 'Rewards',
+        'label': 'Withdraw Points',
         'gradient': [Colors.purple, Colors.pinkAccent],
       },
     ];
@@ -253,7 +237,6 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
       children: [
         Text("Quick Actions", style: AppTextStyle.semiBold(fontSize: 16)),
         const SizedBox(height: 10),
-
         GridView.builder(
           padding: EdgeInsets.zero,
           shrinkWrap: true,
@@ -267,19 +250,51 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
           ),
           itemBuilder: (context, index) {
             final item = actions[index];
-
-            return _buildActionCard(
-              icon: item['icon'] as IconData,
-              label: item['label'] as String,
-              gradient: (item['gradient'] as List).cast<Color>(),
-              onTap: () {
-                if (index == 0) {
-                  context.pushRoute(DepositFirebaseRoute());
-                }
-                if (index == 1) {
-                  context.pushRoute(MainRoute(initialIndex: 2));
-                }
-              },
+            return Card(
+              elevation: 6,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(15),
+                onTap: () {
+                  if (index == 0) context.pushRoute(DepositFirebaseRoute());
+                  if (index == 1) {
+                    context.pushRoute(FirebaseMainRoute(initialIndex: 2));
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 45,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: item['gradient'] as List<Color>,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          item['icon'] as IconData,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        item['label'] as String,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             );
           },
         ),
@@ -287,75 +302,28 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     );
   }
 
-  Widget _buildActionCard({
-    required IconData icon,
-    required String label,
-    required List<Color> gradient,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(15),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 45,
-                height: 45,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: gradient),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: Colors.white, size: 20),
-              ),
-              const Spacer(),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // =====================================================
   // RECENT ACTIVITY
-  // =====================================================
   Widget _buildRecentActivity(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Recent Activity',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            TextButton(onPressed: () {}, child: const Text('View All')),
-          ],
+        const Text(
+          'Recent Activity',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-
+        const SizedBox(height: 10),
         BlocBuilder<DepositFirebaseBloc, DepositFirebaseState>(
           builder: (context, state) {
-            if (state.isLoading)
+            if (state.isLoading) {
               return const Center(child: CircularProgressIndicator());
-            if (state.deposits.isEmpty)
+            }
+            if (state.deposits.isEmpty) {
               return const Center(child: Text("No Data"));
+            }
 
             return ListView.builder(
               padding: EdgeInsets.zero,
-              itemCount: state.deposits.length,
+              itemCount: state.deposits.length.clamp(0, 5),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
@@ -369,9 +337,94 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
     );
   }
 
-  Widget _buildActivityCard(DepositFirebaseModel data) {
+  // LIST TILE BUILDER
+  Widget _buildListTile(DepositFirebaseModel data) {
     final statusColor = getStatusColor(data.status);
     final createdText = DateFormat('dd MMM yyyy').format(data.createdAt);
+
+    return ListTile(
+      leading: Container(
+        height: 36,
+        width: 36,
+        decoration: BoxDecoration(
+          color: statusColor.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          mapIconName(data.iconNameCategory ?? ""),
+          size: 16,
+          color: statusColor,
+        ),
+      ),
+      title: Text(
+        data.nameCategory ?? "",
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      subtitle: Row(
+        children: [
+          Text("${data.weight} kg"),
+          const SizedBox(width: 4),
+          const Text("•"),
+          const SizedBox(width: 4),
+          Text(createdText),
+        ],
+      ),
+      trailing: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            "+${data.totalPoints}",
+            style: TextStyle(color: statusColor, fontWeight: FontWeight.bold),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: statusColor.withValues(alpha: 0.4),
+            ),
+            child: Text(
+              data.status,
+              style: TextStyle(
+                color: statusColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // MAIN ACTIVITY CARD
+  Widget _buildActivityCard(DepositFirebaseModel data) {
+    final isPending = data.status == 'pending';
+
+    if (!isPending) {
+      return Card(
+        elevation: 3,
+        margin: const EdgeInsets.only(bottom: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: InkWell(
+          onTap: () {
+            context.pushRoute(DepositFirebaseRoute(deposit: data)).then((
+              value,
+            ) {
+              final uid = FirebaseAuth.instance.currentUser?.uid;
+              if (uid != null) {
+                context.read<DepositFirebaseBloc>().add(
+                  DepositFirebaseEvent.loadDeposits(uid),
+                );
+                context.read<HistoryFirebaseBloc>().add(
+                  HistoryFirebaseEvent.loadTransactions(uid),
+                );
+              }
+            });
+          },
+          child: _buildListTile(data),
+        ),
+      );
+    }
 
     return Dismissible(
       key: ValueKey(data.id),
@@ -385,8 +438,6 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
         ),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-
-      // 🚀 KONFIRMASI DELETE
       confirmDismiss: (direction) async {
         return await showDialog(
           context: context,
@@ -406,12 +457,11 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
           ),
         );
       },
-
-      // 🚀 AKSI DELETE
       onDismissed: (direction) {
         context.read<DepositFirebaseBloc>().add(
           DepositFirebaseEvent.deleteDeposit(data.id!),
         );
+
         context.read<HistoryFirebaseBloc>().add(
           HistoryFirebaseEvent.loadTransactions(
             FirebaseAuth.instance.currentUser!.uid,
@@ -422,14 +472,12 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
           context,
         ).showSnackBar(SnackBar(content: Text('${data.nameCategory} dihapus')));
       },
-
       child: Card(
         elevation: 3,
         margin: const EdgeInsets.only(bottom: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: InkWell(
           onTap: () {
-            // 🚀 UPDATE: Ketika item ditekan, buka DepositFirebaseScreen
             context.pushRoute(DepositFirebaseRoute(deposit: data)).then((
               value,
             ) {
@@ -444,64 +492,7 @@ class _FirebaseDashboardScreenState extends State<FirebaseDashboardScreen> {
               }
             });
           },
-          child: ListTile(
-            leading: Container(
-              height: 36,
-              width: 36,
-              decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                mapIconName(data.iconNameCategory ?? ""),
-                size: 16,
-                color: Colors.green,
-              ),
-            ),
-            title: Text(
-              data.nameCategory ?? "",
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Row(
-              children: [
-                Text("${data.weight} kg"),
-                const SizedBox(width: 4),
-                const Text("•"),
-                const SizedBox(width: 4),
-                Text(createdText),
-              ],
-            ),
-            trailing: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  "+${data.totalPoints}",
-                  style: const TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: statusColor.withOpacity(0.1),
-                  ),
-                  child: Text(
-                    data.status,
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          child: _buildListTile(data),
         ),
       ),
     );

@@ -33,10 +33,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             loading: () => const Center(child: CircularProgressIndicator()),
             unauthenticated: () =>
                 const Center(child: Text("You are logged out")),
-
-            /// ===============================
-            /// USER BERHASIL AUTH → TAMPILKAN PROFILE
-            /// ===============================
             authenticated: (user) {
               return ListView(
                 padding: EdgeInsets.zero,
@@ -61,9 +57,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ===============================
+  
   // HEADER
-  // ===============================
+  
   Widget _buildHeader(BuildContext context, dynamic user) {
     final initials = _getInitials(user.name);
 
@@ -181,9 +177,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ===============================
+  
   // PERSONAL INFO SECTION
-  // ===============================
+  
   Widget _buildPersonalInfoSection(dynamic user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -228,9 +224,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ===============================
+  
   // SETTINGS
-  // ===============================
+  
   Widget _buildSettingsSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -261,9 +257,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ===============================
+  
   // LOGOUT
-  // ===============================
+  
   Widget _buildLogoutButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -312,9 +308,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ===============================
+  
   // REUSABLES
-  // ===============================
+  
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
       color: Colors.white,

@@ -50,7 +50,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
           return Stack(
             clipBehavior: Clip.none,
             children: [
-              // ================= HEADER =================
+              //  HEADER 
               Container(
                 height: size.height * 0.25,
                 width: double.infinity,
@@ -103,7 +103,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                 ),
               ),
 
-              // =============== FLOATING CONTENT =================
+              // FLOATING CONTENT 
               Positioned(
                 top: size.height * 0.20,
                 left: 0,
@@ -137,7 +137,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     );
   }
 
-  // ================= INPUT CARD =================
+  //  INPUT CARD 
   Widget _buildInputCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -170,7 +170,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
           const SizedBox(height: 20),
 
           DropdownButtonFormField<String>(
-            value: paymentMethod,
+            initialValue: paymentMethod,
             items: const [
               DropdownMenuItem(value: "cash", child: Text("Cash (in person)")),
               DropdownMenuItem(value: "gopay", child: Text("Gopay")),
@@ -210,7 +210,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     );
   }
 
-  // ================= SUMMARY CARD =================
+  //  SUMMARY CARD 
   Widget _buildSummaryCard() {
     final points = int.tryParse(_pointsCtrl.text) ?? 0;
     final amount = points * 100;
@@ -218,7 +218,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.teal.withOpacity(0.08),
+        color: Colors.teal.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -247,7 +247,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
     );
   }
 
-  // ================= SUBMIT BUTTON =================
+  //  SUBMIT BUTTON 
   Widget _buildSubmitButton(user) {
     return SizedBox(
       width: double.infinity,

@@ -39,16 +39,13 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
     return BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
       listener: (context, state) {
         state.whenOrNull(
-          loading: () {
-            
-          },
+          loading: () {},
           authenticated: (user) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Login Successful 🎉')),
             );
 
-            // Navigation based on role
             if (user.role == "admin") {
               context.router.replaceAll([const AdminDashboardRoute()]);
             } else {
@@ -134,17 +131,16 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
 
                           SizedBox(height: height * 0.02),
 
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: const Text(
-                                "Forgot Password?",
-                                style: TextStyle(color: Color(0xFF009966)),
-                              ),
-                            ),
-                          ),
-
+                          // Align(
+                          //   alignment: Alignment.centerRight,
+                          //   child: TextButton(
+                          //     onPressed: () {},
+                          //     child: const Text(
+                          //       "Forgot Password?",
+                          //       style: TextStyle(color: Color(0xFF009966)),
+                          //     ),
+                          //   ),
+                          // ),
                           SizedBox(height: height * 0.03),
 
                           InkWell(

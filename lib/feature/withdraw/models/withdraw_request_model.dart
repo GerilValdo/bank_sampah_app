@@ -10,8 +10,8 @@ abstract class WithdrawRequestModel with _$WithdrawRequestModel {
     required int userId,
     required int pointsRequested,
     required double amount,
-    required String status, // pending, approved, completed, rejected
-    String? paymentMethod, // cash, bank, dana, ovo, gopay
+    required String status, 
+    String? paymentMethod, 
     String? phone,
     String? notes,
     required DateTime createdAt,

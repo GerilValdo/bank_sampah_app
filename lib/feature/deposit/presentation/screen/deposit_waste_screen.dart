@@ -61,7 +61,6 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
         });
       }
     } catch (e) {
-      // handle possible errors (permission denied, etc.)
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed pick image: $e')));
@@ -82,7 +81,6 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
     final categorySource = CategoryLocalDataSource();
     final depositSource = DepositLocalDataSource();
 
-    // Ambil kategori dari database
     final categories = await categorySource.getAllCategories();
     final selected = categories.firstWhere(
       (c) => c.name == selectedCategory,
@@ -96,7 +94,6 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
 
     final totalPoints = (weightValue * selected.pointsPerKg).round();
 
-    // Buat model Deposit
     final deposit = DepositModel(
       id: widget.deposit?.id, 
       categoryId: selected.id ?? 1,
@@ -110,7 +107,6 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
       iconNameCategory: selected.iconName,
     );
 
-    // Tentukan mode Create / Update
     if (widget.deposit == null) {
       await depositSource.insertDeposit(deposit);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -138,7 +134,7 @@ class _DepositWasteScreenState extends State<DepositWasteScreen> {
       imageFile = null;
     });
 
-    Navigator.pop(context, true); // untuk trigger refresh setelah kembali
+    Navigator.pop(context, true); 
   }
 
   @override

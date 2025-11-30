@@ -22,7 +22,6 @@ abstract class UserFirebaseModel with _$UserFirebaseModel {
   factory UserFirebaseModel.fromJson(Map<String, dynamic> json) =>
       _$UserFirebaseModelFromJson(json);
 
-  /// Firestore snapshot -> model (includes docId)
   factory UserFirebaseModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
   ) {
@@ -32,7 +31,6 @@ abstract class UserFirebaseModel with _$UserFirebaseModel {
   }
 }
 
-/// Converter between Firestore Timestamp and Dart DateTime
 class TimestampConverter implements JsonConverter<DateTime?, dynamic> {
   const TimestampConverter();
 

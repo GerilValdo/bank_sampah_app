@@ -16,6 +16,6 @@ IconData mapIconName(String iconName) {
     case 'leaf':
       return FontAwesomeIcons.leaf;
     default:
-      return FontAwesomeIcons.recycle; // fallback icon
+      return FontAwesomeIcons.recycle; 
   }
 }

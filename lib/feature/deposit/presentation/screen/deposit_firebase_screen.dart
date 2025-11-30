@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:bank_sampah_app/core/helpers/image_helper.dart';
 import 'package:bank_sampah_app/core/utils/icon_mapper.dart';
 
 // Firebase & Blocs
@@ -36,26 +37,22 @@ class _DepositFirebaseScreenState extends State<DepositFirebaseScreen> {
   String? selectedStatus;
 
   File? imageFile;
+  String? networkImageUrl; 
+
   final picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    if (widget.deposit == null) {
-      selectedCategory = null; // dipaksa pilih manual
-    }
 
     if (widget.deposit != null) {
       final d = widget.deposit!;
-
       _weightController.text = d.weight.toString();
       _notesController.text = d.notes ?? "";
       selectedCategory = d.nameCategory;
       selectedStatus = d.status;
 
-      if (d.imageUrl != null && d.imageUrl!.isNotEmpty) {
-        imageFile = File(d.imageUrl!);
-      }
+      networkImageUrl = d.imageUrl; 
     } else {
       selectedStatus = "pending";
     }
@@ -67,24 +64,65 @@ class _DepositFirebaseScreenState extends State<DepositFirebaseScreen> {
     "rejected": Colors.red,
   };
 
-  Future<void> _pickImage() async {
-    try {
-      final XFile? picked = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1200,
-        imageQuality: 85,
-      );
-
-      if (picked != null) {
-        setState(() {
-          imageFile = File(picked.path);
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Failed pick image: $e")));
+  Future<void> pickGallery() async {
+    final file = await ImageHelper.pickGallery();
+    if (file != null) {
+      setState(() {
+        imageFile = file;
+        networkImageUrl = null; 
+      });
     }
+  }
+
+  Future<void> pickCamera() async {
+    final file = await ImageHelper.pickCamera();
+    if (file != null) {
+      setState(() {
+        imageFile = file;
+        networkImageUrl = null; 
+      });
+    }
+  }
+
+  void removePhoto() {
+    setState(() {
+      imageFile = null;
+      networkImageUrl = null;
+    });
+  }
+
+  void _showPhotoSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library, color: Colors.teal),
+                title: const Text("Choose from Gallery"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickGallery();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Colors.teal),
+                title: const Text("Take a Photo"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickCamera();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _submitForm() async {
@@ -116,13 +154,13 @@ class _DepositFirebaseScreenState extends State<DepositFirebaseScreen> {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     final depositFirebase = DepositFirebaseModel(
-      id: widget.deposit?.id, // FIX ID
+      id: widget.deposit?.id,
       userId: userId,
       categoryId: selectedCat.id.toString(),
       weight: weightValue,
       totalPoints: totalPoints,
       status: selectedStatus ?? "pending",
-      imageUrl: imageFile?.path,
+      imageUrl: networkImageUrl,
       notes: _notesController.text,
       createdAt: widget.deposit?.createdAt ?? DateTime.now(),
       nameCategory: selectedCat.name,
@@ -133,7 +171,12 @@ class _DepositFirebaseScreenState extends State<DepositFirebaseScreen> {
     final bloc = context.read<DepositFirebaseBloc>();
 
     if (widget.deposit == null) {
-      bloc.add(DepositFirebaseEvent.addDeposit(depositFirebase));
+      bloc.add(
+        DepositFirebaseEvent.addDeposit(
+          deposit: depositFirebase,
+          imageFile: imageFile,
+        ),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -407,38 +450,74 @@ class _DepositFirebaseScreenState extends State<DepositFirebaseScreen> {
               ),
               const SizedBox(height: 8),
 
-              InkWell(
-                onTap: _pickImage,
+              GestureDetector(
+                onTap: () => _showPhotoSourceDialog(),
                 child: Container(
                   height: 150,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.teal.withOpacity(0.5),
+                      color: Colors.teal.withValues(alpha: 0.5),
                       width: 1.5,
                     ),
                   ),
-                  child: Center(
-                    child: imageFile == null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(
-                                Icons.camera_alt,
-                                color: Colors.teal,
-                                size: 30,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: imageFile != null
+                            ? Image.file(
+                                imageFile!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              )
+                            : (networkImageUrl != null &&
+                                  networkImageUrl!.isNotEmpty)
+                            ? Image.network(
+                                networkImageUrl!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              )
+                            : Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const [
+                                    Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.teal,
+                                      size: 30,
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      "Tap to upload photo",
+                                      style: TextStyle(color: Colors.teal),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              SizedBox(height: 8),
-                              Text(
-                                "Take or upload photo",
-                                style: TextStyle(color: Colors.teal),
+                      ),
+
+                      if (imageFile != null || networkImageUrl != null)
+                        Positioned(
+                          top: 6,
+                          right: 6,
+                          child: GestureDetector(
+                            onTap: removePhoto,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.6),
+                                shape: BoxShape.circle,
                               ),
-                            ],
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.file(imageFile!, fit: BoxFit.cover),
+                              padding: const EdgeInsets.all(4),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
                           ),
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -470,9 +549,6 @@ class _DepositFirebaseScreenState extends State<DepositFirebaseScreen> {
                 ),
               ),
 
-              // -------------------------------------------------
-              // 🔥 MODERN STATUS DROPDOWN (Tambah DISINI)
-              // -------------------------------------------------
               const SizedBox(height: 20),
               const Text(
                 "Deposit Status",

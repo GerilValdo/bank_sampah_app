@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:bank_sampah_app/core/config/cloudinary_config.dart';
+import 'package:bank_sampah_app/core/services/cloudinary_service.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/bloc/firebase_auth_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,9 +27,9 @@ class DepositFirebaseBloc
     on<_DeleteDeposit>(_onDeleteDeposit);
   }
 
-  /// =============================
+  
   /// LOAD DEPOSITS
-  /// =============================
+  
   Future<void> _onLoadDeposits(
     _LoadDeposits event,
     Emitter<DepositFirebaseState> emit,
@@ -57,37 +61,59 @@ class DepositFirebaseBloc
   }
 
   Future<void> _onAddDeposit(
-    _AddDeposit event,
-    Emitter<DepositFirebaseState> emit,
-  ) async {
-    emit(
-      state.copyWith(isLoading: true, errorMessage: null, successMessage: null),
+  _AddDeposit event,
+  Emitter<DepositFirebaseState> emit,
+) async {
+  emit(
+    state.copyWith(isLoading: true, errorMessage: null, successMessage: null),
+  );
+
+  try {
+    String? imageUrl;
+
+    if (event.imageFile != null) {
+      imageUrl = await CloudinaryService.uploadImage(
+        file: event.imageFile!,
+        folder: "bank_sampah/deposit",
+        uploadPreset: CloudinaryConfig.uploadPresetDeposit,
+      );
+    }
+
+    final depositData = event.deposit.copyWith(
+      imageUrl: imageUrl,
+      createdAt: DateTime.now(),
     );
 
-    try {
-      final docRef = await firestore
-          .collection('deposits')
-          .add(event.deposit.toJson());
+    // simpan ke Firestore
+    final docRef = await firestore
+        .collection('deposits')
+        .add(depositData.toJson());
 
-      await docRef.update({'id': docRef.id});
+    await docRef.update({'id': docRef.id});
 
-      // reload data
-      add(DepositFirebaseEvent.loadDeposits(event.deposit.userId!));
+    // reload deposit user
+    add(DepositFirebaseEvent.loadDeposits(event.deposit.userId!));
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-          successMessage: "Deposit successfully submitted!",
-        ),
-      );
-    } catch (e) {
-      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
-    }
+    emit(
+      state.copyWith(
+        isLoading: false,
+        successMessage: "Deposit successfully submitted!",
+      ),
+    );
+  } catch (e) {
+    emit(
+      state.copyWith(
+        isLoading: false,
+        errorMessage: "Failed to add deposit: $e",
+      ),
+    );
   }
+}
 
-  /// =============================
+
+  
   /// UPDATE DEPOSIT
-  /// =============================
+  
   Future<void> _onUpdateDeposit(
     _UpdateDeposit event,
     Emitter<DepositFirebaseState> emit,
@@ -103,7 +129,6 @@ class DepositFirebaseBloc
           .doc(event.deposit.id)
           .update(event.deposit.toJson());
 
-      // ⭐ Tambahkan ke user jika deposit disetujui (approved)
       if (event.deposit.status == "completed") {
         final userRef = firestore.collection("users").doc(event.deposit.userId);
 
@@ -132,9 +157,9 @@ class DepositFirebaseBloc
     }
   }
 
-  /// =============================
+  
   /// DELETE DEPOSIT
-  /// =============================
+  
   Future<void> _onDeleteDeposit(
     _DeleteDeposit event,
     Emitter<DepositFirebaseState> emit,
@@ -146,7 +171,6 @@ class DepositFirebaseBloc
     try {
       await firestore.collection('deposits').doc(event.id).delete();
 
-      // 🔥 RELOAD DEPOSIT SETELAH DELETE
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
         add(DepositFirebaseEvent.loadDeposits(currentUser.uid));
