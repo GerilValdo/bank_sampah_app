@@ -173,6 +173,22 @@ class FirebaseDashboardRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [FirebaseEmailVerificationScreen]
+class FirebaseEmailVerificationRoute extends PageRouteInfo<void> {
+  const FirebaseEmailVerificationRoute({List<PageRouteInfo>? children})
+    : super(FirebaseEmailVerificationRoute.name, initialChildren: children);
+
+  static const String name = 'FirebaseEmailVerificationRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const FirebaseEmailVerificationScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [FirebaseLoginScreen]
 class FirebaseLoginRoute extends PageRouteInfo<void> {
   const FirebaseLoginRoute({List<PageRouteInfo>? children})

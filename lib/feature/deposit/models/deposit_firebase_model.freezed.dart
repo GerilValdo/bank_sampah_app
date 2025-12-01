@@ -15,10 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DepositFirebaseModel {
 
- String? get id;// Firestore document id
- String get categoryId; double get weight; int get totalPoints; String get status;// e.g. 'pending', 'completed', 'rejected'
- String? get imageUrl;// can be storage URL
- String? get notes;@TimestampConverter() DateTime get createdAt; String? get reason; String? get nameCategory; int? get pointsPerKgCategory; String? get iconNameCategory; String? get userId;
+ String? get id; String get categoryId; double get weight; int get totalPoints; String get status; String? get imageUrl; String? get notes;@TimestampConverter() DateTime get createdAt; String? get reason; String? get nameCategory; int? get pointsPerKgCategory; String? get iconNameCategory; String? get userId;
 /// Create a copy of DepositFirebaseModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -228,14 +225,11 @@ class _DepositFirebaseModel implements DepositFirebaseModel {
   factory _DepositFirebaseModel.fromJson(Map<String, dynamic> json) => _$DepositFirebaseModelFromJson(json);
 
 @override final  String? id;
-// Firestore document id
 @override final  String categoryId;
 @override final  double weight;
 @override final  int totalPoints;
 @override final  String status;
-// e.g. 'pending', 'completed', 'rejected'
 @override final  String? imageUrl;
-// can be storage URL
 @override final  String? notes;
 @override@TimestampConverter() final  DateTime createdAt;
 @override final  String? reason;

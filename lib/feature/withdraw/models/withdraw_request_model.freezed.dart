@@ -15,9 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WithdrawRequestModel {
 
- int? get id; int get userId; int get pointsRequested; double get amount; String get status;// pending, approved, completed, rejected
- String? get paymentMethod;// cash, bank, dana, ovo, gopay
- String? get phone; String? get notes; DateTime get createdAt; DateTime? get updatedAt;
+ int? get id; int get userId; int get pointsRequested; double get amount; String get status; String? get paymentMethod; String? get phone; String? get notes; DateTime get createdAt; DateTime? get updatedAt;
 /// Create a copy of WithdrawRequestModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -228,9 +226,7 @@ class _WithdrawRequestModel implements WithdrawRequestModel {
 @override final  int pointsRequested;
 @override final  double amount;
 @override final  String status;
-// pending, approved, completed, rejected
 @override final  String? paymentMethod;
-// cash, bank, dana, ovo, gopay
 @override final  String? phone;
 @override final  String? notes;
 @override final  DateTime createdAt;

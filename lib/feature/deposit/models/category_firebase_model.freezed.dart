@@ -15,8 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CategoryFirebaseModel {
 
- String? get id;// firestore doc id
- int get idCategory; String get name; String get iconName; int get pointsPerKg;
+ String? get id; int get idCategory; String get name; String get iconName; int get pointsPerKg;
 /// Create a copy of CategoryFirebaseModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -218,7 +217,6 @@ class _CategoryFirebaseModel implements CategoryFirebaseModel {
   factory _CategoryFirebaseModel.fromJson(Map<String, dynamic> json) => _$CategoryFirebaseModelFromJson(json);
 
 @override final  String? id;
-// firestore doc id
 @override final  int idCategory;
 @override final  String name;
 @override final  String iconName;

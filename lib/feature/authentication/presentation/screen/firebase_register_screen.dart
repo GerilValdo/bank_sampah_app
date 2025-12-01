@@ -54,32 +54,35 @@ class _FirebaseRegisterScreenState extends State<FirebaseRegisterScreen> {
     return BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
       listener: (context, state) {
         state.whenOrNull(
-          loading: () {
-        
-          },
+  loading: () {},
 
-          success: (message) async {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
+  /// REGISTER SUCCESS → EMAIL DIKIRIM
+  emailVerificationSent: () async {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Verification email sent. Please check your inbox."),
+        backgroundColor: Colors.green,
+      ),
+    );
 
-            await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 700));
 
-            if (!context.mounted) return;
-            context.replaceRoute(const FirebaseLoginRoute());
-          },
+    if (!context.mounted) return;
+    context.replaceRoute(const FirebaseEmailVerificationRoute());
+  },
 
-          error: (msg) {
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(msg),
-                backgroundColor: Colors.redAccent,
-              ),
-            );
-          },
-        );
+  error: (msg) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.redAccent,
+      ),
+    );
+  },
+);
+
       },
 
       child: Scaffold(

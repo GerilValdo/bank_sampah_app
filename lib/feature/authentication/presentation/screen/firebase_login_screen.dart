@@ -39,8 +39,19 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
     return BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
       listener: (context, state) {
         state.whenOrNull(
+          emailNotVerified: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Please verify your email before logging in."),
+                backgroundColor: Colors.orange,
+              ),
+            );
+
+            context.pushRoute(const FirebaseEmailVerificationRoute());
+          },
+
           loading: () {},
-          authenticated: (user) {
+          loginSuccess: (user) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Login Successful 🎉')),
@@ -52,6 +63,7 @@ class _FirebaseLoginScreenState extends State<FirebaseLoginScreen> {
               context.router.replaceAll([FirebaseMainRoute()]);
             }
           },
+
           error: (message) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(

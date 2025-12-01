@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:bank_sampah_app/feature/admin/dashboard/admin_dashboard_screen.dart';
 import 'package:bank_sampah_app/feature/admin/transactions/screen/admin_transaction_screen.dart';
+import 'package:bank_sampah_app/feature/authentication/presentation/screen/firebase_email_verification_screen.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/screen/firebase_login_screen.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/screen/firebase_register_screen.dart';
 import 'package:bank_sampah_app/feature/authentication/presentation/screen/login_screen.dart';
@@ -52,6 +53,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: ProfileFirebaseRoute.page, path: ProfileFirebaseScreen.id),
     AutoRoute(page: MainRoute.page, path: MainScreen.id),
     AutoRoute(page: FirebaseMainRoute.page, path: FirebaseMainScreen.id),
+    AutoRoute(page: FirebaseEmailVerificationRoute.page, path: FirebaseEmailVerificationScreen.id),
     AutoRoute(page: WithdrawRoute.page, path: WithdrawScreen.id),
     AutoRoute(page: WithdrawHistoryFirebaseRoute.page, path: WithdrawHistoryFirebaseScreen.id),
     AutoRoute(

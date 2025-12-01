@@ -37,16 +37,15 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     }
   }
 
-  
   // EDIT PROFILE DIALOG
-  
+
   void _showEditProfileDialog(user) {
     final usernameCtrl = TextEditingController(text: user.username);
     final phoneCtrl = TextEditingController(text: user.phoneNumber ?? "");
     final addressCtrl = TextEditingController(text: user.address ?? "");
 
-    File? selectedImageFile; 
-    String? existingPhoto = user.profileImage; 
+    File? selectedImageFile;
+    String? existingPhoto = user.profileImage;
 
     _isEditDialogOpen = true;
 
@@ -81,7 +80,7 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
                       ),
                       const SizedBox(height: 22),
 
-                      // FOTO PROFILE 
+                      // FOTO PROFILE
                       Center(
                         child: Stack(
                           children: [
@@ -304,9 +303,8 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     });
   }
 
-  
   // INPUT FIELD UI
-  
+
   Widget _buildInputField({
     required String label,
     required TextEditingController controller,
@@ -357,9 +355,6 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  
-
-  
   @override
   Widget build(BuildContext context) {
     return BlocListener<FirebaseAuthBloc, FirebaseAuthState>(
@@ -386,13 +381,7 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
         backgroundColor: const Color(0xFFF8FAFB),
         body: BlocBuilder<FirebaseAuthBloc, FirebaseAuthState>(
           builder: (context, state) {
-            return state.when(
-              initial: () => const Center(child: CircularProgressIndicator()),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              unauthenticated: () =>
-                  const Center(child: Text("You are logged out")),
-
-              // USER LOADED
+            return state.maybeWhen(
               authenticated: (user) {
                 return ListView(
                   padding: EdgeInsets.zero,
@@ -407,8 +396,12 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
                 );
               },
 
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (e) => Center(child: Text(e)),
-              success: (_) => const SizedBox(),
+              unauthenticated: () =>
+                  const Center(child: Text("You are logged out")),
+
+              orElse: () => const Center(child: CircularProgressIndicator()),
             );
           },
         ),
@@ -416,9 +409,8 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  
   // HEADER
-  
+
   Widget _buildHeader(BuildContext context, user) {
     final initials = _getInitials(user.username);
 
@@ -558,9 +550,8 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  
   // INFO SECTION
-  
+
   Widget _buildPersonalInfoSection(user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -606,9 +597,8 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  
   // LOGOUT BUTTON
-  
+
   Widget _buildLogoutButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -659,9 +649,8 @@ class _ProfileFirebaseScreenState extends State<ProfileFirebaseScreen> {
     );
   }
 
-  
   // HELPERS
-  
+
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
       color: Colors.white,

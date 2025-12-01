@@ -55,7 +55,7 @@ extension FirebaseAuthEventPatterns on FirebaseAuthEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Register value)?  register,TResult Function( _Login value)?  login,TResult Function( _Logout value)?  logout,TResult Function( _LoadUser value)?  loadUser,TResult Function( _UpdateProfile value)?  updateProfile,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Register value)?  register,TResult Function( _Login value)?  login,TResult Function( _Logout value)?  logout,TResult Function( _LoadUser value)?  loadUser,TResult Function( _UpdateProfile value)?  updateProfile,TResult Function( _SendEmailVerification value)?  sendEmailVerification,TResult Function( _CheckEmailVerification value)?  checkEmailVerification,TResult Function( _ResendEmailVerification value)?  resendEmailVerification,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Register() when register != null:
@@ -63,7 +63,10 @@ return register(_that);case _Login() when login != null:
 return login(_that);case _Logout() when logout != null:
 return logout(_that);case _LoadUser() when loadUser != null:
 return loadUser(_that);case _UpdateProfile() when updateProfile != null:
-return updateProfile(_that);case _:
+return updateProfile(_that);case _SendEmailVerification() when sendEmailVerification != null:
+return sendEmailVerification(_that);case _CheckEmailVerification() when checkEmailVerification != null:
+return checkEmailVerification(_that);case _ResendEmailVerification() when resendEmailVerification != null:
+return resendEmailVerification(_that);case _:
   return orElse();
 
 }
@@ -81,7 +84,7 @@ return updateProfile(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Register value)  register,required TResult Function( _Login value)  login,required TResult Function( _Logout value)  logout,required TResult Function( _LoadUser value)  loadUser,required TResult Function( _UpdateProfile value)  updateProfile,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Register value)  register,required TResult Function( _Login value)  login,required TResult Function( _Logout value)  logout,required TResult Function( _LoadUser value)  loadUser,required TResult Function( _UpdateProfile value)  updateProfile,required TResult Function( _SendEmailVerification value)  sendEmailVerification,required TResult Function( _CheckEmailVerification value)  checkEmailVerification,required TResult Function( _ResendEmailVerification value)  resendEmailVerification,}){
 final _that = this;
 switch (_that) {
 case _Register():
@@ -89,7 +92,10 @@ return register(_that);case _Login():
 return login(_that);case _Logout():
 return logout(_that);case _LoadUser():
 return loadUser(_that);case _UpdateProfile():
-return updateProfile(_that);case _:
+return updateProfile(_that);case _SendEmailVerification():
+return sendEmailVerification(_that);case _CheckEmailVerification():
+return checkEmailVerification(_that);case _ResendEmailVerification():
+return resendEmailVerification(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -106,7 +112,7 @@ return updateProfile(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Register value)?  register,TResult? Function( _Login value)?  login,TResult? Function( _Logout value)?  logout,TResult? Function( _LoadUser value)?  loadUser,TResult? Function( _UpdateProfile value)?  updateProfile,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Register value)?  register,TResult? Function( _Login value)?  login,TResult? Function( _Logout value)?  logout,TResult? Function( _LoadUser value)?  loadUser,TResult? Function( _UpdateProfile value)?  updateProfile,TResult? Function( _SendEmailVerification value)?  sendEmailVerification,TResult? Function( _CheckEmailVerification value)?  checkEmailVerification,TResult? Function( _ResendEmailVerification value)?  resendEmailVerification,}){
 final _that = this;
 switch (_that) {
 case _Register() when register != null:
@@ -114,7 +120,10 @@ return register(_that);case _Login() when login != null:
 return login(_that);case _Logout() when logout != null:
 return logout(_that);case _LoadUser() when loadUser != null:
 return loadUser(_that);case _UpdateProfile() when updateProfile != null:
-return updateProfile(_that);case _:
+return updateProfile(_that);case _SendEmailVerification() when sendEmailVerification != null:
+return sendEmailVerification(_that);case _CheckEmailVerification() when checkEmailVerification != null:
+return checkEmailVerification(_that);case _ResendEmailVerification() when resendEmailVerification != null:
+return resendEmailVerification(_that);case _:
   return null;
 
 }
@@ -131,14 +140,17 @@ return updateProfile(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String username,  String email,  String password,  String phoneNumber)?  register,TResult Function( String email,  String password)?  login,TResult Function()?  logout,TResult Function()?  loadUser,TResult Function( String username,  String phoneNumber,  String address,  File? imageFile)?  updateProfile,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String username,  String email,  String password,  String phoneNumber)?  register,TResult Function( String email,  String password)?  login,TResult Function()?  logout,TResult Function()?  loadUser,TResult Function( String username,  String phoneNumber,  String address,  File? imageFile)?  updateProfile,TResult Function()?  sendEmailVerification,TResult Function()?  checkEmailVerification,TResult Function()?  resendEmailVerification,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Register() when register != null:
 return register(_that.username,_that.email,_that.password,_that.phoneNumber);case _Login() when login != null:
 return login(_that.email,_that.password);case _Logout() when logout != null:
 return logout();case _LoadUser() when loadUser != null:
 return loadUser();case _UpdateProfile() when updateProfile != null:
-return updateProfile(_that.username,_that.phoneNumber,_that.address,_that.imageFile);case _:
+return updateProfile(_that.username,_that.phoneNumber,_that.address,_that.imageFile);case _SendEmailVerification() when sendEmailVerification != null:
+return sendEmailVerification();case _CheckEmailVerification() when checkEmailVerification != null:
+return checkEmailVerification();case _ResendEmailVerification() when resendEmailVerification != null:
+return resendEmailVerification();case _:
   return orElse();
 
 }
@@ -156,14 +168,17 @@ return updateProfile(_that.username,_that.phoneNumber,_that.address,_that.imageF
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String username,  String email,  String password,  String phoneNumber)  register,required TResult Function( String email,  String password)  login,required TResult Function()  logout,required TResult Function()  loadUser,required TResult Function( String username,  String phoneNumber,  String address,  File? imageFile)  updateProfile,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String username,  String email,  String password,  String phoneNumber)  register,required TResult Function( String email,  String password)  login,required TResult Function()  logout,required TResult Function()  loadUser,required TResult Function( String username,  String phoneNumber,  String address,  File? imageFile)  updateProfile,required TResult Function()  sendEmailVerification,required TResult Function()  checkEmailVerification,required TResult Function()  resendEmailVerification,}) {final _that = this;
 switch (_that) {
 case _Register():
 return register(_that.username,_that.email,_that.password,_that.phoneNumber);case _Login():
 return login(_that.email,_that.password);case _Logout():
 return logout();case _LoadUser():
 return loadUser();case _UpdateProfile():
-return updateProfile(_that.username,_that.phoneNumber,_that.address,_that.imageFile);case _:
+return updateProfile(_that.username,_that.phoneNumber,_that.address,_that.imageFile);case _SendEmailVerification():
+return sendEmailVerification();case _CheckEmailVerification():
+return checkEmailVerification();case _ResendEmailVerification():
+return resendEmailVerification();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -180,14 +195,17 @@ return updateProfile(_that.username,_that.phoneNumber,_that.address,_that.imageF
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String username,  String email,  String password,  String phoneNumber)?  register,TResult? Function( String email,  String password)?  login,TResult? Function()?  logout,TResult? Function()?  loadUser,TResult? Function( String username,  String phoneNumber,  String address,  File? imageFile)?  updateProfile,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String username,  String email,  String password,  String phoneNumber)?  register,TResult? Function( String email,  String password)?  login,TResult? Function()?  logout,TResult? Function()?  loadUser,TResult? Function( String username,  String phoneNumber,  String address,  File? imageFile)?  updateProfile,TResult? Function()?  sendEmailVerification,TResult? Function()?  checkEmailVerification,TResult? Function()?  resendEmailVerification,}) {final _that = this;
 switch (_that) {
 case _Register() when register != null:
 return register(_that.username,_that.email,_that.password,_that.phoneNumber);case _Login() when login != null:
 return login(_that.email,_that.password);case _Logout() when logout != null:
 return logout();case _LoadUser() when loadUser != null:
 return loadUser();case _UpdateProfile() when updateProfile != null:
-return updateProfile(_that.username,_that.phoneNumber,_that.address,_that.imageFile);case _:
+return updateProfile(_that.username,_that.phoneNumber,_that.address,_that.imageFile);case _SendEmailVerification() when sendEmailVerification != null:
+return sendEmailVerification();case _CheckEmailVerification() when checkEmailVerification != null:
+return checkEmailVerification();case _ResendEmailVerification() when resendEmailVerification != null:
+return resendEmailVerification();case _:
   return null;
 
 }
@@ -472,6 +490,102 @@ as File?,
 }
 
 /// @nodoc
+
+
+class _SendEmailVerification implements FirebaseAuthEvent {
+  const _SendEmailVerification();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SendEmailVerification);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FirebaseAuthEvent.sendEmailVerification()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _CheckEmailVerification implements FirebaseAuthEvent {
+  const _CheckEmailVerification();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckEmailVerification);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FirebaseAuthEvent.checkEmailVerification()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _ResendEmailVerification implements FirebaseAuthEvent {
+  const _ResendEmailVerification();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ResendEmailVerification);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FirebaseAuthEvent.resendEmailVerification()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
 mixin _$FirebaseAuthState {
 
 
@@ -515,14 +629,18 @@ extension FirebaseAuthStatePatterns on FirebaseAuthState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Authenticated value)?  authenticated,TResult Function( _Unauthenticated value)?  unauthenticated,TResult Function( _Error value)?  error,TResult Function( _Success value)?  success,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Authenticated value)?  authenticated,TResult Function( _LoginSuccess value)?  loginSuccess,TResult Function( _Unauthenticated value)?  unauthenticated,TResult Function( _EmailVerificationSent value)?  emailVerificationSent,TResult Function( _EmailVerified value)?  emailVerified,TResult Function( _EmailNotVerified value)?  emailNotVerified,TResult Function( _Error value)?  error,TResult Function( _Success value)?  success,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Authenticated() when authenticated != null:
-return authenticated(_that);case _Unauthenticated() when unauthenticated != null:
-return unauthenticated(_that);case _Error() when error != null:
+return authenticated(_that);case _LoginSuccess() when loginSuccess != null:
+return loginSuccess(_that);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated(_that);case _EmailVerificationSent() when emailVerificationSent != null:
+return emailVerificationSent(_that);case _EmailVerified() when emailVerified != null:
+return emailVerified(_that);case _EmailNotVerified() when emailNotVerified != null:
+return emailNotVerified(_that);case _Error() when error != null:
 return error(_that);case _Success() when success != null:
 return success(_that);case _:
   return orElse();
@@ -542,14 +660,18 @@ return success(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Authenticated value)  authenticated,required TResult Function( _Unauthenticated value)  unauthenticated,required TResult Function( _Error value)  error,required TResult Function( _Success value)  success,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Authenticated value)  authenticated,required TResult Function( _LoginSuccess value)  loginSuccess,required TResult Function( _Unauthenticated value)  unauthenticated,required TResult Function( _EmailVerificationSent value)  emailVerificationSent,required TResult Function( _EmailVerified value)  emailVerified,required TResult Function( _EmailNotVerified value)  emailNotVerified,required TResult Function( _Error value)  error,required TResult Function( _Success value)  success,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Loading():
 return loading(_that);case _Authenticated():
-return authenticated(_that);case _Unauthenticated():
-return unauthenticated(_that);case _Error():
+return authenticated(_that);case _LoginSuccess():
+return loginSuccess(_that);case _Unauthenticated():
+return unauthenticated(_that);case _EmailVerificationSent():
+return emailVerificationSent(_that);case _EmailVerified():
+return emailVerified(_that);case _EmailNotVerified():
+return emailNotVerified(_that);case _Error():
 return error(_that);case _Success():
 return success(_that);case _:
   throw StateError('Unexpected subclass');
@@ -568,14 +690,18 @@ return success(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Authenticated value)?  authenticated,TResult? Function( _Unauthenticated value)?  unauthenticated,TResult? Function( _Error value)?  error,TResult? Function( _Success value)?  success,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Authenticated value)?  authenticated,TResult? Function( _LoginSuccess value)?  loginSuccess,TResult? Function( _Unauthenticated value)?  unauthenticated,TResult? Function( _EmailVerificationSent value)?  emailVerificationSent,TResult? Function( _EmailVerified value)?  emailVerified,TResult? Function( _EmailNotVerified value)?  emailNotVerified,TResult? Function( _Error value)?  error,TResult? Function( _Success value)?  success,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Authenticated() when authenticated != null:
-return authenticated(_that);case _Unauthenticated() when unauthenticated != null:
-return unauthenticated(_that);case _Error() when error != null:
+return authenticated(_that);case _LoginSuccess() when loginSuccess != null:
+return loginSuccess(_that);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated(_that);case _EmailVerificationSent() when emailVerificationSent != null:
+return emailVerificationSent(_that);case _EmailVerified() when emailVerified != null:
+return emailVerified(_that);case _EmailNotVerified() when emailNotVerified != null:
+return emailNotVerified(_that);case _Error() when error != null:
 return error(_that);case _Success() when success != null:
 return success(_that);case _:
   return null;
@@ -594,13 +720,17 @@ return success(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( UserFirebaseModel user)?  authenticated,TResult Function()?  unauthenticated,TResult Function( String message)?  error,TResult Function( String message)?  success,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( UserFirebaseModel user)?  authenticated,TResult Function( UserFirebaseModel user)?  loginSuccess,TResult Function()?  unauthenticated,TResult Function()?  emailVerificationSent,TResult Function()?  emailVerified,TResult Function()?  emailNotVerified,TResult Function( String message)?  error,TResult Function( String message)?  success,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Authenticated() when authenticated != null:
-return authenticated(_that.user);case _Unauthenticated() when unauthenticated != null:
-return unauthenticated();case _Error() when error != null:
+return authenticated(_that.user);case _LoginSuccess() when loginSuccess != null:
+return loginSuccess(_that.user);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated();case _EmailVerificationSent() when emailVerificationSent != null:
+return emailVerificationSent();case _EmailVerified() when emailVerified != null:
+return emailVerified();case _EmailNotVerified() when emailNotVerified != null:
+return emailNotVerified();case _Error() when error != null:
 return error(_that.message);case _Success() when success != null:
 return success(_that.message);case _:
   return orElse();
@@ -620,13 +750,17 @@ return success(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( UserFirebaseModel user)  authenticated,required TResult Function()  unauthenticated,required TResult Function( String message)  error,required TResult Function( String message)  success,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( UserFirebaseModel user)  authenticated,required TResult Function( UserFirebaseModel user)  loginSuccess,required TResult Function()  unauthenticated,required TResult Function()  emailVerificationSent,required TResult Function()  emailVerified,required TResult Function()  emailNotVerified,required TResult Function( String message)  error,required TResult Function( String message)  success,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Authenticated():
-return authenticated(_that.user);case _Unauthenticated():
-return unauthenticated();case _Error():
+return authenticated(_that.user);case _LoginSuccess():
+return loginSuccess(_that.user);case _Unauthenticated():
+return unauthenticated();case _EmailVerificationSent():
+return emailVerificationSent();case _EmailVerified():
+return emailVerified();case _EmailNotVerified():
+return emailNotVerified();case _Error():
 return error(_that.message);case _Success():
 return success(_that.message);case _:
   throw StateError('Unexpected subclass');
@@ -645,13 +779,17 @@ return success(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( UserFirebaseModel user)?  authenticated,TResult? Function()?  unauthenticated,TResult? Function( String message)?  error,TResult? Function( String message)?  success,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( UserFirebaseModel user)?  authenticated,TResult? Function( UserFirebaseModel user)?  loginSuccess,TResult? Function()?  unauthenticated,TResult? Function()?  emailVerificationSent,TResult? Function()?  emailVerified,TResult? Function()?  emailNotVerified,TResult? Function( String message)?  error,TResult? Function( String message)?  success,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Authenticated() when authenticated != null:
-return authenticated(_that.user);case _Unauthenticated() when unauthenticated != null:
-return unauthenticated();case _Error() when error != null:
+return authenticated(_that.user);case _LoginSuccess() when loginSuccess != null:
+return loginSuccess(_that.user);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated();case _EmailVerificationSent() when emailVerificationSent != null:
+return emailVerificationSent();case _EmailVerified() when emailVerified != null:
+return emailVerified();case _EmailNotVerified() when emailNotVerified != null:
+return emailNotVerified();case _Error() when error != null:
 return error(_that.message);case _Success() when success != null:
 return success(_that.message);case _:
   return null;
@@ -803,6 +941,81 @@ $UserFirebaseModelCopyWith<$Res> get user {
 /// @nodoc
 
 
+class _LoginSuccess implements FirebaseAuthState {
+  const _LoginSuccess(this.user);
+  
+
+ final  UserFirebaseModel user;
+
+/// Create a copy of FirebaseAuthState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LoginSuccessCopyWith<_LoginSuccess> get copyWith => __$LoginSuccessCopyWithImpl<_LoginSuccess>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginSuccess&&(identical(other.user, user) || other.user == user));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,user);
+
+@override
+String toString() {
+  return 'FirebaseAuthState.loginSuccess(user: $user)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LoginSuccessCopyWith<$Res> implements $FirebaseAuthStateCopyWith<$Res> {
+  factory _$LoginSuccessCopyWith(_LoginSuccess value, $Res Function(_LoginSuccess) _then) = __$LoginSuccessCopyWithImpl;
+@useResult
+$Res call({
+ UserFirebaseModel user
+});
+
+
+$UserFirebaseModelCopyWith<$Res> get user;
+
+}
+/// @nodoc
+class __$LoginSuccessCopyWithImpl<$Res>
+    implements _$LoginSuccessCopyWith<$Res> {
+  __$LoginSuccessCopyWithImpl(this._self, this._then);
+
+  final _LoginSuccess _self;
+  final $Res Function(_LoginSuccess) _then;
+
+/// Create a copy of FirebaseAuthState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? user = null,}) {
+  return _then(_LoginSuccess(
+null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as UserFirebaseModel,
+  ));
+}
+
+/// Create a copy of FirebaseAuthState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserFirebaseModelCopyWith<$Res> get user {
+  
+  return $UserFirebaseModelCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
+}
+
+/// @nodoc
+
+
 class _Unauthenticated implements FirebaseAuthState {
   const _Unauthenticated();
   
@@ -824,6 +1037,102 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'FirebaseAuthState.unauthenticated()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _EmailVerificationSent implements FirebaseAuthState {
+  const _EmailVerificationSent();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmailVerificationSent);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FirebaseAuthState.emailVerificationSent()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _EmailVerified implements FirebaseAuthState {
+  const _EmailVerified();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmailVerified);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FirebaseAuthState.emailVerified()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _EmailNotVerified implements FirebaseAuthState {
+  const _EmailNotVerified();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EmailNotVerified);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'FirebaseAuthState.emailNotVerified()';
 }
 
 

@@ -25,4 +25,9 @@ abstract class FirebaseAuthEvent with _$FirebaseAuthEvent {
   File? imageFile,
 }) = _UpdateProfile;
 
+const factory FirebaseAuthEvent.sendEmailVerification() = _SendEmailVerification;
+const factory FirebaseAuthEvent.checkEmailVerification() = _CheckEmailVerification;
+const factory FirebaseAuthEvent.resendEmailVerification() = _ResendEmailVerification;
+
+
 }

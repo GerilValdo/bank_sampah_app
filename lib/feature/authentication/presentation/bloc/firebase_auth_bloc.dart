@@ -21,9 +21,13 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
     on<_Logout>(_logout);
     on<_LoadUser>(_loadUser);
     on<_UpdateProfile>(_updateProfile);
+    on<_CheckEmailVerification>(_checkEmailVerification);
+    on<_ResendEmailVerification>(_resendEmailVerification);
   }
 
-  /// REGISTER
+  
+  //           REGISTER
+  
   Future<void> _register(
     _Register event,
     Emitter<FirebaseAuthState> emit,
@@ -49,12 +53,17 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
 
       await _firestore.collection('users').doc(user.uid).set(model.toJson());
 
-      emit(const FirebaseAuthState.success("Account created successfully 🎉"));
+      await user.sendEmailVerification();
+
+      emit(const FirebaseAuthState.emailVerificationSent());
     } catch (e) {
       emit(FirebaseAuthState.error("Registration failed: $e"));
     }
   }
 
+  
+  // LOGIN
+  
   Future<void> _login(_Login event, Emitter<FirebaseAuthState> emit) async {
     emit(const FirebaseAuthState.loading());
 
@@ -65,20 +74,34 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
       );
 
       final user = cred.user!;
-      final snap = await _firestore.collection('users').doc(user.uid).get();
+      await user.reload();
 
+      if (!user.emailVerified) {
+        emit(const FirebaseAuthState.emailNotVerified());
+        return;
+      }
+
+      final snap = await _firestore.collection('users').doc(user.uid).get();
       final model = UserFirebaseModel.fromJson(snap.data()!);
-      emit(FirebaseAuthState.authenticated(model));
+
+      emit(FirebaseAuthState.loginSuccess(model));
+
     } catch (e) {
       emit(FirebaseAuthState.error("Login failed: $e"));
     }
   }
 
+  
+  //LOGOUT
+  
   Future<void> _logout(_Logout event, Emitter<FirebaseAuthState> emit) async {
     await _auth.signOut();
     emit(const FirebaseAuthState.unauthenticated());
   }
 
+  
+  //          LOAD USER
+  
   Future<void> _loadUser(
     _LoadUser event,
     Emitter<FirebaseAuthState> emit,
@@ -100,14 +123,15 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
 
       final model = UserFirebaseModel.fromJson(snap.data()!);
 
-      emit(const FirebaseAuthState.loading());
-
       emit(FirebaseAuthState.authenticated(model));
     } catch (e) {
       emit(const FirebaseAuthState.unauthenticated());
     }
   }
 
+  
+  //        UPDATE PROFILE
+  
   Future<void> _updateProfile(
     _UpdateProfile event,
     Emitter<FirebaseAuthState> emit,
@@ -150,6 +174,49 @@ class FirebaseAuthBloc extends Bloc<FirebaseAuthEvent, FirebaseAuthState> {
       emit(const FirebaseAuthState.success("Profile updated successfully"));
     } catch (e) {
       emit(FirebaseAuthState.error("Failed to update profile: $e"));
+    }
+  }
+
+  
+  //     CHECK EMAIL VERIFICATION
+  
+  Future<void> _checkEmailVerification(
+    _CheckEmailVerification event,
+    Emitter<FirebaseAuthState> emit,
+  ) async {
+    try {
+      final user = _auth.currentUser;
+      await user?.reload();
+
+      if (user != null && !user.emailVerified) {
+        emit(const FirebaseAuthState.emailNotVerified());
+        return;
+      }
+
+      if (user != null && user.emailVerified) {
+        emit(const FirebaseAuthState.emailVerified());
+      }
+    } catch (e) {
+      emit(FirebaseAuthState.error("Failed to verify email: $e"));
+    }
+  }
+
+  
+  //         RESEND EMAIL
+  
+  Future<void> _resendEmailVerification(
+    _ResendEmailVerification event,
+    Emitter<FirebaseAuthState> emit,
+  ) async {
+    try {
+      final user = _auth.currentUser;
+
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+        emit(const FirebaseAuthState.emailVerificationSent());
+      }
+    } catch (e) {
+      emit(FirebaseAuthState.error("Failed to resend verification email: $e"));
     }
   }
 }
